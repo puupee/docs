@@ -1,0 +1,31 @@
+---
+title: "包与 SDK"
+description: "Puupee 子包的用户文档规划。"
+---
+
+子包的 `docs/` 面向包使用者或外部开发者，`dev/` 面向维护者。
+
+## 文档规则
+
+| 内容 | 推荐位置 |
+| --- | --- |
+| 安装、公开 API、命令用法、示例 | `packages/<package>/docs/` 或 `README.md` |
+| 生成器实现、数据库迁移模板、历史实现总结 | `packages/<package>/dev/` |
+| 自动生成的 API 模型说明 | 保留在生成器约定目录，如 `docs/` 或 `doc/` |
+
+## 主要入口
+
+| 包 | 说明 |
+| --- | --- |
+| `packages/puupee` | Puupee 核心能力、CLI 用法和 Sync 查询说明 |
+| `packages/puupee_cli` | Puupee CLI |
+| `packages/puupee_shared` | Flutter 共享组件和错误处理用户说明 |
+| `packages/puupee_sync` | 同步、配对和 MCP 用户说明 |
+| `packages/puupee_sync_api` | 同步节点 API 客户端文档 |
+| `packages/puupee_api_client` | Dart API 客户端文档 |
+| `packages/puupee-api-axios` | TypeScript Axios API 客户端文档 |
+| `packages/puupee-api-go` | Go API 客户端文档 |
+
+## 已归入 dev 的内容
+
+核心包的数据库迁移、字段映射和生成器文档，`puupee_shared` 的迁移/任务总结，以及 `puupee_sync` 的架构优化和阶段任务总结已移入对应 `dev/`。

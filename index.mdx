@@ -1,97 +1,32 @@
 ---
-title: "Introduction"
-description: "Welcome to the new home for your documentation"
+title: "Puupee 文档"
+description: "Puupee 应用、同步能力和公开 SDK 的用户文档入口。"
 ---
 
-## Setting up
+Puupee 是一组面向个人效率、数据同步、应用发布和开发者工具的应用与基础包。这里是面向用户和外部使用者的文档站入口。
 
-Get your documentation site up and running in minutes.
-
-<Card
-  title="Start here"
-  icon="rocket"
-  href="/quickstart"
-  horizontal
->
-  Follow our three step quickstart guide.
-</Card>
-
-## Make it yours
-
-Design a docs site that looks great and empowers your users.
-
-<Columns cols={2}>
-  <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
-  >
-    Edit your docs locally and preview them in real time.
+<CardGroup cols={2}>
+  <Card title="快速开始" icon="rocket" href="/quickstart">
+    了解如何安装、登录和开始使用 Puupee 应用。
   </Card>
-  <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
-  >
-    Customize the design and colors of your site to match your brand.
+  <Card title="应用文档" icon="grid-2x2" href="/apps">
+    查看各子应用的功能、价格和用户可见说明。
   </Card>
-    <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
-  >
-    Organize your docs to help users find what they need and succeed with your product.
+  <Card title="包与 SDK" icon="blocks" href="/packages">
+    查看可被应用或外部项目复用的包、CLI 和 SDK。
   </Card>
-  <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
-  >
-    Auto-generate API documentation from OpenAPI specifications.
+  <Card title="公开接口" icon="terminal" href="/api-reference">
+    查看 API 客户端、同步接口和开放能力的入口。
   </Card>
-</Columns>
+</CardGroup>
 
-## Create beautiful pages
+## 文档分层
 
-Everything you need to create world-class documentation.
+本仓库的文档按受众分为两类：
 
-<Columns cols={2}>
-  <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
-  >
-    Use MDX to style your docs pages.
-  </Card>
-  <Card
-    title="Code samples"
-    icon="code"
-    href="/essentials/code"
-  >
-    Add sample code to demonstrate how to use your product.
-  </Card>
-  <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
-  >
-    Display images and other media.
-  </Card>
-  <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
-  >
-    Write once and reuse across your docs.
-  </Card>
-</Columns>
+| 目录 | 受众 | 内容 |
+| --- | --- | --- |
+| `docs/` | 用户、外部开发者、包使用者 | 功能介绍、使用指南、价格说明、公开 API 和 SDK 文档 |
+| `dev/` | 项目维护者 | 架构记录、任务清单、迁移计划、实现总结、测试计划和内部排障 |
 
-## Need inspiration?
-
-<Card
-  title="See complete examples"
-  icon="stars"
-  href="https://mintlify.com/customers"
->
-  Browse our showcase of exceptional documentation sites.
-</Card>
+根目录的 `docs/` 是 Mintlify 文档站，只配置用户可见内容。根目录和各子应用、子包的 `dev/` 不会被加入 Mintlify 导航。

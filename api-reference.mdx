@@ -1,0 +1,18 @@
+---
+title: "公开接口"
+description: "Puupee 公开 API 与生成客户端文档入口。"
+---
+
+Puupee 的 API 文档分散在不同语言的生成客户端中。根文档站保留入口，具体接口以各客户端目录中的生成文档为准。
+
+| 客户端 | 文档位置 |
+| --- | --- |
+| Dart API client | `packages/puupee_api_client/doc/` |
+| TypeScript Axios client | `packages/puupee-api-axios/docs/` |
+| Go client | `packages/puupee-api-go/docs/` |
+| Sync API client | `packages/puupee_sync_api/doc/` |
+| Emaopay API client | `apps/emaopay/api/doc/` |
+
+<Warning>
+  生成客户端文档会随 OpenAPI 或后端模型重新生成。请不要把内部实现记录混入这些公开接口说明中。
+</Warning>
