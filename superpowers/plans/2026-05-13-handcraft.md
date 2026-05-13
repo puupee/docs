@@ -1,63 +1,57 @@
-# 小汪手工 Implementation Plan
+# 小汪手工实现计划
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **给智能体工作者：** 必须使用 `superpowers:subagent-driven-development`（推荐）或 `superpowers:executing-plans` 按任务逐项执行。本计划使用复选框语法记录进度。
 
-**Goal:** Build the new `handcraft` Flutter sub-application so users can create synced handcraft projects, upload a style image and fabric image, fill or estimate dimensions, and run a complete mock generation flow for preview image, pattern image, and process video reference.
+**目标：** 创建新的 `handcraft` Flutter 子应用，让用户创建手工作品，上传款式图和布料图，填写或模拟估算尺寸，并跑通成品效果图、裁剪图、过程视频引用的本地模拟生成流程。
 
-**Architecture:** Scaffold `apps/puupee/handcraft` as a first-class Puupee sub-application using `runMyApp`, typed `go_router`, Riverpod annotation providers, shadcn Flutter UI, and Android project conventions copied from the existing Puupee apps. Keep all persistence behind `HandcraftProjectRepo`, keep generation behind `HandcraftGenerationService`, and use an in-memory first-version data source shaped for later Puupee/Sync and object-storage replacement.
+**架构：** `apps/puupee/handcraft` 作为标准 Puupee 子应用接入，启动走 `runMyApp`，路由走类型化 `go_router`，状态走 Riverpod 注解，UI 使用 `shadcn_flutter`、`puupee_ui` 和 `puupee_shared`。作品读写全部放在 `HandcraftProjectRepo` 后面，生成逻辑全部放在 `HandcraftGenerationService` 后面，第一版使用内存数据源和本地模拟结果，字段和接口按后续 Puupee/Sync、对象存储、真实 AI 生成预留。
 
-**Tech Stack:** Dart 3.8, Flutter, shadcn_flutter, go_router with go_router_builder, Riverpod annotation, hooks_riverpod, puupee_shared, puupee_ui, build_runner, Android Kotlin/Java 17.
-
----
-
-## File Structure
-
-- Modify `pubspec.yaml`: add `apps/puupee/handcraft` to the workspace list near other Puupee apps.
-- Create `apps/puupee/handcraft/pubspec.yaml`: Flutter package definition for `puupee_handcraft`.
-- Create `apps/puupee/handcraft/.metadata`: Flutter app metadata so app-level tests and tooling recognize the project.
-- Create `apps/puupee/handcraft/lib/env.dart`: `HandcraftEnvConfig`.
-- Create `apps/puupee/handcraft/lib/main.dart`: startup through `runMyApp`.
-- Create `apps/puupee/handcraft/lib/router.dart`: typed shell routes for studio, projects, assets, and settings.
-- Generate `apps/puupee/handcraft/lib/router.g.dart`.
-- Create `apps/puupee/handcraft/lib/components/adaptive_handcraft_shell.dart`: desktop sidebar and mobile bottom navigation.
-- Create `apps/puupee/handcraft/lib/components/handcraft_project_card.dart`: project history card.
-- Create `apps/puupee/handcraft/lib/components/handcraft_media_input_card.dart`: path-based media input card.
-- Create `apps/puupee/handcraft/lib/components/handcraft_dimension_editor.dart`: item type and dimension editor.
-- Create `apps/puupee/handcraft/lib/components/handcraft_generation_panel.dart`: stage and result preview panel.
-- Create `apps/puupee/handcraft/lib/models/handcraft_project.dart`: project entity, enums, dimension helpers, and copy helpers.
-- Create `apps/puupee/handcraft/lib/repo/handcraft_project_repo.dart`: repo interface and in-memory implementation.
-- Create `apps/puupee/handcraft/lib/services/handcraft_generation_service.dart`: mock generation service.
-- Create `apps/puupee/handcraft/lib/providers/handcraft_providers.dart`: repo, project stream, current project, and generation controller providers.
-- Generate `apps/puupee/handcraft/lib/providers/handcraft_providers.g.dart`.
-- Create `apps/puupee/handcraft/lib/pages/handcraft_studio_page.dart`: mobile wizard and desktop workbench.
-- Create `apps/puupee/handcraft/lib/pages/handcraft_projects_page.dart`: project history list.
-- Create `apps/puupee/handcraft/lib/pages/handcraft_assets_page.dart`: lightweight media reference list.
-- Create `apps/puupee/handcraft/README.md`: first-version scope and verification commands.
-- Create tests under `apps/puupee/handcraft/test/`: env, model, generation service, repo/provider, and page smoke tests.
-- Create Android files under `apps/puupee/handcraft/android/`: Gradle config, manifest, localized strings, Kotlin `MainActivity`, launch resources, FileProvider XML, and launcher assets copied from an existing Puupee app.
+**技术栈：** Dart 3.8、Flutter、shadcn_flutter、go_router / go_router_builder、Riverpod 注解、hooks_riverpod、puupee_shared、puupee_ui、build_runner、Android Kotlin/Java 17。
 
 ---
 
-### Task 1: Scaffold App Package And EnvConfig
+## 文件结构
 
-**Files:**
-- Modify: `pubspec.yaml`
-- Create: `apps/puupee/handcraft/pubspec.yaml`
-- Create: `apps/puupee/handcraft/.metadata`
-- Create: `apps/puupee/handcraft/lib/env.dart`
-- Create: `apps/puupee/handcraft/lib/main.dart`
-- Test: `apps/puupee/handcraft/test/env_test.dart`
+- 修改 `pubspec.yaml`：把 `apps/puupee/handcraft` 加入工作区。
+- 创建 `apps/puupee/handcraft/pubspec.yaml`：定义 `puupee_handcraft` Flutter 包。
+- 创建 `apps/puupee/handcraft/.metadata`：让 Flutter 工具识别为应用项目。
+- 创建 `apps/puupee/handcraft/lib/env.dart`：实现 `HandcraftEnvConfig`。
+- 创建 `apps/puupee/handcraft/lib/main.dart`：通过 `runMyApp` 启动。
+- 创建 `apps/puupee/handcraft/lib/models/handcraft_project.dart`：作品模型、枚举、尺寸逻辑、状态标签。
+- 创建 `apps/puupee/handcraft/lib/services/handcraft_generation_service.dart`：本地模拟生成服务。
+- 创建 `apps/puupee/handcraft/lib/repo/handcraft_project_repo.dart`：作品仓库接口和内存实现。
+- 创建 `apps/puupee/handcraft/lib/providers/handcraft_providers.dart`：仓库、项目流、当前工作台、生成控制器提供器。
+- 生成 `apps/puupee/handcraft/lib/providers/handcraft_providers.g.dart`。
+- 创建 `apps/puupee/handcraft/lib/router.dart`：创作、作品、素材、我的四个分支路由。
+- 生成 `apps/puupee/handcraft/lib/router.g.dart`。
+- 创建 `apps/puupee/handcraft/lib/components/` 下的工作台组件：自适应 Shell、作品卡、媒体输入卡、尺寸编辑器、生成结果面板。
+- 创建 `apps/puupee/handcraft/lib/pages/` 下的页面：创作页、作品页、素材页。
+- 创建 `apps/puupee/handcraft/android/`：从现有 Puupee 应用复制 Android 模板并改为 `com.puupee.handcraft`。
+- 创建 `apps/puupee/handcraft/README.md`：说明第一版范围和验证命令。
+- 创建 `apps/puupee/handcraft/test/` 下的测试：EnvConfig、模型、生成服务、仓库、提供器、页面冒烟测试。
 
-- [ ] **Step 1: Write the failing EnvConfig test**
+---
 
-Create `apps/puupee/handcraft/test/env_test.dart`:
+### 任务 1：创建应用骨架和 EnvConfig
+
+**文件：**
+- 修改：`pubspec.yaml`
+- 创建：`apps/puupee/handcraft/pubspec.yaml`
+- 创建：`apps/puupee/handcraft/.metadata`
+- 创建：`apps/puupee/handcraft/lib/env.dart`
+- 创建：`apps/puupee/handcraft/lib/main.dart`
+- 测试：`apps/puupee/handcraft/test/env_test.dart`
+
+- [ ] **步骤 1：先写失败的 EnvConfig 测试**
+
+创建 `apps/puupee/handcraft/test/env_test.dart`：
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
 import 'package:puupee_handcraft/env.dart';
 
 void main() {
-  test('HandcraftEnvConfig provides required split layout defaults', () {
+  test('HandcraftEnvConfig 提供必需的左右布局默认值', () {
     final env = HandcraftEnvConfig();
 
     expect(env.appId, 'handcraft');
@@ -72,28 +66,28 @@ void main() {
 }
 ```
 
-- [ ] **Step 2: Run the test and verify it fails because the app package does not exist**
+- [ ] **步骤 2：运行测试确认当前失败**
 
-Run:
+运行：
 
 ```bash
-cd apps/puupee/handcraft
+cd /Users/j/repos/puupees/puupee-apps/apps/puupee/handcraft
 flutter test test/env_test.dart --no-pub
 ```
 
-Expected: command cannot run yet because `apps/puupee/handcraft` or `pubspec.yaml` is missing.
+预期：目录或 `pubspec.yaml` 还不存在，命令失败。
 
-- [ ] **Step 3: Add the app to the workspace**
+- [ ] **步骤 3：加入工作区**
 
-Modify root `pubspec.yaml` workspace list by inserting this entry after `apps/puupee/builder`:
+在根目录 `pubspec.yaml` 的工作区列表中，紧跟 `apps/puupee/builder` 后加入：
 
 ```yaml
   - apps/puupee/handcraft
 ```
 
-- [ ] **Step 4: Create the Flutter package manifest**
+- [ ] **步骤 4：创建应用 pubspec**
 
-Create `apps/puupee/handcraft/pubspec.yaml`:
+创建 `apps/puupee/handcraft/pubspec.yaml`：
 
 ```yaml
 name: puupee_handcraft
@@ -138,9 +132,9 @@ flutter:
   generate: true
 ```
 
-- [ ] **Step 5: Create Flutter metadata**
+- [ ] **步骤 5：创建 Flutter 项目元数据**
 
-Create `apps/puupee/handcraft/.metadata`:
+创建 `apps/puupee/handcraft/.metadata`：
 
 ```yaml
 # This file tracks properties of this Flutter project.
@@ -167,9 +161,9 @@ migration:
     - 'lib/main.dart'
 ```
 
-- [ ] **Step 6: Implement EnvConfig**
+- [ ] **步骤 6：实现 EnvConfig**
 
-Create `apps/puupee/handcraft/lib/env.dart`:
+创建 `apps/puupee/handcraft/lib/env.dart`：
 
 ```dart
 import 'package:puupee_shared/env.dart';
@@ -205,9 +199,9 @@ class HandcraftEnvConfig extends EnvConfig {
 }
 ```
 
-- [ ] **Step 7: Implement the app entry**
+- [ ] **步骤 7：实现应用入口**
 
-Create `apps/puupee/handcraft/lib/main.dart`:
+创建 `apps/puupee/handcraft/lib/main.dart`：
 
 ```dart
 import 'package:go_router/go_router.dart';
@@ -225,22 +219,22 @@ void main() async {
 }
 ```
 
-This file will not analyze until Task 5 creates `router.dart`.
+说明：`router.dart` 会在任务 5 创建，因此任务 1 结束时只运行 EnvConfig 测试。
 
-- [ ] **Step 8: Run the focused EnvConfig test**
+- [ ] **步骤 8：运行 EnvConfig 测试**
 
-Run:
+运行：
 
 ```bash
 cd /Users/j/repos/puupees/puupee-apps/apps/puupee/handcraft
 flutter test test/env_test.dart --no-pub
 ```
 
-Expected: PASS for `HandcraftEnvConfig provides required split layout defaults`.
+预期：测试通过。
 
-- [ ] **Step 9: Commit the scaffold and EnvConfig**
+- [ ] **步骤 9：提交任务 1**
 
-Run:
+运行：
 
 ```bash
 git add pubspec.yaml apps/puupee/handcraft/pubspec.yaml apps/puupee/handcraft/.metadata apps/puupee/handcraft/lib/env.dart apps/puupee/handcraft/lib/main.dart apps/puupee/handcraft/test/env_test.dart
@@ -249,22 +243,22 @@ git commit -m "feat(handcraft): 创建小汪手工应用骨架"
 
 ---
 
-### Task 2: Add Project Model And Dimension Logic
+### 任务 2：实现作品模型和尺寸逻辑
 
-**Files:**
-- Create: `apps/puupee/handcraft/lib/models/handcraft_project.dart`
-- Test: `apps/puupee/handcraft/test/handcraft_project_test.dart`
+**文件：**
+- 创建：`apps/puupee/handcraft/lib/models/handcraft_project.dart`
+- 测试：`apps/puupee/handcraft/test/handcraft_project_test.dart`
 
-- [ ] **Step 1: Write the failing model tests**
+- [ ] **步骤 1：先写失败的模型测试**
 
-Create `apps/puupee/handcraft/test/handcraft_project_test.dart`:
+创建 `apps/puupee/handcraft/test/handcraft_project_test.dart`：
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
 import 'package:puupee_handcraft/models/handcraft_project.dart';
 
 void main() {
-  test('create initializes a draft project with local media upload defaults', () {
+  test('新建项目默认是草稿并使用本地媒体状态', () {
     final now = DateTime(2026, 5, 13, 9);
     final project = HandcraftProject.create(
       id: 'project-1',
@@ -283,7 +277,7 @@ void main() {
     expect(project.hasRequiredInputs, isFalse);
   });
 
-  test('copyWith updates media paths and input readiness', () {
+  test('更新两张输入图后可以开始生成', () {
     final project = HandcraftProject.create(
       id: 'project-1',
       title: '帆布托特包',
@@ -299,7 +293,7 @@ void main() {
     expect(project.fabricImageLocalPath, '/tmp/canvas.jpg');
   });
 
-  test('estimated dimensions use item specific defaults', () {
+  test('不同类型作品有不同模拟尺寸', () {
     final bag = HandcraftDimensions.estimatedFor(HandcraftItemType.bag);
     final clothing = HandcraftDimensions.estimatedFor(
       HandcraftItemType.clothing,
@@ -314,7 +308,7 @@ void main() {
     expect(other.values['heightCm'], 24);
   });
 
-  test('effectiveDimensions keeps manual values when provided', () {
+  test('用户填写尺寸时优先使用手动尺寸', () {
     final project = HandcraftProject.create(
       id: 'project-1',
       title: '衬衫',
@@ -334,282 +328,89 @@ void main() {
 }
 ```
 
-- [ ] **Step 2: Run the model tests and verify they fail**
+- [ ] **步骤 2：运行测试确认失败**
 
-Run:
+运行：
 
 ```bash
 cd /Users/j/repos/puupees/puupee-apps/apps/puupee/handcraft
 flutter test test/handcraft_project_test.dart --no-pub
 ```
 
-Expected: FAIL because `models/handcraft_project.dart` does not exist.
+预期：缺少 `models/handcraft_project.dart`，测试失败。
 
-- [ ] **Step 3: Implement the project model**
+- [ ] **步骤 3：实现模型**
 
-Create `apps/puupee/handcraft/lib/models/handcraft_project.dart` with these public APIs:
+创建 `apps/puupee/handcraft/lib/models/handcraft_project.dart`，必须包含：
+
+- 枚举：`HandcraftItemType`、`HandcraftProjectStatus`、`HandcraftGenerationStage`、`HandcraftUploadStatus`、`HandcraftDimensionMode`。
+- 类：`HandcraftDimensions`，包含 `estimatedFor` 和 `copyWith`。
+- 类：`HandcraftProject`，包含设计规格中的基础信息、状态、输入媒体、生成结果、媒体同步、尺寸、生成说明字段。
+- 工厂方法：`HandcraftProject.create`。
+- 便捷 getter：`hasRequiredInputs`、`effectiveDimensions`。
+- `copyWith` 必须允许把可空字段显式设为 null，可使用 `_sentinel` 实现。
+- 中文标签扩展：`HandcraftItemTypeLabel`、`HandcraftProjectStatusLabel`、`HandcraftGenerationStageLabel`。
+
+关键尺寸默认值：
 
 ```dart
-enum HandcraftItemType { bag, clothing, other }
-
-enum HandcraftProjectStatus { draft, generating, completed, failed }
-
-enum HandcraftGenerationStage {
-  ready,
-  renderingPreview,
-  draftingPattern,
-  makingVideo,
-  completed,
+HandcraftItemType.bag => {
+  'widthCm': 32,
+  'bodyHeightCm': 28,
+  'bottomDepthCm': 10,
+  'handleLengthCm': 46,
+  'seamAllowanceCm': 1,
 }
 
-enum HandcraftUploadStatus { localOnly, queued, uploading, uploaded, failed }
-
-enum HandcraftDimensionMode { manual, estimated }
-
-class HandcraftDimensions {
-  const HandcraftDimensions({required this.mode, required this.values});
-
-  final HandcraftDimensionMode mode;
-  final Map<String, num> values;
-
-  factory HandcraftDimensions.estimatedFor(HandcraftItemType itemType) {
-    return switch (itemType) {
-      HandcraftItemType.bag => const HandcraftDimensions(
-        mode: HandcraftDimensionMode.estimated,
-        values: {
-          'widthCm': 32,
-          'bodyHeightCm': 28,
-          'bottomDepthCm': 10,
-          'handleLengthCm': 46,
-          'seamAllowanceCm': 1,
-        },
-      ),
-      HandcraftItemType.clothing => const HandcraftDimensions(
-        mode: HandcraftDimensionMode.estimated,
-        values: {
-          'lengthCm': 68,
-          'chestCm': 96,
-          'shoulderCm': 40,
-          'sleeveCm': 58,
-          'seamAllowanceCm': 1.2,
-        },
-      ),
-      HandcraftItemType.other => const HandcraftDimensions(
-        mode: HandcraftDimensionMode.estimated,
-        values: {
-          'widthCm': 24,
-          'heightCm': 24,
-          'depthCm': 6,
-          'seamAllowanceCm': 1,
-        },
-      ),
-    };
-  }
-
-  HandcraftDimensions copyWith({
-    HandcraftDimensionMode? mode,
-    Map<String, num>? values,
-  }) {
-    return HandcraftDimensions(
-      mode: mode ?? this.mode,
-      values: Map.unmodifiable(values ?? this.values),
-    );
-  }
+HandcraftItemType.clothing => {
+  'lengthCm': 68,
+  'chestCm': 96,
+  'shoulderCm': 40,
+  'sleeveCm': 58,
+  'seamAllowanceCm': 1.2,
 }
 
-class HandcraftProject {
-  const HandcraftProject({
-    required this.id,
-    required this.title,
-    required this.itemType,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.status,
-    required this.currentStage,
-    required this.styleUploadStatus,
-    required this.fabricUploadStatus,
-    required this.resultUploadStatus,
-    this.styleImageLocalPath,
-    this.styleImageRemoteUrl,
-    this.fabricImageLocalPath,
-    this.fabricImageRemoteUrl,
-    this.previewImageLocalPath,
-    this.previewImageRemoteUrl,
-    this.patternImageLocalPath,
-    this.patternImageRemoteUrl,
-    this.processVideoLocalPath,
-    this.processVideoRemoteUrl,
-    this.dimensions,
-    this.generationPrompt,
-    this.generationSeed,
-    this.errorMessage,
-  });
-
-  factory HandcraftProject.create({
-    required String id,
-    required String title,
-    required HandcraftItemType itemType,
-    DateTime? now,
-  }) {
-    final timestamp = now ?? DateTime.now();
-    return HandcraftProject(
-      id: id,
-      title: title,
-      itemType: itemType,
-      createdAt: timestamp,
-      updatedAt: timestamp,
-      status: HandcraftProjectStatus.draft,
-      currentStage: HandcraftGenerationStage.ready,
-      styleUploadStatus: HandcraftUploadStatus.localOnly,
-      fabricUploadStatus: HandcraftUploadStatus.localOnly,
-      resultUploadStatus: HandcraftUploadStatus.localOnly,
-    );
-  }
-
-  final String id;
-  final String title;
-  final HandcraftItemType itemType;
-  final DateTime createdAt;
-  final DateTime updatedAt;
-  final HandcraftProjectStatus status;
-  final HandcraftGenerationStage currentStage;
-  final String? styleImageLocalPath;
-  final String? styleImageRemoteUrl;
-  final String? fabricImageLocalPath;
-  final String? fabricImageRemoteUrl;
-  final String? previewImageLocalPath;
-  final String? previewImageRemoteUrl;
-  final String? patternImageLocalPath;
-  final String? patternImageRemoteUrl;
-  final String? processVideoLocalPath;
-  final String? processVideoRemoteUrl;
-  final HandcraftUploadStatus styleUploadStatus;
-  final HandcraftUploadStatus fabricUploadStatus;
-  final HandcraftUploadStatus resultUploadStatus;
-  final HandcraftDimensions? dimensions;
-  final String? generationPrompt;
-  final int? generationSeed;
-  final String? errorMessage;
-
-  bool get hasRequiredInputs =>
-      styleImageLocalPath != null &&
-      styleImageLocalPath!.trim().isNotEmpty &&
-      fabricImageLocalPath != null &&
-      fabricImageLocalPath!.trim().isNotEmpty;
-
-  HandcraftDimensions get effectiveDimensions =>
-      dimensions ?? HandcraftDimensions.estimatedFor(itemType);
-
-  HandcraftProject copyWith({
-    String? title,
-    HandcraftItemType? itemType,
-    DateTime? updatedAt,
-    HandcraftProjectStatus? status,
-    HandcraftGenerationStage? currentStage,
-    Object? styleImageLocalPath = _sentinel,
-    Object? styleImageRemoteUrl = _sentinel,
-    Object? fabricImageLocalPath = _sentinel,
-    Object? fabricImageRemoteUrl = _sentinel,
-    Object? previewImageLocalPath = _sentinel,
-    Object? previewImageRemoteUrl = _sentinel,
-    Object? patternImageLocalPath = _sentinel,
-    Object? patternImageRemoteUrl = _sentinel,
-    Object? processVideoLocalPath = _sentinel,
-    Object? processVideoRemoteUrl = _sentinel,
-    HandcraftUploadStatus? styleUploadStatus,
-    HandcraftUploadStatus? fabricUploadStatus,
-    HandcraftUploadStatus? resultUploadStatus,
-    Object? dimensions = _sentinel,
-    Object? generationPrompt = _sentinel,
-    Object? generationSeed = _sentinel,
-    Object? errorMessage = _sentinel,
-  }) {
-    return HandcraftProject(
-      id: id,
-      title: title ?? this.title,
-      itemType: itemType ?? this.itemType,
-      createdAt: createdAt,
-      updatedAt: updatedAt ?? DateTime.now(),
-      status: status ?? this.status,
-      currentStage: currentStage ?? this.currentStage,
-      styleImageLocalPath: _valueOrCurrent(
-        styleImageLocalPath,
-        this.styleImageLocalPath,
-      ),
-      styleImageRemoteUrl: _valueOrCurrent(
-        styleImageRemoteUrl,
-        this.styleImageRemoteUrl,
-      ),
-      fabricImageLocalPath: _valueOrCurrent(
-        fabricImageLocalPath,
-        this.fabricImageLocalPath,
-      ),
-      fabricImageRemoteUrl: _valueOrCurrent(
-        fabricImageRemoteUrl,
-        this.fabricImageRemoteUrl,
-      ),
-      previewImageLocalPath: _valueOrCurrent(
-        previewImageLocalPath,
-        this.previewImageLocalPath,
-      ),
-      previewImageRemoteUrl: _valueOrCurrent(
-        previewImageRemoteUrl,
-        this.previewImageRemoteUrl,
-      ),
-      patternImageLocalPath: _valueOrCurrent(
-        patternImageLocalPath,
-        this.patternImageLocalPath,
-      ),
-      patternImageRemoteUrl: _valueOrCurrent(
-        patternImageRemoteUrl,
-        this.patternImageRemoteUrl,
-      ),
-      processVideoLocalPath: _valueOrCurrent(
-        processVideoLocalPath,
-        this.processVideoLocalPath,
-      ),
-      processVideoRemoteUrl: _valueOrCurrent(
-        processVideoRemoteUrl,
-        this.processVideoRemoteUrl,
-      ),
-      styleUploadStatus: styleUploadStatus ?? this.styleUploadStatus,
-      fabricUploadStatus: fabricUploadStatus ?? this.fabricUploadStatus,
-      resultUploadStatus: resultUploadStatus ?? this.resultUploadStatus,
-      dimensions: _valueOrCurrent(dimensions, this.dimensions),
-      generationPrompt: _valueOrCurrent(
-        generationPrompt,
-        this.generationPrompt,
-      ),
-      generationSeed: _valueOrCurrent(generationSeed, this.generationSeed),
-      errorMessage: _valueOrCurrent(errorMessage, this.errorMessage),
-    );
-  }
-}
-
-const Object _sentinel = Object();
-
-T? _valueOrCurrent<T>(Object? value, T? current) {
-  if (identical(value, _sentinel)) {
-    return current;
-  }
-  return value as T?;
+HandcraftItemType.other => {
+  'widthCm': 24,
+  'heightCm': 24,
+  'depthCm': 6,
+  'seamAllowanceCm': 1,
 }
 ```
 
-- [ ] **Step 4: Run the model tests**
+中文标签必须返回：
 
-Run:
+```dart
+HandcraftItemType.bag => '包'
+HandcraftItemType.clothing => '衣服'
+HandcraftItemType.other => '其他'
+
+HandcraftProjectStatus.draft => '草稿'
+HandcraftProjectStatus.generating => '生成中'
+HandcraftProjectStatus.completed => '已完成'
+HandcraftProjectStatus.failed => '失败'
+
+HandcraftGenerationStage.ready => '准备'
+HandcraftGenerationStage.renderingPreview => '生成成品效果图'
+HandcraftGenerationStage.draftingPattern => '生成裁剪图'
+HandcraftGenerationStage.makingVideo => '生成过程视频'
+HandcraftGenerationStage.completed => '完成'
+```
+
+- [ ] **步骤 4：运行模型测试**
+
+运行：
 
 ```bash
 cd /Users/j/repos/puupees/puupee-apps/apps/puupee/handcraft
 flutter test test/handcraft_project_test.dart --no-pub
 ```
 
-Expected: PASS.
+预期：测试通过。
 
-- [ ] **Step 5: Commit the model**
+- [ ] **步骤 5：提交任务 2**
 
-Run:
+运行：
 
 ```bash
 git add apps/puupee/handcraft/lib/models/handcraft_project.dart apps/puupee/handcraft/test/handcraft_project_test.dart
@@ -618,15 +419,15 @@ git commit -m "feat(handcraft): 添加手工作品模型"
 
 ---
 
-### Task 3: Add Mock Generation Service
+### 任务 3：实现本地模拟生成服务
 
-**Files:**
-- Create: `apps/puupee/handcraft/lib/services/handcraft_generation_service.dart`
-- Test: `apps/puupee/handcraft/test/handcraft_generation_service_test.dart`
+**文件：**
+- 创建：`apps/puupee/handcraft/lib/services/handcraft_generation_service.dart`
+- 测试：`apps/puupee/handcraft/test/handcraft_generation_service_test.dart`
 
-- [ ] **Step 1: Write the failing service tests**
+- [ ] **步骤 1：先写失败的生成服务测试**
 
-Create `apps/puupee/handcraft/test/handcraft_generation_service_test.dart`:
+创建 `apps/puupee/handcraft/test/handcraft_generation_service_test.dart`：
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
@@ -646,7 +447,7 @@ void main() {
     );
   }
 
-  test('mock generation completes preview, pattern, and video references', () async {
+  test('模拟生成会依次产出效果图、裁剪图和过程视频引用', () async {
     final stages = <HandcraftGenerationStage>[];
     final service = MockHandcraftGenerationService(delay: Duration.zero);
 
@@ -671,7 +472,7 @@ void main() {
     ]);
   });
 
-  test('mock generation rejects missing input media', () async {
+  test('缺少输入图时拒绝生成', () async {
     final service = MockHandcraftGenerationService(delay: Duration.zero);
     final project = HandcraftProject.create(
       id: 'project-1',
@@ -686,7 +487,7 @@ void main() {
     );
   });
 
-  test('mock generation can fail at a requested stage', () async {
+  test('可以指定阶段模拟失败', () async {
     final service = MockHandcraftGenerationService(
       delay: Duration.zero,
       failAtStage: HandcraftGenerationStage.draftingPattern,
@@ -706,20 +507,20 @@ void main() {
 }
 ```
 
-- [ ] **Step 2: Run the service tests and verify they fail**
+- [ ] **步骤 2：运行测试确认失败**
 
-Run:
+运行：
 
 ```bash
 cd /Users/j/repos/puupees/puupee-apps/apps/puupee/handcraft
 flutter test test/handcraft_generation_service_test.dart --no-pub
 ```
 
-Expected: FAIL because `services/handcraft_generation_service.dart` does not exist.
+预期：缺少生成服务文件，测试失败。
 
-- [ ] **Step 3: Implement the generation service**
+- [ ] **步骤 3：实现生成服务**
 
-Create `apps/puupee/handcraft/lib/services/handcraft_generation_service.dart`:
+创建 `apps/puupee/handcraft/lib/services/handcraft_generation_service.dart`，内容结构如下：
 
 ```dart
 import 'dart:async';
@@ -836,20 +637,20 @@ class MockHandcraftGenerationService implements HandcraftGenerationService {
 }
 ```
 
-- [ ] **Step 4: Run the service tests**
+- [ ] **步骤 4：运行生成服务测试**
 
-Run:
+运行：
 
 ```bash
 cd /Users/j/repos/puupees/puupee-apps/apps/puupee/handcraft
 flutter test test/handcraft_generation_service_test.dart --no-pub
 ```
 
-Expected: PASS.
+预期：测试通过。
 
-- [ ] **Step 5: Commit the service**
+- [ ] **步骤 5：提交任务 3**
 
-Run:
+运行：
 
 ```bash
 git add apps/puupee/handcraft/lib/services/handcraft_generation_service.dart apps/puupee/handcraft/test/handcraft_generation_service_test.dart
@@ -858,217 +659,59 @@ git commit -m "feat(handcraft): 添加模拟生成服务"
 
 ---
 
-### Task 4: Add Repo And Riverpod Providers
+### 任务 4：实现作品仓库和 Riverpod 状态
 
-**Files:**
-- Create: `apps/puupee/handcraft/lib/repo/handcraft_project_repo.dart`
-- Create: `apps/puupee/handcraft/lib/providers/handcraft_providers.dart`
-- Generate: `apps/puupee/handcraft/lib/providers/handcraft_providers.g.dart`
-- Test: `apps/puupee/handcraft/test/handcraft_project_repo_test.dart`
-- Test: `apps/puupee/handcraft/test/handcraft_providers_test.dart`
+**文件：**
+- 创建：`apps/puupee/handcraft/lib/repo/handcraft_project_repo.dart`
+- 创建：`apps/puupee/handcraft/lib/providers/handcraft_providers.dart`
+- 生成：`apps/puupee/handcraft/lib/providers/handcraft_providers.g.dart`
+- 测试：`apps/puupee/handcraft/test/handcraft_project_repo_test.dart`
+- 测试：`apps/puupee/handcraft/test/handcraft_providers_test.dart`
 
-- [ ] **Step 1: Write the failing repo tests**
+- [ ] **步骤 1：先写仓库测试**
 
-Create `apps/puupee/handcraft/test/handcraft_project_repo_test.dart`:
+创建 `apps/puupee/handcraft/test/handcraft_project_repo_test.dart`，覆盖：
 
-```dart
-import 'package:flutter_test/flutter_test.dart';
-import 'package:puupee_handcraft/models/handcraft_project.dart';
-import 'package:puupee_handcraft/repo/handcraft_project_repo.dart';
+- `createProject` 新建草稿。
+- `saveProject` 更新本地图片路径。
+- `getProject` 可以取回指定作品。
+- `watchProjects` 会推送列表变化。
+- `listProjects(status: ...)` 可以按状态筛选。
 
-void main() {
-  test('in-memory repo creates, updates, and streams projects', () async {
-    final repo = InMemoryHandcraftProjectRepo(
-      clock: () => DateTime(2026, 5, 13, 9),
-      idFactory: () => 'project-1',
-    );
-    final emissions = <List<HandcraftProject>>[];
-    final sub = repo.watchProjects().listen(emissions.add);
-
-    final created = await repo.createProject(
-      title: '帆布托特包',
-      itemType: HandcraftItemType.bag,
-    );
-    final updated = await repo.saveProject(
-      created.copyWith(styleImageLocalPath: '/tmp/bag.jpg'),
-    );
-
-    expect(updated.styleImageLocalPath, '/tmp/bag.jpg');
-    expect(await repo.getProject('project-1'), updated);
-    expect(emissions.last.single.id, 'project-1');
-
-    await sub.cancel();
-    repo.dispose();
-  });
-
-  test('repo filters projects by status', () async {
-    final repo = InMemoryHandcraftProjectRepo(
-      clock: () => DateTime(2026, 5, 13, 9),
-      idFactory: () => 'project-1',
-    );
-
-    final created = await repo.createProject(
-      title: '帆布托特包',
-      itemType: HandcraftItemType.bag,
-    );
-    await repo.saveProject(
-      created.copyWith(status: HandcraftProjectStatus.completed),
-    );
-
-    final completed = await repo.listProjects(
-      status: HandcraftProjectStatus.completed,
-    );
-    final drafts = await repo.listProjects(status: HandcraftProjectStatus.draft);
-
-    expect(completed, hasLength(1));
-    expect(drafts, isEmpty);
-
-    repo.dispose();
-  });
-}
-```
-
-- [ ] **Step 2: Implement the repo**
-
-Create `apps/puupee/handcraft/lib/repo/handcraft_project_repo.dart`:
+关键断言：
 
 ```dart
-import 'dart:async';
-
-import 'package:puupee_handcraft/models/handcraft_project.dart';
-
-abstract class HandcraftProjectRepo {
-  Future<HandcraftProject> createProject({
-    required String title,
-    required HandcraftItemType itemType,
-  });
-
-  Future<HandcraftProject?> getProject(String id);
-
-  Future<List<HandcraftProject>> listProjects({
-    HandcraftProjectStatus? status,
-  });
-
-  Stream<List<HandcraftProject>> watchProjects({
-    HandcraftProjectStatus? status,
-  });
-
-  Future<HandcraftProject> saveProject(HandcraftProject project);
-}
-
-typedef HandcraftClock = DateTime Function();
-typedef HandcraftIdFactory = String Function();
-
-class InMemoryHandcraftProjectRepo implements HandcraftProjectRepo {
-  InMemoryHandcraftProjectRepo({
-    HandcraftClock? clock,
-    HandcraftIdFactory? idFactory,
-    List<HandcraftProject> seedProjects = const [],
-  }) : _clock = clock ?? DateTime.now,
-       _idFactory = idFactory ?? _defaultIdFactory {
-    for (final project in seedProjects) {
-      _projects[project.id] = project;
-    }
-    _emit();
-  }
-
-  final HandcraftClock _clock;
-  final HandcraftIdFactory _idFactory;
-  final Map<String, HandcraftProject> _projects = {};
-  final _controller = StreamController<List<HandcraftProject>>.broadcast();
-
-  @override
-  Future<HandcraftProject> createProject({
-    required String title,
-    required HandcraftItemType itemType,
-  }) async {
-    final project = HandcraftProject.create(
-      id: _idFactory(),
-      title: title,
-      itemType: itemType,
-      now: _clock(),
-    );
-    _projects[project.id] = project;
-    _emit();
-    return project;
-  }
-
-  @override
-  Future<HandcraftProject?> getProject(String id) async {
-    return _projects[id];
-  }
-
-  @override
-  Future<List<HandcraftProject>> listProjects({
-    HandcraftProjectStatus? status,
-  }) async {
-    return _filtered(status);
-  }
-
-  @override
-  Stream<List<HandcraftProject>> watchProjects({
-    HandcraftProjectStatus? status,
-  }) async* {
-    yield _filtered(status);
-    yield* _controller.stream.map((projects) {
-      if (status == null) {
-        return projects;
-      }
-      return projects
-          .where((project) => project.status == status)
-          .toList(growable: false);
-    });
-  }
-
-  @override
-  Future<HandcraftProject> saveProject(HandcraftProject project) async {
-    final updated = project.copyWith(updatedAt: _clock());
-    _projects[project.id] = updated;
-    _emit();
-    return updated;
-  }
-
-  void dispose() {
-    _controller.close();
-  }
-
-  List<HandcraftProject> _filtered(HandcraftProjectStatus? status) {
-    final projects = _projects.values.toList(growable: false)
-      ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
-    if (status == null) {
-      return projects;
-    }
-    return projects
-        .where((project) => project.status == status)
-        .toList(growable: false);
-  }
-
-  void _emit() {
-    if (!_controller.isClosed) {
-      _controller.add(_filtered(null));
-    }
-  }
-}
-
-String _defaultIdFactory() {
-  return 'handcraft-${DateTime.now().microsecondsSinceEpoch}';
-}
+expect(updated.styleImageLocalPath, '/tmp/bag.jpg');
+expect(await repo.getProject('project-1'), updated);
+expect(completed, hasLength(1));
+expect(drafts, isEmpty);
 ```
 
-- [ ] **Step 3: Run repo tests**
+- [ ] **步骤 2：实现仓库**
 
-Run:
+创建 `apps/puupee/handcraft/lib/repo/handcraft_project_repo.dart`，必须包含：
+
+- 抽象类 `HandcraftProjectRepo`。
+- 方法 `createProject`、`getProject`、`listProjects`、`watchProjects`、`saveProject`。
+- 类型别名 `HandcraftClock` 和 `HandcraftIdFactory`。
+- 类 `InMemoryHandcraftProjectRepo`，内部使用 `Map<String, HandcraftProject>` 和 `StreamController<List<HandcraftProject>>.broadcast()`。
+- `saveProject` 必须更新 `updatedAt` 并向 stream 发射新列表。
+- `dispose` 必须关闭 stream controller。
+
+- [ ] **步骤 3：运行仓库测试**
+
+运行：
 
 ```bash
 cd /Users/j/repos/puupees/puupee-apps/apps/puupee/handcraft
 flutter test test/handcraft_project_repo_test.dart --no-pub
 ```
 
-Expected: PASS.
+预期：测试通过。
 
-- [ ] **Step 4: Write the failing provider tests**
+- [ ] **步骤 4：先写提供器测试**
 
-Create `apps/puupee/handcraft/test/handcraft_providers_test.dart`:
+创建 `apps/puupee/handcraft/test/handcraft_providers_test.dart`：
 
 ```dart
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -1079,7 +722,7 @@ import 'package:puupee_handcraft/repo/handcraft_project_repo.dart';
 import 'package:puupee_handcraft/services/handcraft_generation_service.dart';
 
 void main() {
-  test('studio controller creates a draft and completes mock generation', () async {
+  test('工作台控制器可以创建草稿并完成模拟生成', () async {
     final repo = InMemoryHandcraftProjectRepo(
       clock: () => DateTime(2026, 5, 13, 9),
       idFactory: () => 'project-1',
@@ -1115,147 +758,42 @@ void main() {
 }
 ```
 
-- [ ] **Step 5: Implement providers**
+- [ ] **步骤 5：实现提供器**
 
-Create `apps/puupee/handcraft/lib/providers/handcraft_providers.dart`:
+创建 `apps/puupee/handcraft/lib/providers/handcraft_providers.dart`，必须包含：
 
-```dart
-import 'package:puupee_handcraft/models/handcraft_project.dart';
-import 'package:puupee_handcraft/repo/handcraft_project_repo.dart';
-import 'package:puupee_handcraft/services/handcraft_generation_service.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
+- `@Riverpod(keepAlive: true) HandcraftProjectRepo handcraftProjectRepo(Ref ref)`。
+- `@riverpod HandcraftGenerationService handcraftGenerationService(Ref ref)`。
+- `@riverpod Stream<List<HandcraftProject>> handcraftProjects(Ref ref, {HandcraftProjectStatus? status})`。
+- `@riverpod class HandcraftStudioController extends _$HandcraftStudioController`。
+- 控制器方法 `updateInputs`、`updateDetails`、`generate`。
+- `generate` 需要处理 `HandcraftGenerationException`，失败时保存 `status: failed`、`currentStage` 和 `errorMessage`。
 
-part 'handcraft_providers.g.dart';
+- [ ] **步骤 6：生成 Riverpod 代码**
 
-@Riverpod(keepAlive: true)
-HandcraftProjectRepo handcraftProjectRepo(Ref ref) {
-  final repo = InMemoryHandcraftProjectRepo();
-  ref.onDispose(() {
-    if (repo is InMemoryHandcraftProjectRepo) {
-      repo.dispose();
-    }
-  });
-  return repo;
-}
-
-@riverpod
-HandcraftGenerationService handcraftGenerationService(Ref ref) {
-  return const MockHandcraftGenerationService();
-}
-
-@riverpod
-Stream<List<HandcraftProject>> handcraftProjects(
-  Ref ref, {
-  HandcraftProjectStatus? status,
-}) {
-  return ref.watch(handcraftProjectRepoProvider).watchProjects(status: status);
-}
-
-@riverpod
-class HandcraftStudioController extends _$HandcraftStudioController {
-  @override
-  Future<HandcraftProject> build() async {
-    final repo = ref.watch(handcraftProjectRepoProvider);
-    final existing = await repo.listProjects(status: HandcraftProjectStatus.draft);
-    if (existing.isNotEmpty) {
-      return existing.first;
-    }
-    return repo.createProject(title: '新的手工作品', itemType: HandcraftItemType.bag);
-  }
-
-  Future<void> updateInputs({
-    String? styleImageLocalPath,
-    String? fabricImageLocalPath,
-  }) async {
-    final project = await future;
-    final updated = project.copyWith(
-      styleImageLocalPath: styleImageLocalPath ?? project.styleImageLocalPath,
-      fabricImageLocalPath: fabricImageLocalPath ?? project.fabricImageLocalPath,
-      errorMessage: null,
-    );
-    state = AsyncData(await ref.read(handcraftProjectRepoProvider).saveProject(updated));
-  }
-
-  Future<void> updateDetails({
-    String? title,
-    HandcraftItemType? itemType,
-    HandcraftDimensions? dimensions,
-  }) async {
-    final project = await future;
-    final updated = project.copyWith(
-      title: title,
-      itemType: itemType,
-      dimensions: dimensions,
-      errorMessage: null,
-    );
-    state = AsyncData(await ref.read(handcraftProjectRepoProvider).saveProject(updated));
-  }
-
-  Future<void> generate() async {
-    final project = await future;
-    if (project.status == HandcraftProjectStatus.generating) {
-      return;
-    }
-
-    final repo = ref.read(handcraftProjectRepoProvider);
-    final service = ref.read(handcraftGenerationServiceProvider);
-    try {
-      state = AsyncData(
-        await repo.saveProject(
-          project.copyWith(
-            status: HandcraftProjectStatus.generating,
-            currentStage: HandcraftGenerationStage.renderingPreview,
-            errorMessage: null,
-          ),
-        ),
-      );
-      final result = await service.generate(
-        await future,
-        onStageChanged: (stage) async {
-          final current = await future;
-          state = AsyncData(
-            await repo.saveProject(current.copyWith(currentStage: stage)),
-          );
-        },
-      );
-      state = AsyncData(await repo.saveProject(result));
-    } on HandcraftGenerationException catch (error) {
-      final failed = project.copyWith(
-        status: HandcraftProjectStatus.failed,
-        currentStage: error.stage ?? project.currentStage,
-        errorMessage: error.message,
-      );
-      state = AsyncData(await repo.saveProject(failed));
-    }
-  }
-}
-```
-
-- [ ] **Step 6: Generate Riverpod code**
-
-Run:
+运行：
 
 ```bash
 cd /Users/j/repos/puupees/puupee-apps/apps/puupee/handcraft
 dart run build_runner build --delete-conflicting-outputs
 ```
 
-Expected: creates `lib/providers/handcraft_providers.g.dart`.
+预期：生成 `lib/providers/handcraft_providers.g.dart`。
 
-- [ ] **Step 7: Run provider tests**
+- [ ] **步骤 7：运行提供器测试**
 
-Run:
+运行：
 
 ```bash
 cd /Users/j/repos/puupees/puupee-apps/apps/puupee/handcraft
 flutter test test/handcraft_providers_test.dart --no-pub
 ```
 
-Expected: PASS.
+预期：测试通过。
 
-- [ ] **Step 8: Commit repo and providers**
+- [ ] **步骤 8：提交任务 4**
 
-Run:
+运行：
 
 ```bash
 git add apps/puupee/handcraft/lib/repo/handcraft_project_repo.dart apps/puupee/handcraft/lib/providers/handcraft_providers.dart apps/puupee/handcraft/lib/providers/handcraft_providers.g.dart apps/puupee/handcraft/test/handcraft_project_repo_test.dart apps/puupee/handcraft/test/handcraft_providers_test.dart
@@ -1264,24 +802,24 @@ git commit -m "feat(handcraft): 添加作品仓库和状态管理"
 
 ---
 
-### Task 5: Add Routing, Shell, Pages, And Components
+### 任务 5：实现路由、页面和组件
 
-**Files:**
-- Create: `apps/puupee/handcraft/lib/router.dart`
-- Generate: `apps/puupee/handcraft/lib/router.g.dart`
-- Create: `apps/puupee/handcraft/lib/components/adaptive_handcraft_shell.dart`
-- Create: `apps/puupee/handcraft/lib/components/handcraft_project_card.dart`
-- Create: `apps/puupee/handcraft/lib/components/handcraft_media_input_card.dart`
-- Create: `apps/puupee/handcraft/lib/components/handcraft_dimension_editor.dart`
-- Create: `apps/puupee/handcraft/lib/components/handcraft_generation_panel.dart`
-- Create: `apps/puupee/handcraft/lib/pages/handcraft_studio_page.dart`
-- Create: `apps/puupee/handcraft/lib/pages/handcraft_projects_page.dart`
-- Create: `apps/puupee/handcraft/lib/pages/handcraft_assets_page.dart`
-- Test: `apps/puupee/handcraft/test/handcraft_page_smoke_test.dart`
+**文件：**
+- 创建：`apps/puupee/handcraft/lib/router.dart`
+- 生成：`apps/puupee/handcraft/lib/router.g.dart`
+- 创建：`apps/puupee/handcraft/lib/components/adaptive_handcraft_shell.dart`
+- 创建：`apps/puupee/handcraft/lib/components/handcraft_project_card.dart`
+- 创建：`apps/puupee/handcraft/lib/components/handcraft_media_input_card.dart`
+- 创建：`apps/puupee/handcraft/lib/components/handcraft_dimension_editor.dart`
+- 创建：`apps/puupee/handcraft/lib/components/handcraft_generation_panel.dart`
+- 创建：`apps/puupee/handcraft/lib/pages/handcraft_studio_page.dart`
+- 创建：`apps/puupee/handcraft/lib/pages/handcraft_projects_page.dart`
+- 创建：`apps/puupee/handcraft/lib/pages/handcraft_assets_page.dart`
+- 测试：`apps/puupee/handcraft/test/handcraft_page_smoke_test.dart`
 
-- [ ] **Step 1: Write a failing page smoke test**
+- [ ] **步骤 1：先写页面冒烟测试**
 
-Create `apps/puupee/handcraft/test/handcraft_page_smoke_test.dart`:
+创建 `apps/puupee/handcraft/test/handcraft_page_smoke_test.dart`：
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
@@ -1290,7 +828,7 @@ import 'package:puupee_handcraft/pages/handcraft_studio_page.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 
 void main() {
-  testWidgets('studio page shows primary workflow text', (tester) async {
+  testWidgets('创作页显示核心工作流', (tester) async {
     await tester.pumpWidget(
       const ProviderScope(
         child: ShadcnApp(home: HandcraftStudioPage()),
@@ -1307,20 +845,28 @@ void main() {
 }
 ```
 
-- [ ] **Step 2: Run the smoke test and verify it fails**
+- [ ] **步骤 2：运行冒烟测试确认失败**
 
-Run:
+运行：
 
 ```bash
 cd /Users/j/repos/puupees/puupee-apps/apps/puupee/handcraft
 flutter test test/handcraft_page_smoke_test.dart --no-pub
 ```
 
-Expected: FAIL because pages and components do not exist.
+预期：页面文件不存在，测试失败。
 
-- [ ] **Step 3: Implement the adaptive shell**
+- [ ] **步骤 3：实现自适应 Shell**
 
-Create `apps/puupee/handcraft/lib/components/adaptive_handcraft_shell.dart` using the same structure as `AdaptiveInventoryShell`: `AdaptiveLayout` for desktop, bottom navigation for mobile, app icon `HomeIcon(appId: 'handcraft')`, title `小汪手工`, and four menu items:
+创建 `apps/puupee/handcraft/lib/components/adaptive_handcraft_shell.dart`，结构参考 `apps/puupee/inventory/lib/components/adaptive_inventory_shell.dart`。
+
+桌面端使用：
+
+- `AdaptiveLayout`
+- `HomeIcon(appId: 'handcraft')`
+- `appTitle: '小汪手工'`
+
+菜单项固定为：
 
 ```dart
 static const List<AdaptiveMenuItem> _menuItems = [
@@ -1335,268 +881,98 @@ static const List<AdaptiveMenuItem> _menuItems = [
 ];
 ```
 
-Map indexes to these routes:
+路由跳转固定为：
 
 ```dart
-switch (index) {
-  case 0:
-    context.go('/handcraft');
-    break;
-  case 1:
-    context.go('/handcraft/projects');
-    break;
-  case 2:
-    context.go('/handcraft/assets');
-    break;
-  case 3:
-    context.go('/handcraft/settings');
-    break;
-}
+case 0:
+  context.go('/handcraft');
+case 1:
+  context.go('/handcraft/projects');
+case 2:
+  context.go('/handcraft/assets');
+case 3:
+  context.go('/handcraft/settings');
 ```
 
-- [ ] **Step 4: Implement reusable cards and editors**
+- [ ] **步骤 4：实现组件**
 
-Create the four component files with focused responsibilities:
+创建以下组件：
+
+- `HandcraftProjectCard`：显示作品标题、物品类型、状态，可点击。
+- `HandcraftMediaInputCard`：显示标题和本地路径输入框；`TextField.placeholder` 使用 `const Text('输入本地图片路径')`。
+- `HandcraftDimensionEditor`：显示 `project.effectiveDimensions` 的所有字段和值。
+- `HandcraftGenerationPanel`：显示当前阶段、生成按钮、效果图、裁剪图、过程视频、错误信息。
+
+生成按钮规则：
 
 ```dart
-// handcraft_project_card.dart
-class HandcraftProjectCard extends StatelessWidget {
-  const HandcraftProjectCard({super.key, required this.project, this.onPressed});
-
-  final HandcraftProject project;
-  final VoidCallback? onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Card(
-      child: GestureDetector(
-        onTap: onPressed,
-        behavior: HitTestBehavior.opaque,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(project.title, style: theme.typography.h4),
-            const SizedBox(height: 6),
-            Text(
-              '${project.itemType.label} · ${project.status.label}',
-              style: theme.typography.small.copyWith(
-                color: theme.colorScheme.mutedForeground,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
+final isGenerating = project.status == HandcraftProjectStatus.generating;
+final canGenerate = project.hasRequiredInputs && !isGenerating;
 ```
+
+按钮禁用规则：
 
 ```dart
-// handcraft_media_input_card.dart
-class HandcraftMediaInputCard extends StatelessWidget {
-  const HandcraftMediaInputCard({
-    super.key,
-    required this.title,
-    required this.path,
-    required this.onChanged,
-  });
-
-  final String title;
-  final String? path;
-  final ValueChanged<String> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    final controller = TextEditingController(text: path ?? '');
-    return Card(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(title, style: Theme.of(context).typography.h4),
-          const SizedBox(height: 10),
-          TextField(
-            controller: controller,
-            placeholder: '输入本地图片路径',
-            onSubmitted: onChanged,
-          ),
-        ],
-      ),
-    );
-  }
-}
+onPressed: canGenerate ? onGenerate : null
 ```
 
-```dart
-// handcraft_dimension_editor.dart
-class HandcraftDimensionEditor extends StatelessWidget {
-  const HandcraftDimensionEditor({
-    super.key,
-    required this.project,
-    required this.onChanged,
-  });
+- [ ] **步骤 5：实现页面**
 
-  final HandcraftProject project;
-  final ValueChanged<HandcraftDimensions> onChanged;
+创建 `HandcraftStudioPage`：
 
-  @override
-  Widget build(BuildContext context) {
-    final dimensions = project.effectiveDimensions;
-    return Card(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('尺寸', style: Theme.of(context).typography.h4),
-          const SizedBox(height: 10),
-          for (final entry in dimensions.values.entries)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: Row(
-                children: [
-                  Expanded(child: Text(entry.key)),
-                  Text('${entry.value} cm'),
-                ],
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-}
-```
+- `ConsumerWidget`
+- 使用 `AdaptiveScaffold(title: '小汪手工')`
+- 读取 `handcraftStudioControllerProvider`
+- 移动端宽度 `< 700` 时用单列向导布局
+- 桌面端宽度 `>= 700` 时用左右两列布局
+- 必须出现 `款式图`、`布料图`、`尺寸`、`生成效果`
 
-```dart
-// handcraft_generation_panel.dart
-class HandcraftGenerationPanel extends StatelessWidget {
-  const HandcraftGenerationPanel({
-    super.key,
-    required this.project,
-    required this.onGenerate,
-  });
+创建 `HandcraftProjectsPage`：
 
-  final HandcraftProject project;
-  final VoidCallback onGenerate;
+- 读取 `handcraftProjectsProvider()`
+- 无项目显示 `还没有手工作品`
+- 有项目显示 `HandcraftProjectCard`
 
-  @override
-  Widget build(BuildContext context) {
-    final isGenerating = project.status == HandcraftProjectStatus.generating;
-    return Card(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('生成效果', style: Theme.of(context).typography.h4),
-          const SizedBox(height: 10),
-          Text('当前阶段：${project.currentStage.label}'),
-          const SizedBox(height: 12),
-          PrimaryButton(
-            onPressed: isGenerating || !project.hasRequiredInputs ? null : onGenerate,
-            child: Text(isGenerating ? '生成中' : '生成效果'),
-          ),
-          const SizedBox(height: 12),
-          Text('效果图：${project.previewImageLocalPath ?? '尚未生成'}'),
-          Text('裁剪图：${project.patternImageLocalPath ?? '尚未生成'}'),
-          Text('过程视频：${project.processVideoLocalPath ?? '尚未生成'}'),
-          if (project.errorMessage != null) Text(project.errorMessage!),
-        ],
-      ),
-    );
-  }
-}
-```
+创建 `HandcraftAssetsPage`：
 
-Also add label extensions to `handcraft_project.dart`:
+- 读取所有项目
+- 按 `输入素材` 和 `生成结果` 两组列出非空媒体路径或 URL
+- 无素材时显示 `还没有素材引用`
 
-```dart
-extension HandcraftItemTypeLabel on HandcraftItemType {
-  String get label => switch (this) {
-    HandcraftItemType.bag => '包',
-    HandcraftItemType.clothing => '衣服',
-    HandcraftItemType.other => '其他',
-  };
-}
+- [ ] **步骤 6：实现类型化路由和设置页路由**
 
-extension HandcraftProjectStatusLabel on HandcraftProjectStatus {
-  String get label => switch (this) {
-    HandcraftProjectStatus.draft => '草稿',
-    HandcraftProjectStatus.generating => '生成中',
-    HandcraftProjectStatus.completed => '已完成',
-    HandcraftProjectStatus.failed => '失败',
-  };
-}
+创建 `apps/puupee/handcraft/lib/router.dart`：
 
-extension HandcraftGenerationStageLabel on HandcraftGenerationStage {
-  String get label => switch (this) {
-    HandcraftGenerationStage.ready => '准备',
-    HandcraftGenerationStage.renderingPreview => '生成成品效果图',
-    HandcraftGenerationStage.draftingPattern => '生成裁剪图',
-    HandcraftGenerationStage.makingVideo => '生成过程视频',
-    HandcraftGenerationStage.completed => '完成',
-  };
-}
-```
+- `@TypedStatefulShellRoute<HandcraftMainStatefulShellRoute>`
+- 四个分支：`/handcraft`、`/handcraft/projects`、`/handcraft/assets`、`/handcraft/settings`
+- 设置页复用 `SettingsShellPage`、`SettingsHomePage`、`AccountPage`、`StoragePage`、`SyncSettingsPage`、`DataPage`、`DevicesPage`、`DeveloperPage`、`AboutPage`、`FeedbackPage`、`FeedbackSuccessPage`、`FeedbackListPage`、`FeedbackDetailPage`、`RuntimeInfoPage`、`RecycleBinPage`、`SubscriptionPage`
+- `/handcraft/settings` 在移动端返回 `SettingsHomePage`，桌面端返回 `SizedBox.shrink()`
 
-- [ ] **Step 5: Implement pages**
+- [ ] **步骤 7：生成路由和提供器代码**
 
-Create `HandcraftStudioPage` as a `ConsumerWidget`. Use `context.isMobile` to choose a single-column mobile wizard and a two-column desktop workbench. Both layouts must include `HandcraftMediaInputCard` for `款式图` and `布料图`, `HandcraftDimensionEditor`, and `HandcraftGenerationPanel`.
-
-Create `HandcraftProjectsPage` as a `ConsumerWidget` that watches `handcraftProjectsProvider()` and renders `HandcraftProjectCard` for each project, with empty text `还没有手工作品`.
-
-Create `HandcraftAssetsPage` as a `ConsumerWidget` that watches all projects and lists non-empty local and remote media fields under headings `输入素材` and `生成结果`.
-
-- [ ] **Step 6: Implement typed routes and settings routes**
-
-Create `apps/puupee/handcraft/lib/router.dart` with a `TypedStatefulShellRoute<HandcraftMainStatefulShellRoute>` and four branches:
-
-```dart
-TypedGoRoute<HandcraftStudioRoute>(path: '/handcraft')
-TypedGoRoute<HandcraftProjectsRoute>(path: '/handcraft/projects')
-TypedGoRoute<HandcraftAssetsRoute>(path: '/handcraft/assets')
-TypedShellRoute<HandcraftSettingsShellRoute>(routes: [
-  TypedGoRoute<HandcraftSettingsRoute>(path: '/handcraft/settings'),
-  TypedGoRoute<HandcraftSettingsAccountRoute>(path: '/handcraft/settings/account'),
-  TypedGoRoute<HandcraftSettingsStorageRoute>(path: '/handcraft/settings/storage'),
-  TypedGoRoute<HandcraftSettingsSyncRoute>(path: '/handcraft/settings/sync'),
-  TypedGoRoute<HandcraftSettingsDataRoute>(path: '/handcraft/settings/data'),
-  TypedGoRoute<HandcraftSettingsDevicesRoute>(path: '/handcraft/settings/devices'),
-  TypedGoRoute<HandcraftSettingsDeveloperRoute>(path: '/handcraft/settings/developer'),
-  TypedGoRoute<HandcraftSettingsAboutRoute>(path: '/handcraft/settings/about'),
-  TypedGoRoute<HandcraftSettingsFeedbackRoute>(path: '/handcraft/settings/feedback'),
-  TypedGoRoute<HandcraftSettingsFeedbackSuccessRoute>(path: '/handcraft/settings/feedback/success'),
-  TypedGoRoute<HandcraftSettingsFeedbackListRoute>(path: '/handcraft/settings/feedback/list'),
-  TypedGoRoute<HandcraftSettingsFeedbackDetailRoute>(path: '/handcraft/settings/feedback/detail/:id'),
-  TypedGoRoute<HandcraftSettingsRuntimeInfoRoute>(path: '/handcraft/settings/runtime-info'),
-  TypedGoRoute<HandcraftSettingsRecycleBinRoute>(path: '/handcraft/settings/recycle-bin'),
-  TypedGoRoute<HandcraftSettingsSubscriptionRoute>(path: '/handcraft/settings/subscription'),
-])
-```
-
-For settings page classes, reuse the same shared settings page imports and mobile-empty behavior used by `apps/puupee/inventory/lib/router.dart`, replacing route class names and paths with `Handcraft`.
-
-- [ ] **Step 7: Generate route and provider code**
-
-Run:
+运行：
 
 ```bash
 cd /Users/j/repos/puupees/puupee-apps/apps/puupee/handcraft
 dart run build_runner build --delete-conflicting-outputs
 ```
 
-Expected: creates or updates `lib/router.g.dart` and `lib/providers/handcraft_providers.g.dart`.
+预期：生成或更新 `lib/router.g.dart` 和 `lib/providers/handcraft_providers.g.dart`。
 
-- [ ] **Step 8: Run the page smoke test**
+- [ ] **步骤 8：运行页面冒烟测试**
 
-Run:
+运行：
 
 ```bash
 cd /Users/j/repos/puupees/puupee-apps/apps/puupee/handcraft
 flutter test test/handcraft_page_smoke_test.dart --no-pub
 ```
 
-Expected: PASS.
+预期：测试通过。
 
-- [ ] **Step 9: Commit UI and routing**
+- [ ] **步骤 9：提交任务 5**
 
-Run:
+运行：
 
 ```bash
 git add apps/puupee/handcraft/lib/router.dart apps/puupee/handcraft/lib/router.g.dart apps/puupee/handcraft/lib/components apps/puupee/handcraft/lib/pages apps/puupee/handcraft/lib/models/handcraft_project.dart apps/puupee/handcraft/test/handcraft_page_smoke_test.dart
@@ -1605,32 +981,32 @@ git commit -m "feat(handcraft): 添加创作工作台和导航页面"
 
 ---
 
-### Task 6: Add Android Project
+### 任务 6：添加 Android 平台工程
 
-**Files:**
-- Create: `apps/puupee/handcraft/android/.gitignore`
-- Create: `apps/puupee/handcraft/android/app/build.gradle.kts`
-- Create: `apps/puupee/handcraft/android/app/proguard-rules.pro`
-- Create: `apps/puupee/handcraft/android/app/src/debug/AndroidManifest.xml`
-- Create: `apps/puupee/handcraft/android/app/src/main/AndroidManifest.xml`
-- Create: `apps/puupee/handcraft/android/app/src/main/kotlin/com/puupee/handcraft/MainActivity.kt`
-- Create: `apps/puupee/handcraft/android/app/src/main/res/values/strings.xml`
-- Create: `apps/puupee/handcraft/android/app/src/main/res/values-zh/strings.xml`
-- Create: `apps/puupee/handcraft/android/app/src/main/res/values/styles.xml`
-- Create: `apps/puupee/handcraft/android/app/src/main/res/values-night/styles.xml`
-- Create: `apps/puupee/handcraft/android/app/src/main/res/drawable/launch_background.xml`
-- Create: `apps/puupee/handcraft/android/app/src/main/res/drawable-v21/launch_background.xml`
-- Create: `apps/puupee/handcraft/android/app/src/main/res/xml/file_paths.xml`
-- Create launcher icon assets copied from `apps/puupee/inventory/android/app/src/main/res/mipmap-*`
-- Create: `apps/puupee/handcraft/android/app/src/profile/AndroidManifest.xml`
-- Create: `apps/puupee/handcraft/android/build.gradle.kts`
-- Create: `apps/puupee/handcraft/android/gradle.properties`
-- Create: `apps/puupee/handcraft/android/settings.gradle.kts`
-- Create: `apps/puupee/handcraft/android/gradle/wrapper/gradle-wrapper.properties`
+**文件：**
+- 创建：`apps/puupee/handcraft/android/.gitignore`
+- 创建：`apps/puupee/handcraft/android/app/build.gradle.kts`
+- 创建：`apps/puupee/handcraft/android/app/proguard-rules.pro`
+- 创建：`apps/puupee/handcraft/android/app/src/debug/AndroidManifest.xml`
+- 创建：`apps/puupee/handcraft/android/app/src/main/AndroidManifest.xml`
+- 创建：`apps/puupee/handcraft/android/app/src/main/kotlin/com/puupee/handcraft/MainActivity.kt`
+- 创建：`apps/puupee/handcraft/android/app/src/main/res/values/strings.xml`
+- 创建：`apps/puupee/handcraft/android/app/src/main/res/values-zh/strings.xml`
+- 创建：`apps/puupee/handcraft/android/app/src/main/res/values/styles.xml`
+- 创建：`apps/puupee/handcraft/android/app/src/main/res/values-night/styles.xml`
+- 创建：`apps/puupee/handcraft/android/app/src/main/res/drawable/launch_background.xml`
+- 创建：`apps/puupee/handcraft/android/app/src/main/res/drawable-v21/launch_background.xml`
+- 创建：`apps/puupee/handcraft/android/app/src/main/res/xml/file_paths.xml`
+- 创建：`apps/puupee/handcraft/android/app/src/profile/AndroidManifest.xml`
+- 创建：`apps/puupee/handcraft/android/build.gradle.kts`
+- 创建：`apps/puupee/handcraft/android/gradle.properties`
+- 创建：`apps/puupee/handcraft/android/settings.gradle.kts`
+- 创建：`apps/puupee/handcraft/android/gradle/wrapper/gradle-wrapper.properties`
+- 复制：`apps/puupee/inventory/android/app/src/main/res/mipmap-*` 下的启动图标资源。
 
-- [ ] **Step 1: Copy Android files from inventory**
+- [ ] **步骤 1：从 inventory 复制 Android 模板**
 
-Run:
+运行：
 
 ```bash
 mkdir -p apps/puupee/handcraft
@@ -1645,11 +1021,11 @@ rsync -a \
   apps/puupee/handcraft/android/
 ```
 
-Expected: `apps/puupee/handcraft/android/app/src/main/AndroidManifest.xml` exists.
+预期：`apps/puupee/handcraft/android/app/src/main/AndroidManifest.xml` 存在。
 
-- [ ] **Step 2: Rename Android package paths**
+- [ ] **步骤 2：修改 Kotlin 包路径**
 
-Run:
+运行：
 
 ```bash
 mkdir -p apps/puupee/handcraft/android/app/src/main/kotlin/com/puupee/handcraft
@@ -1658,7 +1034,7 @@ mv apps/puupee/handcraft/android/app/src/main/kotlin/com/puupee/inventory/MainAc
 find apps/puupee/handcraft/android -type d -empty -delete
 ```
 
-Replace `apps/puupee/handcraft/android/app/src/main/kotlin/com/puupee/handcraft/MainActivity.kt` with:
+替换 `MainActivity.kt` 内容：
 
 ```kotlin
 package com.puupee.handcraft
@@ -1668,23 +1044,23 @@ import io.flutter.embedding.android.FlutterActivity
 class MainActivity : FlutterActivity()
 ```
 
-- [ ] **Step 3: Update Android Gradle config**
+- [ ] **步骤 3：修改 Gradle 包名和应用 ID**
 
-In `apps/puupee/handcraft/android/app/build.gradle.kts`, replace:
+在 `apps/puupee/handcraft/android/app/build.gradle.kts` 中替换：
 
 ```kotlin
 namespace = "com.puupee.inventory"
 applicationId = "com.puupee.inventory"
 ```
 
-with:
+为：
 
 ```kotlin
 namespace = "com.puupee.handcraft"
 applicationId = "com.puupee.handcraft"
 ```
 
-Verify the file still contains:
+确认文件仍包含：
 
 ```kotlin
 kotlin {
@@ -1702,9 +1078,9 @@ dependencies {
 }
 ```
 
-- [ ] **Step 4: Update localized app names**
+- [ ] **步骤 4：修改应用名称**
 
-Replace `apps/puupee/handcraft/android/app/src/main/res/values/strings.xml` with:
+替换 `apps/puupee/handcraft/android/app/src/main/res/values/strings.xml`：
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -1713,7 +1089,7 @@ Replace `apps/puupee/handcraft/android/app/src/main/res/values/strings.xml` with
 </resources>
 ```
 
-Replace `apps/puupee/handcraft/android/app/src/main/res/values-zh/strings.xml` with:
+替换 `apps/puupee/handcraft/android/app/src/main/res/values-zh/strings.xml`：
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -1722,18 +1098,15 @@ Replace `apps/puupee/handcraft/android/app/src/main/res/values-zh/strings.xml` w
 </resources>
 ```
 
-- [ ] **Step 5: Confirm manifest keeps Puupee requirements**
+- [ ] **步骤 5：确认 Manifest 保留关键配置**
 
-Check `apps/puupee/handcraft/android/app/src/main/AndroidManifest.xml` contains:
+确认 `AndroidManifest.xml` 使用：
 
 ```xml
-<application
-    android:label="@string/app_name"
-    android:name="${applicationName}"
-    android:icon="@mipmap/ic_launcher">
+android:label="@string/app_name"
 ```
 
-and FileProvider:
+确认保留 FileProvider：
 
 ```xml
 <provider
@@ -1747,9 +1120,9 @@ and FileProvider:
 </provider>
 ```
 
-- [ ] **Step 6: Remove local platform junk**
+- [ ] **步骤 6：删除本地平台垃圾文件**
 
-Run:
+运行：
 
 ```bash
 rm -rf apps/puupee/handcraft/android/.gradle \
@@ -1760,11 +1133,9 @@ rm -rf apps/puupee/handcraft/android/.gradle \
   apps/puupee/handcraft/android/gradlew.bat
 ```
 
-Expected: none of those paths remain.
+- [ ] **步骤 7：运行 Android 文件存在性检查**
 
-- [ ] **Step 7: Run Android file existence checks**
-
-Run:
+运行：
 
 ```bash
 test -f apps/puupee/handcraft/android/app/src/main/AndroidManifest.xml
@@ -1773,11 +1144,11 @@ test -f apps/puupee/handcraft/android/app/src/main/res/values/strings.xml
 test -f apps/puupee/handcraft/android/app/src/main/res/values-zh/strings.xml
 ```
 
-Expected: all commands exit 0.
+预期：全部退出码为 0。
 
-- [ ] **Step 8: Commit Android platform files**
+- [ ] **步骤 8：提交任务 6**
 
-Run:
+运行：
 
 ```bash
 git add apps/puupee/handcraft/android
@@ -1786,15 +1157,16 @@ git commit -m "build(handcraft): 添加 Android 平台配置"
 
 ---
 
-### Task 7: Add README And Run Final Verification
+### 任务 7：添加 README 并完成最终验证
 
-**Files:**
-- Create: `apps/puupee/handcraft/README.md`
-- Verify generated files: `apps/puupee/handcraft/lib/router.g.dart`, `apps/puupee/handcraft/lib/providers/handcraft_providers.g.dart`
+**文件：**
+- 创建：`apps/puupee/handcraft/README.md`
+- 验证：`apps/puupee/handcraft/lib/router.g.dart`
+- 验证：`apps/puupee/handcraft/lib/providers/handcraft_providers.g.dart`
 
-- [ ] **Step 1: Create the app README**
+- [ ] **步骤 1：创建 README**
 
-Create `apps/puupee/handcraft/README.md`:
+创建 `apps/puupee/handcraft/README.md`：
 
 ```markdown
 # 小汪手工
@@ -1820,59 +1192,59 @@ flutter build apk --debug --target-platform android-arm64 --no-pub
 ```
 ```
 
-- [ ] **Step 2: Run code generation**
+- [ ] **步骤 2：运行代码生成**
 
-Run:
+运行：
 
 ```bash
 cd /Users/j/repos/puupees/puupee-apps/apps/puupee/handcraft
 dart run build_runner build --delete-conflicting-outputs
 ```
 
-Expected: finishes successfully and generated files are current.
+预期：生成文件保持最新。
 
-- [ ] **Step 3: Run focused analyze**
+- [ ] **步骤 3：运行 EnvConfig 相关 analyze**
 
-Run:
+运行：
 
 ```bash
 cd /Users/j/repos/puupees/puupee-apps
 dart analyze apps/puupee/handcraft/lib/env.dart apps/puupee/handcraft/lib/main.dart apps/puupee/handcraft/test/env_test.dart
 ```
 
-Expected: `No issues found!`
+预期：输出 `No issues found!`。
 
-- [ ] **Step 4: Run all handcraft tests**
+- [ ] **步骤 4：运行 handcraft 全部测试**
 
-Run:
+运行：
 
 ```bash
 cd /Users/j/repos/puupees/puupee-apps/apps/puupee/handcraft
 flutter test --no-pub
 ```
 
-Expected: all tests pass.
+预期：全部测试通过。
 
-- [ ] **Step 5: Build debug Android APK**
+- [ ] **步骤 5：构建 Android debug APK**
 
-Run:
+运行：
 
 ```bash
 cd /Users/j/repos/puupees/puupee-apps/apps/puupee/handcraft
 flutter build apk --debug --target-platform android-arm64 --no-pub
 ```
 
-Expected: debug APK build succeeds.
+预期：debug APK 构建成功。
 
-- [ ] **Step 6: Confirm no local platform junk is staged**
+- [ ] **步骤 6：确认没有平台本地文件进入暂存区**
 
-Run:
+运行：
 
 ```bash
 git status --short
 ```
 
-Expected: no entries for:
+预期：输出中不包含：
 
 ```text
 apps/puupee/handcraft/android/.gradle
@@ -1882,16 +1254,16 @@ apps/puupee/handcraft/android/gradlew
 apps/puupee/handcraft/android/gradlew.bat
 ```
 
-- [ ] **Step 7: Commit README and verification updates**
+- [ ] **步骤 7：提交任务 7**
 
-Run:
+如果 generated 文件有变化，运行：
 
 ```bash
 git add apps/puupee/handcraft/README.md apps/puupee/handcraft/lib/router.g.dart apps/puupee/handcraft/lib/providers/handcraft_providers.g.dart
 git commit -m "docs(handcraft): 添加应用说明和生成文件"
 ```
 
-If generated files were already committed in earlier tasks and only README changed, run:
+如果只有 README 有变化，运行：
 
 ```bash
 git add apps/puupee/handcraft/README.md
@@ -1900,8 +1272,9 @@ git commit -m "docs(handcraft): 添加应用说明"
 
 ---
 
-## Self-Review Notes
+## 自审记录
 
-- Spec coverage: this plan covers app scaffold, workspace registration, EnvConfig, Android setup, model fields, local media paths, remote URL fields, upload statuses, manual or estimated dimensions, mock preview/pattern/video generation, project history repo, Riverpod state, studio/projects/assets/settings navigation, tests, analyze, and APK build.
-- Scope: real AI generation, object storage upload, precise pattern-making algorithms, and complete cross-device media sync remain outside first-version implementation.
-- Type consistency: model enums and class names use the `Handcraft` prefix across tests, service, repo, providers, routes, and pages.
+- 规格覆盖：本计划覆盖应用骨架、工作区注册、EnvConfig、Android 配置、作品模型、两张图片输入、本地和远程媒体字段、上传状态、手动或模拟尺寸、模拟效果图/裁剪图/视频生成、作品历史仓库、Riverpod 状态、创作/作品/素材/我的导航、测试、analyze 和 APK 构建。
+- 范围边界：真实 AI 生成、对象存储上传、精确制版算法、完整跨设备媒体同步不进入第一版。
+- 类型一致性：测试、模型、服务、仓库、提供器、页面、路由统一使用 `Handcraft` 前缀。
+- 语言一致性：正文、任务名、步骤说明、验收说明均为中文；路径、命令、Dart/Kotlin/XML 标识符按工程需要保留英文。
