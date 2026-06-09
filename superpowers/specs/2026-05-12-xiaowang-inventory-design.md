@@ -1,10 +1,10 @@
-# 小汪盘点子应用设计
+# 小汪记物子应用设计
 
 日期：2026-05-12
 
 ## 背景
 
-创建新的 Puupee 子应用“小汪盘点”，英文应用 ID 为 `inventory`，包名为 `puupee_inventory`，路由根路径为 `/inventory`。应用定位为个人资产中枢，用于盘点生活中的实物资产和虚拟资产，并通过 Puupee/Sync 持久化和同步。
+创建新的 Puupee 子应用“小汪记物”，英文应用 ID 为 `inventory`，包名为 `puupee_inventory`，路由根路径为 `/inventory`。应用定位为个人资产中枢，用于盘点生活中的实物资产和虚拟资产，并通过 Puupee/Sync 持久化和同步。
 
 第一版采用“资产中枢 MVP”路线：实物和虚拟资产使用统一模型；拍照和截图入口生成识别草稿，用户确认后入库；真实 OCR/AI 暂不接入，先用可替换的模拟识别服务完成端到端流程。
 
@@ -47,7 +47,7 @@ apps/puupee/inventory/
 └── README.md
 ```
 
-应用使用 `runMyApp()` 启动，`InventoryEnvConfig` 配置 `appId: inventory` 和 `appTitle: 小汪盘点`。路由根路径为 `/inventory`，桌面端使用侧栏布局，移动端使用底部导航。
+应用使用 `runMyApp()` 启动，`InventoryEnvConfig` 配置 `appId: inventory` 和 `appTitle: 小汪记物`。路由根路径为 `/inventory`，桌面端使用侧栏布局，移动端使用底部导航。
 
 ### Sync 功能模型
 

@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** 在 API 中提供可被任意子应用复用的 AI 服务商管理、图片分析和结构化抽取能力，并让 developer 管理服务商，让小汪盘点用真实通用接口替换 mock 识别。
+**Goal:** 在 API 中提供可被任意子应用复用的 AI 服务商管理、图片分析和结构化抽取能力，并让 developer 管理服务商，让小汪记物用真实通用接口替换 mock 识别。
 
-**Architecture:** 先扩展 `Puupees.Ai` 通用网关：服务商与模型配置落库，Provider Router 按能力路由，`AiVisionAppService` 负责 OCR/标签/商品/图片摘要，`AiExtractionAppService` 负责 JSON 结构化抽取。Flutter 侧通过生成的 `puupee_api_client` 调用通用接口，developer 管理 provider，小汪盘点只新增一个客户端适配服务，不新增后端专属 inventory recognition 接口。
+**Architecture:** 先扩展 `Puupees.Ai` 通用网关：服务商与模型配置落库，Provider Router 按能力路由，`AiVisionAppService` 负责 OCR/标签/商品/图片摘要，`AiExtractionAppService` 负责 JSON 结构化抽取。Flutter 侧通过生成的 `puupee_api_client` 调用通用接口，developer 管理 provider，小汪记物只新增一个客户端适配服务，不新增后端专属 inventory recognition 接口。
 
 **Tech Stack:** .NET 8、ABP Framework 8.1、Entity Framework Core、ASP.NET Core MVC、System.Text.Json、HttpClientFactory、xUnit、Shouldly、NSubstitute、Dart 3.8、Flutter、Riverpod、go_router、shadcn_flutter、OpenAPI Generator。
 
@@ -12,12 +12,12 @@
 
 ## Scope Check
 
-这个 spec 横跨 API、客户端生成、developer 管理端和小汪盘点接入。为了让每一段可独立验收，本计划按可工作的阶段拆任务：
+这个 spec 横跨 API、客户端生成、developer 管理端和小汪记物接入。为了让每一段可独立验收，本计划按可工作的阶段拆任务：
 
 - Task 1-5 交付可复用 API 能力，未配置真实服务商时 mock 可通过测试。
 - Task 6 生成 Dart API 客户端。
 - Task 7 交付 developer AI 服务商管理入口。
-- Task 8-9 让小汪盘点调用通用 AI 能力并保留确认页。
+- Task 8-9 让小汪记物调用通用 AI 能力并保留确认页。
 - Task 10 做整体验证。
 
 若需要拆 PR，以 Task 5、Task 7、Task 9 作为自然边界。

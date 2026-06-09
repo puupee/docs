@@ -1,4 +1,4 @@
-# 小汪盘点 Implementation Plan
+# 小汪记物 Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -297,7 +297,7 @@ name: puupee_inventory
 resolution: workspace
 version: 0.1.0
 publish_to: none
-description: 小汪盘点 - 个人实物资产与虚拟资产盘点工具
+description: 小汪记物 - 个人实物资产与虚拟资产盘点工具
 
 environment:
   sdk: ^3.8.1
@@ -350,7 +350,7 @@ class InventoryEnvConfig extends EnvConfig {
     : super(
         env: 'production',
         appId: 'inventory',
-        appTitle: '小汪盘点',
+        appTitle: '小汪记物',
         apiUrl: const String.fromEnvironment(
           'API_URL',
           defaultValue: 'https://api.puupee.com',
@@ -402,7 +402,7 @@ class InventoryDashboardPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(child: Text('小汪盘点'));
+    return const Center(child: Text('小汪记物'));
   }
 }
 ```
@@ -472,7 +472,7 @@ class AdaptiveInventoryShell extends ConsumerWidget {
     if (isDesktop) {
       return AdaptiveLayout(
         appIcon: const HomeIcon(appId: 'inventory'),
-        appTitle: '小汪盘点',
+        appTitle: '小汪记物',
         menuItems: _items,
         selectedIndex: current,
         onMenuItemTap: (index) => _go(context, index),
@@ -540,7 +540,7 @@ Expected: `router.g.dart` is generated and `dart analyze` exits without errors f
 
 ```bash
 git add pubspec.yaml apps/puupee/inventory
-git commit -m "feat(inventory): 创建小汪盘点应用骨架"
+git commit -m "feat(inventory): 创建小汪记物应用骨架"
 ```
 
 ---
@@ -763,7 +763,7 @@ git commit -m "feat(inventory): 接入资产同步数据层"
 
 - [ ] **Step 1: Write dashboard smoke test**
 
-Create a widget test that pumps `InventoryDashboardPage` inside `ProviderScope` and verifies text for `小汪盘点`, `拍照实物`, `导入截图`, and `手动添加`.
+Create a widget test that pumps `InventoryDashboardPage` inside `ProviderScope` and verifies text for `小汪记物`, `拍照实物`, `导入截图`, and `手动添加`.
 
 - [ ] **Step 2: Implement shared components**
 
@@ -841,7 +841,7 @@ git commit -m "feat(inventory): 完成资产盘点核心界面"
 Create `apps/puupee/inventory/README.md` with sections:
 
 ```markdown
-# 小汪盘点
+# 小汪记物
 
 个人实物资产与虚拟资产盘点工具。
 
@@ -901,7 +901,7 @@ Expected: changed files are limited to `packages/puupee`, `apps/puupee/inventory
 
 ```bash
 git add apps/puupee/inventory/README.md
-git commit -m "docs(inventory): 添加小汪盘点说明"
+git commit -m "docs(inventory): 添加小汪记物说明"
 ```
 
 ---
