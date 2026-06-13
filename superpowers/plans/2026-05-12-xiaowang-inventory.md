@@ -4,7 +4,7 @@
 
 **Goal:** Build the new `inventory` Flutter sub-application for personal physical and virtual asset inventory, backed by a Puupee/Sync `InventoryAsset` feature model.
 
-**Architecture:** Add a first-class `InventoryAsset` content type in `packages/puupee`, then scaffold `apps/puupee/inventory` with the same `runMyApp`, GoRouter, Riverpod, ProductRepoBase, and shadcn Flutter conventions used by existing sub-apps. Image and screenshot capture produce editable `InventoryAssetDraft` values through a mock recognition service so the UI and Sync save path are complete before real OCR/AI exists.
+**Architecture:** Add a first-class `InventoryAsset` content type in `packages/core/puupee`, then scaffold `apps/inventory` with the same `runMyApp`, GoRouter, Riverpod, ProductRepoBase, and shadcn Flutter conventions used by existing sub-apps. Image and screenshot capture produce editable `InventoryAssetDraft` values through a mock recognition service so the UI and Sync save path are complete before real OCR/AI exists.
 
 **Tech Stack:** Dart 3.8, Flutter, shadcn_flutter, go_router with go_router_builder, Riverpod annotation, Puupee/Sync, drift query APIs via repo classes, build_runner.
 
@@ -12,45 +12,45 @@
 
 ## File Structure
 
-- Modify `pubspec.yaml`: add `apps/puupee/inventory` to the workspace list near the other Puupee apps.
-- Modify `packages/puupee_utilities/lib/products.dart`: register `Products.inventory` for app root creation.
-- Modify `packages/puupee_utilities/test/products_test.dart`: cover `inventory` product lookup.
-- Create `packages/puupee/lib/src/features/inventory_asset.dart`: declares enums, `@PuupeeFeature`, and convenience extensions for `InventoryAsset`.
-- Modify `packages/puupee/lib/puupee.dart`: export `src/features/inventory_asset.dart`.
-- Generate `packages/puupee/lib/src/features/inventory_asset.puupee.dart`, `packages/puupee/lib/src/generated/puupee_content_types.g.dart`, and `packages/puupee/lib/src/generated/feature_cli_schemas.g.dart`.
-- Create `packages/puupee/test/features/inventory_asset_test.dart`: verifies contentType, key fields, and conversion helpers.
-- Create `apps/puupee/inventory/pubspec.yaml`: workspace package definition.
-- Create `apps/puupee/inventory/lib/env.dart`: `InventoryEnvConfig`.
-- Create `apps/puupee/inventory/lib/main.dart`: app entry using `runMyApp`.
-- Create `apps/puupee/inventory/lib/router.dart`: typed stateful shell routes and shared settings routes.
-- Generate `apps/puupee/inventory/lib/router.g.dart`.
-- Create `apps/puupee/inventory/lib/components/adaptive_inventory_shell.dart`: desktop sidebar and mobile bottom nav.
-- Create `apps/puupee/inventory/lib/models/inventory_asset_draft.dart`: draft and field confidence model.
-- Create `apps/puupee/inventory/lib/models/inventory_filter.dart`: list/search/reminder filter state.
-- Create `apps/puupee/inventory/lib/services/inventory_recognition_service.dart`: mock physical/screenshot recognition.
-- Create `apps/puupee/inventory/lib/repo/inventory_asset_repo.dart`: Sync-backed CRUD and stream queries.
-- Create `apps/puupee/inventory/lib/providers/inventory_providers.dart`: repo, stream, filtering, dashboard, reminder providers.
-- Generate `apps/puupee/inventory/lib/providers/inventory_providers.g.dart`.
-- Create page files under `apps/puupee/inventory/lib/pages/`: dashboard, asset list, detail/edit, recognition confirm, reminders, checklist, settings shell handling through router.
-- Create focused widgets under `apps/puupee/inventory/lib/components/`: asset card, stat card, quick add panel, filter bar, draft field editor.
-- Create tests under `apps/puupee/inventory/test/`: draft/filter/recognition unit tests and at least one widget smoke test for the dashboard.
-- Create `apps/puupee/inventory/README.md`: usage, first-version scope, and verification commands.
+- Modify `pubspec.yaml`: add `apps/inventory` to the workspace list near the other Puupee apps.
+- Modify `packages/core/puupee_utilities/lib/products.dart`: register `Products.inventory` for app root creation.
+- Modify `packages/core/puupee_utilities/test/products_test.dart`: cover `inventory` product lookup.
+- Create `packages/core/puupee/lib/src/features/inventory_asset.dart`: declares enums, `@PuupeeFeature`, and convenience extensions for `InventoryAsset`.
+- Modify `packages/core/puupee/lib/puupee.dart`: export `src/features/inventory_asset.dart`.
+- Generate `packages/core/puupee/lib/src/features/inventory_asset.puupee.dart`, `packages/core/puupee/lib/src/generated/puupee_content_types.g.dart`, and `packages/core/puupee/lib/src/generated/feature_cli_schemas.g.dart`.
+- Create `packages/core/puupee/test/features/inventory_asset_test.dart`: verifies contentType, key fields, and conversion helpers.
+- Create `apps/inventory/pubspec.yaml`: workspace package definition.
+- Create `apps/inventory/lib/env.dart`: `InventoryEnvConfig`.
+- Create `apps/inventory/lib/main.dart`: app entry using `runMyApp`.
+- Create `apps/inventory/lib/router.dart`: typed stateful shell routes and shared settings routes.
+- Generate `apps/inventory/lib/router.g.dart`.
+- Create `apps/inventory/lib/components/adaptive_inventory_shell.dart`: desktop sidebar and mobile bottom nav.
+- Create `apps/inventory/lib/models/inventory_asset_draft.dart`: draft and field confidence model.
+- Create `apps/inventory/lib/models/inventory_filter.dart`: list/search/reminder filter state.
+- Create `apps/inventory/lib/services/inventory_recognition_service.dart`: mock physical/screenshot recognition.
+- Create `apps/inventory/lib/repo/inventory_asset_repo.dart`: Sync-backed CRUD and stream queries.
+- Create `apps/inventory/lib/providers/inventory_providers.dart`: repo, stream, filtering, dashboard, reminder providers.
+- Generate `apps/inventory/lib/providers/inventory_providers.g.dart`.
+- Create page files under `apps/inventory/lib/pages/`: dashboard, asset list, detail/edit, recognition confirm, reminders, checklist, settings shell handling through router.
+- Create focused widgets under `apps/inventory/lib/components/`: asset card, stat card, quick add panel, filter bar, draft field editor.
+- Create tests under `apps/inventory/test/`: draft/filter/recognition unit tests and at least one widget smoke test for the dashboard.
+- Create `apps/inventory/README.md`: usage, first-version scope, and verification commands.
 
 ---
 
 ### Task 1: Add `InventoryAsset` Feature Model
 
 **Files:**
-- Create: `packages/puupee/test/features/inventory_asset_test.dart`
-- Create: `packages/puupee/lib/src/features/inventory_asset.dart`
-- Modify: `packages/puupee/lib/puupee.dart`
-- Generated: `packages/puupee/lib/src/features/inventory_asset.puupee.dart`
-- Generated: `packages/puupee/lib/src/generated/puupee_content_types.g.dart`
-- Generated: `packages/puupee/lib/src/generated/feature_cli_schemas.g.dart`
+- Create: `packages/core/puupee/test/features/inventory_asset_test.dart`
+- Create: `packages/core/puupee/lib/src/features/inventory_asset.dart`
+- Modify: `packages/core/puupee/lib/puupee.dart`
+- Generated: `packages/core/puupee/lib/src/features/inventory_asset.puupee.dart`
+- Generated: `packages/core/puupee/lib/src/generated/puupee_content_types.g.dart`
+- Generated: `packages/core/puupee/lib/src/generated/feature_cli_schemas.g.dart`
 
 - [ ] **Step 1: Write the failing model test**
 
-Create `packages/puupee/test/features/inventory_asset_test.dart`:
+Create `packages/core/puupee/test/features/inventory_asset_test.dart`:
 
 ```dart
 import 'package:decimal/decimal.dart';
@@ -100,7 +100,7 @@ void main() {
 Run:
 
 ```bash
-cd packages/puupee
+cd packages/core/puupee
 flutter test test/features/inventory_asset_test.dart
 ```
 
@@ -108,7 +108,7 @@ Expected: FAIL because `InventoryAsset`, `InventoryAssetKind`, and `kInventoryAs
 
 - [ ] **Step 3: Add the feature model source**
 
-Create `packages/puupee/lib/src/features/inventory_asset.dart`:
+Create `packages/core/puupee/lib/src/features/inventory_asset.dart`:
 
 ```dart
 import 'package:decimal/decimal.dart';
@@ -226,18 +226,18 @@ extension InventoryAssetX on InventoryAsset {
 
 - [ ] **Step 4: Export the feature model**
 
-Modify `packages/puupee/lib/puupee.dart` and add this export near the other feature exports:
+Modify `packages/core/puupee/lib/puupee.dart` and add this export near the other feature exports:
 
 ```dart
 export 'src/features/inventory_asset.dart';
 ```
 
-- [ ] **Step 5: Run generator for `packages/puupee`**
+- [ ] **Step 5: Run generator for `packages/core/puupee`**
 
 Run:
 
 ```bash
-cd packages/puupee
+cd packages/core/puupee
 dart run build_runner build --delete-conflicting-outputs
 ```
 
@@ -248,7 +248,7 @@ Expected: generated files include `inventory_asset.puupee.dart`, `kInventoryAsse
 Run:
 
 ```bash
-cd packages/puupee
+cd packages/core/puupee
 flutter test test/features/inventory_asset_test.dart
 ```
 
@@ -257,12 +257,12 @@ Expected: PASS.
 - [ ] **Step 7: Commit the model work**
 
 ```bash
-git add packages/puupee/lib/puupee.dart \
-  packages/puupee/lib/src/features/inventory_asset.dart \
-  packages/puupee/lib/src/features/inventory_asset.puupee.dart \
-  packages/puupee/lib/src/generated/puupee_content_types.g.dart \
-  packages/puupee/lib/src/generated/feature_cli_schemas.g.dart \
-  packages/puupee/test/features/inventory_asset_test.dart
+git add packages/core/puupee/lib/puupee.dart \
+  packages/core/puupee/lib/src/features/inventory_asset.dart \
+  packages/core/puupee/lib/src/features/inventory_asset.puupee.dart \
+  packages/core/puupee/lib/src/generated/puupee_content_types.g.dart \
+  packages/core/puupee/lib/src/generated/feature_cli_schemas.g.dart \
+  packages/core/puupee/test/features/inventory_asset_test.dart
 git commit -m "feat(inventory): 添加资产盘点模型"
 ```
 
@@ -272,25 +272,25 @@ git commit -m "feat(inventory): 添加资产盘点模型"
 
 **Files:**
 - Modify: `pubspec.yaml`
-- Create: `apps/puupee/inventory/pubspec.yaml`
-- Create: `apps/puupee/inventory/lib/env.dart`
-- Create: `apps/puupee/inventory/lib/main.dart`
-- Create: `apps/puupee/inventory/lib/router.dart`
-- Create: `apps/puupee/inventory/lib/components/adaptive_inventory_shell.dart`
-- Create: temporary page placeholders under `apps/puupee/inventory/lib/pages/`
-- Generated: `apps/puupee/inventory/lib/router.g.dart`
+- Create: `apps/inventory/pubspec.yaml`
+- Create: `apps/inventory/lib/env.dart`
+- Create: `apps/inventory/lib/main.dart`
+- Create: `apps/inventory/lib/router.dart`
+- Create: `apps/inventory/lib/components/adaptive_inventory_shell.dart`
+- Create: temporary page placeholders under `apps/inventory/lib/pages/`
+- Generated: `apps/inventory/lib/router.g.dart`
 
 - [ ] **Step 1: Add the app to the workspace**
 
-In root `pubspec.yaml`, add the workspace entry near the other `apps/puupee/*` entries:
+In root `pubspec.yaml`, add the workspace entry near the other `apps/*` entries:
 
 ```yaml
-  - apps/puupee/inventory
+  - apps/inventory
 ```
 
 - [ ] **Step 2: Create the app pubspec**
 
-Create `apps/puupee/inventory/pubspec.yaml`:
+Create `apps/inventory/pubspec.yaml`:
 
 ```yaml
 name: puupee_inventory
@@ -340,7 +340,7 @@ flutter:
 
 - [ ] **Step 3: Create env and main**
 
-Create `apps/puupee/inventory/lib/env.dart`:
+Create `apps/inventory/lib/env.dart`:
 
 ```dart
 import 'package:puupee_shared/env.dart';
@@ -371,7 +371,7 @@ class InventoryEnvConfig extends EnvConfig {
 }
 ```
 
-Create `apps/puupee/inventory/lib/main.dart`:
+Create `apps/inventory/lib/main.dart`:
 
 ```dart
 import 'package:go_router/go_router.dart';
@@ -392,7 +392,7 @@ void main() async {
 
 - [ ] **Step 4: Add placeholder pages for route compilation**
 
-Create `apps/puupee/inventory/lib/pages/dashboard_page.dart`:
+Create `apps/inventory/lib/pages/dashboard_page.dart`:
 
 ```dart
 import 'package:shadcn_flutter/shadcn_flutter.dart';
@@ -411,7 +411,7 @@ Create `asset_list_page.dart`, `reminders_page.dart`, and `checklist_page.dart` 
 
 - [ ] **Step 5: Create shell and router**
 
-Create `apps/puupee/inventory/lib/components/adaptive_inventory_shell.dart` using `AdaptiveLayout`, `HomeIcon(appId: 'inventory')`, shadcn `Scaffold`, and five menu items:
+Create `apps/inventory/lib/components/adaptive_inventory_shell.dart` using `AdaptiveLayout`, `HomeIcon(appId: 'inventory')`, shadcn `Scaffold`, and five menu items:
 
 ```dart
 import 'package:go_router/go_router.dart';
@@ -522,14 +522,14 @@ class AdaptiveInventoryShell extends ConsumerWidget {
 }
 ```
 
-Create `apps/puupee/inventory/lib/router.dart` by following the `ops` router pattern with branches for `/inventory`, `/inventory/assets`, `/inventory/reminders`, `/inventory/checklist`, and shared settings routes under `/inventory/settings`.
+Create `apps/inventory/lib/router.dart` by following the `ops` router pattern with branches for `/inventory`, `/inventory/assets`, `/inventory/reminders`, `/inventory/checklist`, and shared settings routes under `/inventory/settings`.
 
 - [ ] **Step 6: Generate routes and verify app analysis**
 
 Run:
 
 ```bash
-cd apps/puupee/inventory
+cd apps/inventory
 dart run build_runner build --delete-conflicting-outputs
 dart analyze
 ```
@@ -539,7 +539,7 @@ Expected: `router.g.dart` is generated and `dart analyze` exits without errors f
 - [ ] **Step 7: Commit the shell work**
 
 ```bash
-git add pubspec.yaml apps/puupee/inventory
+git add pubspec.yaml apps/inventory
 git commit -m "feat(inventory): 创建小汪记物应用骨架"
 ```
 
@@ -548,15 +548,15 @@ git commit -m "feat(inventory): 创建小汪记物应用骨架"
 ### Task 3: Add Draft Models, Recognition Service, and Unit Tests
 
 **Files:**
-- Create: `apps/puupee/inventory/lib/models/inventory_asset_draft.dart`
-- Create: `apps/puupee/inventory/lib/models/inventory_filter.dart`
-- Create: `apps/puupee/inventory/lib/services/inventory_recognition_service.dart`
-- Create: `apps/puupee/inventory/test/inventory_recognition_service_test.dart`
-- Create: `apps/puupee/inventory/test/inventory_filter_test.dart`
+- Create: `apps/inventory/lib/models/inventory_asset_draft.dart`
+- Create: `apps/inventory/lib/models/inventory_filter.dart`
+- Create: `apps/inventory/lib/services/inventory_recognition_service.dart`
+- Create: `apps/inventory/test/inventory_recognition_service_test.dart`
+- Create: `apps/inventory/test/inventory_filter_test.dart`
 
 - [ ] **Step 1: Write recognition tests**
 
-Create `apps/puupee/inventory/test/inventory_recognition_service_test.dart`:
+Create `apps/inventory/test/inventory_recognition_service_test.dart`:
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
@@ -591,14 +591,14 @@ void main() {
 
 - [ ] **Step 2: Write filter tests**
 
-Create `apps/puupee/inventory/test/inventory_filter_test.dart` with tests for search query, kind, status, and reminder windows using `InventoryAsset.create(...)`.
+Create `apps/inventory/test/inventory_filter_test.dart` with tests for search query, kind, status, and reminder windows using `InventoryAsset.create(...)`.
 
 - [ ] **Step 3: Run tests and confirm failure**
 
 Run:
 
 ```bash
-cd apps/puupee/inventory
+cd apps/inventory
 flutter test test/inventory_recognition_service_test.dart test/inventory_filter_test.dart
 ```
 
@@ -630,7 +630,7 @@ abstract class InventoryRecognitionService {
 Run:
 
 ```bash
-cd apps/puupee/inventory
+cd apps/inventory
 flutter test test/inventory_recognition_service_test.dart test/inventory_filter_test.dart
 ```
 
@@ -639,10 +639,10 @@ Expected: PASS.
 - [ ] **Step 8: Commit the domain service work**
 
 ```bash
-git add apps/puupee/inventory/lib/models \
-  apps/puupee/inventory/lib/services \
-  apps/puupee/inventory/test/inventory_recognition_service_test.dart \
-  apps/puupee/inventory/test/inventory_filter_test.dart
+git add apps/inventory/lib/models \
+  apps/inventory/lib/services \
+  apps/inventory/test/inventory_recognition_service_test.dart \
+  apps/inventory/test/inventory_filter_test.dart
 git commit -m "feat(inventory): 添加资产草稿和识别服务"
 ```
 
@@ -651,16 +651,16 @@ git commit -m "feat(inventory): 添加资产草稿和识别服务"
 ### Task 4: Add Sync Repo and Riverpod Providers
 
 **Files:**
-- Modify: `packages/puupee_utilities/lib/products.dart`
-- Modify: `packages/puupee_utilities/test/products_test.dart`
-- Create: `apps/puupee/inventory/lib/repo/inventory_asset_repo.dart`
-- Create: `apps/puupee/inventory/lib/providers/inventory_providers.dart`
-- Generated: `apps/puupee/inventory/lib/providers/inventory_providers.g.dart`
-- Create: `apps/puupee/inventory/test/inventory_provider_logic_test.dart`
+- Modify: `packages/core/puupee_utilities/lib/products.dart`
+- Modify: `packages/core/puupee_utilities/test/products_test.dart`
+- Create: `apps/inventory/lib/repo/inventory_asset_repo.dart`
+- Create: `apps/inventory/lib/providers/inventory_providers.dart`
+- Generated: `apps/inventory/lib/providers/inventory_providers.g.dart`
+- Create: `apps/inventory/test/inventory_provider_logic_test.dart`
 
 - [ ] **Step 1: Register the inventory product**
 
-Modify `packages/puupee_utilities/lib/products.dart`:
+Modify `packages/core/puupee_utilities/lib/products.dart`:
 
 ```dart
 static const Products inventory = Products._("inventory", "Inventory", "盘点");
@@ -668,7 +668,7 @@ static const Products inventory = Products._("inventory", "Inventory", "盘点")
 
 Add `inventory` to `Products.values` after `billings`.
 
-Modify `packages/puupee_utilities/test/products_test.dart`:
+Modify `packages/core/puupee_utilities/test/products_test.dart`:
 
 ```dart
 expect(Products.inventory.appId, equals('inventory'));
@@ -682,7 +682,7 @@ expect(Products.fromValue('Inventory'), equals(Products.inventory));
 Run:
 
 ```bash
-cd packages/puupee_utilities
+cd packages/core/puupee_utilities
 dart test test/products_test.dart
 ```
 
@@ -716,7 +716,7 @@ Create `getInventoryAssetRepoProvider`, `inventoryAssetStreamProvider`, `invento
 Run:
 
 ```bash
-cd apps/puupee/inventory
+cd apps/inventory
 dart run build_runner build --delete-conflicting-outputs
 ```
 
@@ -727,10 +727,10 @@ Expected: `inventory_providers.g.dart` is generated.
 Run:
 
 ```bash
-cd apps/puupee/inventory
+cd apps/inventory
 flutter test test/inventory_provider_logic_test.dart
 dart analyze
-cd ../../../packages/puupee_utilities
+cd ../../../packages/core/puupee_utilities
 dart test test/products_test.dart
 ```
 
@@ -739,11 +739,11 @@ Expected: PASS and no analyzer errors in the new app.
 - [ ] **Step 7: Commit repo and provider work**
 
 ```bash
-git add packages/puupee_utilities/lib/products.dart \
-  packages/puupee_utilities/test/products_test.dart \
-  apps/puupee/inventory/lib/repo \
-  apps/puupee/inventory/lib/providers \
-  apps/puupee/inventory/test/inventory_provider_logic_test.dart
+git add packages/core/puupee_utilities/lib/products.dart \
+  packages/core/puupee_utilities/test/products_test.dart \
+  apps/inventory/lib/repo \
+  apps/inventory/lib/providers \
+  apps/inventory/test/inventory_provider_logic_test.dart
 git commit -m "feat(inventory): 接入资产同步数据层"
 ```
 
@@ -752,14 +752,14 @@ git commit -m "feat(inventory): 接入资产同步数据层"
 ### Task 5: Build Core UI Pages
 
 **Files:**
-- Create/modify components under `apps/puupee/inventory/lib/components/`
-- Replace placeholders in `apps/puupee/inventory/lib/pages/dashboard_page.dart`
+- Create/modify components under `apps/inventory/lib/components/`
+- Replace placeholders in `apps/inventory/lib/pages/dashboard_page.dart`
 - Replace placeholders in `asset_list_page.dart`, `reminders_page.dart`, `checklist_page.dart`
-- Create: `apps/puupee/inventory/lib/pages/asset_detail_page.dart`
-- Create: `apps/puupee/inventory/lib/pages/recognition_confirm_page.dart`
-- Modify: `apps/puupee/inventory/lib/router.dart`
-- Generated: `apps/puupee/inventory/lib/router.g.dart`
-- Create: `apps/puupee/inventory/test/dashboard_page_test.dart`
+- Create: `apps/inventory/lib/pages/asset_detail_page.dart`
+- Create: `apps/inventory/lib/pages/recognition_confirm_page.dart`
+- Modify: `apps/inventory/lib/router.dart`
+- Generated: `apps/inventory/lib/router.g.dart`
+- Create: `apps/inventory/test/dashboard_page_test.dart`
 
 - [ ] **Step 1: Write dashboard smoke test**
 
@@ -813,7 +813,7 @@ Add routes:
 Run:
 
 ```bash
-cd apps/puupee/inventory
+cd apps/inventory
 dart run build_runner build --delete-conflicting-outputs
 flutter test test/dashboard_page_test.dart
 dart analyze
@@ -824,7 +824,7 @@ Expected: PASS and no analyzer errors in the new app.
 - [ ] **Step 9: Commit UI work**
 
 ```bash
-git add apps/puupee/inventory/lib apps/puupee/inventory/test/dashboard_page_test.dart
+git add apps/inventory/lib apps/inventory/test/dashboard_page_test.dart
 git commit -m "feat(inventory): 完成资产盘点核心界面"
 ```
 
@@ -833,12 +833,12 @@ git commit -m "feat(inventory): 完成资产盘点核心界面"
 ### Task 6: Documentation and Final Verification
 
 **Files:**
-- Create: `apps/puupee/inventory/README.md`
+- Create: `apps/inventory/README.md`
 - Modify: generated files only when verification commands produce intended app-specific changes
 
 - [ ] **Step 1: Create README**
 
-Create `apps/puupee/inventory/README.md` with sections:
+Create `apps/inventory/README.md` with sections:
 
 ```markdown
 # 小汪记物
@@ -856,7 +856,7 @@ Create `apps/puupee/inventory/README.md` with sections:
 ## 开发
 
 ```bash
-cd apps/puupee/inventory
+cd apps/inventory
 dart run build_runner build --delete-conflicting-outputs
 dart analyze
 flutter test
@@ -868,7 +868,7 @@ flutter test
 Run:
 
 ```bash
-cd packages/puupee
+cd packages/core/puupee
 flutter test test/features/inventory_asset_test.dart
 ```
 
@@ -879,7 +879,7 @@ Expected: PASS.
 Run:
 
 ```bash
-cd apps/puupee/inventory
+cd apps/inventory
 flutter test
 dart analyze
 ```
@@ -895,12 +895,12 @@ git status --short
 git diff --stat
 ```
 
-Expected: changed files are limited to `packages/puupee`, `apps/puupee/inventory`, root `pubspec.yaml`, and generated files caused by the inventory model/app. Existing unrelated `GeneratedPluginRegistrant` and `untranslated_messages.json` changes remain unstaged.
+Expected: changed files are limited to `packages/core/puupee`, `apps/inventory`, root `pubspec.yaml`, and generated files caused by the inventory model/app. Existing unrelated `GeneratedPluginRegistrant` and `untranslated_messages.json` changes remain unstaged.
 
 - [ ] **Step 5: Commit final docs**
 
 ```bash
-git add apps/puupee/inventory/README.md
+git add apps/inventory/README.md
 git commit -m "docs(inventory): 添加小汪记物说明"
 ```
 

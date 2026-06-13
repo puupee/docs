@@ -61,23 +61,23 @@
 - Create: `api/test/Puupees.Application.Tests/Ai/AiProviderRouterTests.cs`
 - Create: `api/test/Puupees.Application.Tests/Ai/AiVisionAndExtractionTests.cs`
 - Create: `api/test/Puupees.Application.Tests/Ai/TencentCloudProviderTests.cs`
-- Generated/Modify: `packages/puupee_api_client/lib/**`
-- Generated/Modify: `packages/puupee_api_client/doc/**`
-- Generated/Modify: `packages/puupee_api_client/test/**`
-- Modify: `apps/puupee/developer/lib/development/home_page.dart`
-- Modify: `apps/puupee/developer/lib/router.dart`
-- Create: `apps/puupee/developer/lib/ai-providers/home_page.dart`
-- Create: `apps/puupee/developer/lib/ai-providers/list_view.dart`
-- Create: `apps/puupee/developer/lib/ai-providers/list_view_item.dart`
-- Create: `apps/puupee/developer/lib/ai-providers/edit_page.dart`
-- Create: `apps/puupee/developer/lib/ai-providers/provider.dart`
-- Modify: `apps/puupee/inventory/lib/services/inventory_recognition_service.dart`
-- Modify: `apps/puupee/inventory/lib/providers/inventory_providers.dart`
-- Modify: `apps/puupee/inventory/lib/providers/inventory_providers.g.dart`
-- Create: `apps/puupee/inventory/lib/services/inventory_image_upload_service.dart`
-- Create: `apps/puupee/inventory/lib/services/api_inventory_recognition_service.dart`
-- Modify: `apps/puupee/inventory/test/inventory_recognition_service_test.dart`
-- Create: `apps/puupee/inventory/test/api_inventory_recognition_service_test.dart`
+- Generated/Modify: `packages/api/puupee_api_client/lib/**`
+- Generated/Modify: `packages/api/puupee_api_client/doc/**`
+- Generated/Modify: `packages/api/puupee_api_client/test/**`
+- Modify: `apps/developer/lib/development/home_page.dart`
+- Modify: `apps/developer/lib/router.dart`
+- Create: `apps/developer/lib/ai-providers/home_page.dart`
+- Create: `apps/developer/lib/ai-providers/list_view.dart`
+- Create: `apps/developer/lib/ai-providers/list_view_item.dart`
+- Create: `apps/developer/lib/ai-providers/edit_page.dart`
+- Create: `apps/developer/lib/ai-providers/provider.dart`
+- Modify: `apps/inventory/lib/services/inventory_recognition_service.dart`
+- Modify: `apps/inventory/lib/providers/inventory_providers.dart`
+- Modify: `apps/inventory/lib/providers/inventory_providers.g.dart`
+- Create: `apps/inventory/lib/services/inventory_image_upload_service.dart`
+- Create: `apps/inventory/lib/services/api_inventory_recognition_service.dart`
+- Modify: `apps/inventory/test/inventory_recognition_service_test.dart`
+- Create: `apps/inventory/test/api_inventory_recognition_service_test.dart`
 
 ---
 
@@ -1742,10 +1742,10 @@ Expected: commit only when there are actual fixes.
 ### Task 6: Regenerate Dart API Client
 
 **Files:**
-- Generated/Modify: `packages/puupee_api_client/lib/**`
-- Generated/Modify: `packages/puupee_api_client/doc/**`
-- Generated/Modify: `packages/puupee_api_client/test/**`
-- Modify: `packages/puupee_api_client/pubspec.yaml` only if generator updates it.
+- Generated/Modify: `packages/api/puupee_api_client/lib/**`
+- Generated/Modify: `packages/api/puupee_api_client/doc/**`
+- Generated/Modify: `packages/api/puupee_api_client/test/**`
+- Modify: `packages/api/puupee_api_client/pubspec.yaml` only if generator updates it.
 
 - [ ] **Step 1: Start API host for swagger**
 
@@ -1763,18 +1763,18 @@ Expected: host starts and exposes Swagger JSON. Keep the terminal running for th
 In a second terminal:
 
 ```bash
-cd packages/puupee_sdk_generator
+cd packages/api/puupee_sdk_generator
 dart run bin/puupee_sdk_generator.dart dart --swagger-url http://localhost:5000/swagger/v1/swagger.json
 ```
 
-Expected: `packages/puupee_api_client` gains APIs/models for `AiProvidersApi`, `AiVisionApi`, and `AiExtractionApi`.
+Expected: `packages/api/puupee_api_client` gains APIs/models for `AiProvidersApi`, `AiVisionApi`, and `AiExtractionApi`.
 
 - [ ] **Step 3: Run client code generation**
 
 Run:
 
 ```bash
-cd packages/puupee_api_client
+cd packages/api/puupee_api_client
 dart run build_runner build --delete-conflicting-outputs
 ```
 
@@ -1785,7 +1785,7 @@ Expected: generated `*.g.dart` files are updated successfully.
 Run:
 
 ```bash
-cd packages/puupee_api_client
+cd packages/api/puupee_api_client
 dart analyze
 ```
 
@@ -1794,7 +1794,7 @@ Expected: analysis succeeds.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add packages/puupee_api_client
+git add packages/api/puupee_api_client
 git commit -m "chore(api-client): 生成 AI 通用能力客户端"
 ```
 
@@ -1803,17 +1803,17 @@ git commit -m "chore(api-client): 生成 AI 通用能力客户端"
 ### Task 7: Developer AI Provider Management UI
 
 **Files:**
-- Modify: `apps/puupee/developer/lib/development/home_page.dart`
-- Modify: `apps/puupee/developer/lib/router.dart`
-- Create: `apps/puupee/developer/lib/ai-providers/home_page.dart`
-- Create: `apps/puupee/developer/lib/ai-providers/list_view.dart`
-- Create: `apps/puupee/developer/lib/ai-providers/list_view_item.dart`
-- Create: `apps/puupee/developer/lib/ai-providers/edit_page.dart`
-- Create: `apps/puupee/developer/lib/ai-providers/provider.dart`
+- Modify: `apps/developer/lib/development/home_page.dart`
+- Modify: `apps/developer/lib/router.dart`
+- Create: `apps/developer/lib/ai-providers/home_page.dart`
+- Create: `apps/developer/lib/ai-providers/list_view.dart`
+- Create: `apps/developer/lib/ai-providers/list_view_item.dart`
+- Create: `apps/developer/lib/ai-providers/edit_page.dart`
+- Create: `apps/developer/lib/ai-providers/provider.dart`
 
 - [ ] **Step 1: Write failing provider unit smoke test**
 
-Create `apps/puupee/developer/test/ai_provider_provider_test.dart`:
+Create `apps/developer/test/ai_provider_provider_test.dart`:
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
@@ -1829,7 +1829,7 @@ void main() {
 Run:
 
 ```bash
-cd apps/puupee/developer
+cd apps/developer
 flutter test test/ai_provider_provider_test.dart
 ```
 
@@ -1837,7 +1837,7 @@ Expected: FAIL because `ai-providers/provider.dart` does not exist.
 
 - [ ] **Step 2: Add provider file**
 
-Create `apps/puupee/developer/lib/ai-providers/provider.dart`:
+Create `apps/developer/lib/ai-providers/provider.dart`:
 
 ```dart
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -1865,7 +1865,7 @@ final aiProvidersCountProvider = Provider<AsyncValue<int>>((ref) {
 
 - [ ] **Step 3: Add list item widget**
 
-Create `apps/puupee/developer/lib/ai-providers/list_view_item.dart`:
+Create `apps/developer/lib/ai-providers/list_view_item.dart`:
 
 ```dart
 import 'package:puupee_api_client/puupee_api_client.dart';
@@ -1915,7 +1915,7 @@ class AiProviderListViewItem extends StatelessWidget {
 
 - [ ] **Step 4: Add list page**
 
-Create `apps/puupee/developer/lib/ai-providers/list_view.dart`:
+Create `apps/developer/lib/ai-providers/list_view.dart`:
 
 ```dart
 import 'package:flutter/cupertino.dart' show CupertinoPageRoute;
@@ -1965,7 +1965,7 @@ class AiProviderListView extends ConsumerWidget {
 
 - [ ] **Step 5: Add edit page**
 
-Create `apps/puupee/developer/lib/ai-providers/edit_page.dart`:
+Create `apps/developer/lib/ai-providers/edit_page.dart`:
 
 ```dart
 import 'package:flutter/material.dart' as material;
@@ -2081,7 +2081,7 @@ class _AiProviderEditPageState extends ConsumerState<AiProviderEditPage> {
 
 - [ ] **Step 6: Add home page**
 
-Create `apps/puupee/developer/lib/ai-providers/home_page.dart`:
+Create `apps/developer/lib/ai-providers/home_page.dart`:
 
 ```dart
 import 'package:flutter/cupertino.dart' show CupertinoPageRoute;
@@ -2135,7 +2135,7 @@ class AiProvidersPage extends ConsumerWidget {
 
 - [ ] **Step 7: Add development entry and route**
 
-Modify `apps/puupee/developer/lib/development/home_page.dart`:
+Modify `apps/developer/lib/development/home_page.dart`:
 
 ```dart
 import '../ai-providers/home_page.dart';
@@ -2160,7 +2160,7 @@ _buildNavigationCard(
 ),
 ```
 
-Modify `apps/puupee/developer/lib/router.dart`:
+Modify `apps/developer/lib/router.dart`:
 
 ```dart
 import 'ai-providers/home_page.dart';
@@ -2192,7 +2192,7 @@ class DeveloperAiProvidersRoute extends GoRouteData {
 Run:
 
 ```bash
-cd apps/puupee/developer
+cd apps/developer
 dart run build_runner build --delete-conflicting-outputs
 ```
 
@@ -2203,7 +2203,7 @@ Expected: `router.g.dart` updates.
 Run:
 
 ```bash
-cd apps/puupee/developer
+cd apps/developer
 flutter test test/ai_provider_provider_test.dart
 dart analyze .
 ```
@@ -2213,7 +2213,7 @@ Expected: test and analysis pass.
 - [ ] **Step 10: Commit**
 
 ```bash
-git add apps/puupee/developer
+git add apps/developer
 git commit -m "feat(developer): 添加 AI 服务商管理入口"
 ```
 
@@ -2222,13 +2222,13 @@ git commit -m "feat(developer): 添加 AI 服务商管理入口"
 ### Task 8: Inventory API Recognition Service Mapping
 
 **Files:**
-- Create: `apps/puupee/inventory/lib/services/api_inventory_recognition_service.dart`
-- Create: `apps/puupee/inventory/test/api_inventory_recognition_service_test.dart`
-- Modify: `apps/puupee/inventory/lib/services/inventory_recognition_service.dart`
+- Create: `apps/inventory/lib/services/api_inventory_recognition_service.dart`
+- Create: `apps/inventory/test/api_inventory_recognition_service_test.dart`
+- Modify: `apps/inventory/lib/services/inventory_recognition_service.dart`
 
 - [ ] **Step 1: Write failing mapping test**
 
-Create `apps/puupee/inventory/test/api_inventory_recognition_service_test.dart`:
+Create `apps/inventory/test/api_inventory_recognition_service_test.dart`:
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
@@ -2272,7 +2272,7 @@ void main() {
 Run:
 
 ```bash
-cd apps/puupee/inventory
+cd apps/inventory
 flutter test test/api_inventory_recognition_service_test.dart
 ```
 
@@ -2280,7 +2280,7 @@ Expected: FAIL because `api_inventory_recognition_service.dart` does not exist.
 
 - [ ] **Step 3: Add mapping helper and service skeleton**
 
-Create `apps/puupee/inventory/lib/services/api_inventory_recognition_service.dart`:
+Create `apps/inventory/lib/services/api_inventory_recognition_service.dart`:
 
 ```dart
 import 'dart:io';
@@ -2420,7 +2420,7 @@ DateTime? _date(Object? value) {
 Run:
 
 ```bash
-cd apps/puupee/inventory
+cd apps/inventory
 flutter test test/api_inventory_recognition_service_test.dart
 ```
 
@@ -2429,7 +2429,7 @@ Expected: PASS after adapting `root?['items']` to the actual generated `AiStruct
 - [ ] **Step 5: Commit**
 
 ```bash
-git add apps/puupee/inventory/lib/services/api_inventory_recognition_service.dart apps/puupee/inventory/test/api_inventory_recognition_service_test.dart
+git add apps/inventory/lib/services/api_inventory_recognition_service.dart apps/inventory/test/api_inventory_recognition_service_test.dart
 git commit -m "feat(inventory): 添加通用 AI 识别结果映射"
 ```
 
@@ -2438,15 +2438,15 @@ git commit -m "feat(inventory): 添加通用 AI 识别结果映射"
 ### Task 9: Inventory Upload and Provider Wiring
 
 **Files:**
-- Create: `apps/puupee/inventory/lib/services/inventory_image_upload_service.dart`
-- Modify: `apps/puupee/inventory/lib/providers/inventory_providers.dart`
-- Modify: `apps/puupee/inventory/lib/providers/inventory_providers.g.dart`
-- Modify: `apps/puupee/inventory/test/inventory_recognition_service_test.dart`
-- Modify: `apps/puupee/inventory/test/recognition_confirm_page_test.dart`
+- Create: `apps/inventory/lib/services/inventory_image_upload_service.dart`
+- Modify: `apps/inventory/lib/providers/inventory_providers.dart`
+- Modify: `apps/inventory/lib/providers/inventory_providers.g.dart`
+- Modify: `apps/inventory/test/inventory_recognition_service_test.dart`
+- Modify: `apps/inventory/test/recognition_confirm_page_test.dart`
 
 - [ ] **Step 1: Add image upload service**
 
-Create `apps/puupee/inventory/lib/services/inventory_image_upload_service.dart`:
+Create `apps/inventory/lib/services/inventory_image_upload_service.dart`:
 
 ```dart
 import 'dart:io';
@@ -2490,7 +2490,7 @@ InventoryImageUploadService inventoryImageUploadService(Ref ref) {
 
 - [ ] **Step 2: Wire real recognition service**
 
-Modify `apps/puupee/inventory/lib/providers/inventory_providers.dart`:
+Modify `apps/inventory/lib/providers/inventory_providers.dart`:
 
 ```dart
 import 'package:puupee_inventory/services/api_inventory_recognition_service.dart';
@@ -2517,7 +2517,7 @@ InventoryRecognitionService inventoryRecognitionService(Ref ref) {
 Run:
 
 ```bash
-cd apps/puupee/inventory
+cd apps/inventory
 dart run build_runner build --delete-conflicting-outputs
 ```
 
@@ -2525,7 +2525,7 @@ Expected: `inventory_providers.g.dart` and `inventory_image_upload_service.g.dar
 
 - [ ] **Step 4: Keep mock tests explicit**
 
-Modify `apps/puupee/inventory/test/inventory_recognition_service_test.dart` to test `MockInventoryRecognitionService` directly, not the Riverpod provider:
+Modify `apps/inventory/test/inventory_recognition_service_test.dart` to test `MockInventoryRecognitionService` directly, not the Riverpod provider:
 
 ```dart
 const service = MockInventoryRecognitionService();
@@ -2538,7 +2538,7 @@ Existing expectations remain.
 Run:
 
 ```bash
-cd apps/puupee/inventory
+cd apps/inventory
 flutter test test/inventory_recognition_service_test.dart test/api_inventory_recognition_service_test.dart test/recognition_confirm_page_test.dart
 dart analyze .
 ```
@@ -2548,7 +2548,7 @@ Expected: tests and analysis pass.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add apps/puupee/inventory
+git add apps/inventory
 git commit -m "feat(inventory): 使用通用 AI 接口识别图片"
 ```
 
@@ -2585,7 +2585,7 @@ Expected: PASS.
 Run:
 
 ```bash
-cd apps/puupee/developer
+cd apps/developer
 flutter test test/ai_provider_provider_test.dart
 dart analyze .
 cd ../inventory
@@ -2611,7 +2611,7 @@ Expected: no new analysis errors caused by this feature.
 If verification required small fixes:
 
 ```bash
-git add api apps/puupee/developer apps/puupee/inventory packages/puupee_api_client
+git add api apps/developer apps/inventory packages/api/puupee_api_client
 git commit -m "fix(ai): 完成通用视觉能力验证"
 ```
 

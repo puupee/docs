@@ -10,7 +10,7 @@
 
 ## 目标
 
-- 新增一个可运行的 Flutter 子应用 `apps/puupee/inventory`。
+- 新增一个可运行的 Flutter 子应用 `apps/inventory`。
 - 新增 Sync 原生功能模型 `InventoryAsset`，contentType 为 `application/vnd.puupee.inventory.asset`。
 - 支持个人实物资产和虚拟资产的统一录入、展示、筛选、详情编辑、提醒和轻量盘点。
 - 支持三种添加入口：手动添加、拍照添加实物、截图添加虚拟资产。
@@ -32,7 +32,7 @@
 新增目录：
 
 ```text
-apps/puupee/inventory/
+apps/inventory/
 ├── lib/
 │   ├── main.dart
 │   ├── env.dart
@@ -51,7 +51,7 @@ apps/puupee/inventory/
 
 ### Sync 功能模型
 
-在 `packages/puupee/lib/src/features/` 增加 `inventory_asset.dart`，使用 `@PuupeeFeature(contentTypeOverride: 'application/vnd.puupee.inventory.asset')` 声明模型，并通过代码生成得到 `InventoryAsset` 类型、contentType 常量、CLI/MCP schema。
+在 `packages/core/puupee/lib/src/features/` 增加 `inventory_asset.dart`，使用 `@PuupeeFeature(contentTypeOverride: 'application/vnd.puupee.inventory.asset')` 声明模型，并通过代码生成得到 `InventoryAsset` 类型、contentType 常量、CLI/MCP schema。
 
 `InventoryAsset` 统一承载实物和虚拟资产。核心字段分组如下：
 
@@ -160,7 +160,7 @@ apps/puupee/inventory/
 ## 实施顺序
 
 1. 增加 `InventoryAsset` 功能模型并运行代码生成。
-2. 创建 `apps/puupee/inventory` 子应用骨架、pubspec、env、main、router。
+2. 创建 `apps/inventory` 子应用骨架、pubspec、env、main、router。
 3. 实现 repo、provider、模拟识别服务和草稿模型。
 4. 实现自适应 shell、总览页、资产列表页、详情/编辑页、识别确认页、提醒页、盘点页。
 5. 接入共享设置栈和登录路由。

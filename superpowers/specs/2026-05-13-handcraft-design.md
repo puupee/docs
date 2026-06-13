@@ -12,7 +12,7 @@
 
 第一版包含：
 
-- 新建子应用 `apps/puupee/handcraft`。
+- 新建子应用 `apps/handcraft`。
 - package 名称为 `puupee_handcraft`。
 - 应用中文名为 `小汪手工`。
 - 路由前缀为 `/handcraft`。
@@ -211,7 +211,7 @@ Android 平台从现有轻量 Puupee 子应用复制并调整：
 建议命令：
 
 ```bash
-cd apps/puupee/handcraft
+cd apps/handcraft
 dart run build_runner build --delete-conflicting-outputs
 dart analyze
 flutter test

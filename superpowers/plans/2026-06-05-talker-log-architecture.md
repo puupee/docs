@@ -4,7 +4,7 @@
 
 **Goal:** Build a Talker-based custom logging layer so `sync_server.dart` writes logs under a filterable `sync-server` key with searchable scene labels.
 
-**Architecture:** Add a focused logging model and logger facade to `puupee_utilities`, then migrate only `packages/puupee_sync/lib/src/sync_server.dart` to use it. The global `talker` remains the single logging backend, and the existing developer `TalkerScreen(talker: talker)` remains the UI.
+**Architecture:** Add a focused logging model and logger facade to `puupee_utilities`, then migrate only `packages/sync/puupee_sync/lib/src/sync_server.dart` to use it. The global `talker` remains the single logging backend, and the existing developer `TalkerScreen(talker: talker)` remains the UI.
 
 **Tech Stack:** Dart 3.8, `talker` 5.1.17, Dart `test`, `puupee_utilities`, `puupee_sync`.
 
@@ -12,16 +12,16 @@
 
 ## File Structure
 
-- Create `packages/puupee_utilities/test/talker_test.dart`
+- Create `packages/core/puupee_utilities/test/talker_test.dart`
   - Unit tests for `PuupeeTalkerLog`, `PuupeeLogger`, key registration, and `createTalker(settings:)`.
-- Modify `packages/puupee_utilities/lib/talker.dart`
+- Modify `packages/core/puupee_utilities/lib/talker.dart`
   - Define module/scene constants, custom log model, logger facade, key registration, and fix `createTalker`.
-- Modify `packages/puupee_utilities/lib/puupee_utilities.dart`
+- Modify `packages/core/puupee_utilities/lib/puupee_utilities.dart`
   - Already exports `talker.dart`; verify no extra export is needed.
-- Modify `packages/puupee_sync/lib/src/sync_server.dart`
+- Modify `packages/sync/puupee_sync/lib/src/sync_server.dart`
   - Replace direct `Talker` usage with `PuupeeLogger.syncServer()`.
   - Migrate existing `_logger.info/warning/error` calls to named parameters and scene labels.
-- Create `packages/puupee_sync/test/sync_server_logging_test.dart`
+- Create `packages/sync/puupee_sync/test/sync_server_logging_test.dart`
   - Lightweight tests proving sync-server logs use key `sync-server` and scene-prefixed messages.
 
 ---
@@ -29,12 +29,12 @@
 ### Task 1: Add Puupee Talker Infrastructure Tests
 
 **Files:**
-- Create: `packages/puupee_utilities/test/talker_test.dart`
-- Modify: `packages/puupee_utilities/lib/talker.dart`
+- Create: `packages/core/puupee_utilities/test/talker_test.dart`
+- Modify: `packages/core/puupee_utilities/lib/talker.dart`
 
 - [ ] **Step 1: Write the failing infrastructure tests**
 
-Create `packages/puupee_utilities/test/talker_test.dart`:
+Create `packages/core/puupee_utilities/test/talker_test.dart`:
 
 ```dart
 import 'package:puupee_utilities/talker.dart';
@@ -141,7 +141,7 @@ void main() {
 Run:
 
 ```bash
-cd packages/puupee_utilities
+cd packages/core/puupee_utilities
 dart test test/talker_test.dart
 ```
 
@@ -149,7 +149,7 @@ Expected: FAIL with missing symbols such as `PuupeeTalkerLog`, `PuupeeLogModule`
 
 - [ ] **Step 3: Implement the minimal logging infrastructure**
 
-Replace `packages/puupee_utilities/lib/talker.dart` with:
+Replace `packages/core/puupee_utilities/lib/talker.dart` with:
 
 ```dart
 import 'package:talker/talker.dart';
@@ -350,7 +350,7 @@ Talker talker = createTalker();
 Run:
 
 ```bash
-cd packages/puupee_utilities
+cd packages/core/puupee_utilities
 dart test test/talker_test.dart
 ```
 
@@ -371,7 +371,7 @@ Expected: formatter exits with code 0.
 Run:
 
 ```bash
-git add packages/puupee_utilities/lib/talker.dart packages/puupee_utilities/test/talker_test.dart
+git add packages/core/puupee_utilities/lib/talker.dart packages/core/puupee_utilities/test/talker_test.dart
 git commit -m "feat(puupee_utilities): 添加 Talker 自定义日志基础设施"
 ```
 
@@ -382,12 +382,12 @@ Expected: commit succeeds.
 ### Task 2: Add Sync Server Logging Test
 
 **Files:**
-- Create: `packages/puupee_sync/test/sync_server_logging_test.dart`
-- Modify: `packages/puupee_sync/lib/src/sync_server.dart`
+- Create: `packages/sync/puupee_sync/test/sync_server_logging_test.dart`
+- Modify: `packages/sync/puupee_sync/lib/src/sync_server.dart`
 
 - [ ] **Step 1: Write a sync-server logger behavior test**
 
-Create `packages/puupee_sync/test/sync_server_logging_test.dart`:
+Create `packages/sync/puupee_sync/test/sync_server_logging_test.dart`:
 
 ```dart
 import 'package:puupee_utilities/puupee_utilities.dart';
@@ -444,7 +444,7 @@ void main() {
 Run:
 
 ```bash
-cd packages/puupee_sync
+cd packages/sync/puupee_sync
 dart test test/sync_server_logging_test.dart
 ```
 
@@ -465,7 +465,7 @@ Expected: formatter exits with code 0.
 Run:
 
 ```bash
-git add packages/puupee_sync/test/sync_server_logging_test.dart
+git add packages/sync/puupee_sync/test/sync_server_logging_test.dart
 git commit -m "test(puupee_sync): 覆盖 sync-server 自定义日志"
 ```
 
@@ -476,11 +476,11 @@ Expected: commit succeeds.
 ### Task 3: Migrate sync_server.dart Logger Field and Imports
 
 **Files:**
-- Modify: `packages/puupee_sync/lib/src/sync_server.dart`
+- Modify: `packages/sync/puupee_sync/lib/src/sync_server.dart`
 
 - [ ] **Step 1: Remove direct Talker import**
 
-In `packages/puupee_sync/lib/src/sync_server.dart`, remove:
+In `packages/sync/puupee_sync/lib/src/sync_server.dart`, remove:
 
 ```dart
 import 'package:talker/talker.dart';
@@ -511,7 +511,7 @@ final PuupeeLogger _logger = PuupeeLogger.syncServer();
 Run:
 
 ```bash
-cd packages/puupee_sync
+cd packages/sync/puupee_sync
 dart analyze lib/src/sync_server.dart
 ```
 
@@ -526,7 +526,7 @@ Do not commit this task alone if `sync_server.dart` does not compile. The commit
 ### Task 4: Migrate sync_server.dart Log Calls by Scene
 
 **Files:**
-- Modify: `packages/puupee_sync/lib/src/sync_server.dart`
+- Modify: `packages/sync/puupee_sync/lib/src/sync_server.dart`
 
 - [ ] **Step 1: Convert app-info logs**
 
@@ -798,7 +798,7 @@ _logger.info(
 Run:
 
 ```bash
-rg -n "_logger\\.(info|warning|error|debug|verbose|critical)\\([^\\n]*, [^\\n]*, [^\\n]*\\)" packages/puupee_sync/lib/src/sync_server.dart
+rg -n "_logger\\.(info|warning|error|debug|verbose|critical)\\([^\\n]*, [^\\n]*, [^\\n]*\\)" packages/sync/puupee_sync/lib/src/sync_server.dart
 ```
 
 Expected: no output.
@@ -806,7 +806,7 @@ Expected: no output.
 Run:
 
 ```bash
-rg -n "_logger\\." packages/puupee_sync/lib/src/sync_server.dart
+rg -n "_logger\\." packages/sync/puupee_sync/lib/src/sync_server.dart
 ```
 
 Expected: every result has `scene:` in the call block.
@@ -816,7 +816,7 @@ Expected: every result has `scene:` in the call block.
 Run:
 
 ```bash
-cd packages/puupee_sync
+cd packages/sync/puupee_sync
 dart format lib/src/sync_server.dart
 dart analyze lib/src/sync_server.dart
 ```
@@ -828,7 +828,7 @@ Expected: formatter exits with code 0 and analyzer exits with code 0.
 Run:
 
 ```bash
-git add packages/puupee_sync/lib/src/sync_server.dart
+git add packages/sync/puupee_sync/lib/src/sync_server.dart
 git commit -m "refactor(puupee_sync): 使用 sync-server 自定义日志"
 ```
 
@@ -846,7 +846,7 @@ Expected: commit succeeds.
 Run:
 
 ```bash
-cd packages/puupee_utilities
+cd packages/core/puupee_utilities
 dart test test/talker_test.dart
 dart analyze lib/talker.dart test/talker_test.dart
 ```
@@ -858,7 +858,7 @@ Expected: both commands exit with code 0.
 Run:
 
 ```bash
-cd packages/puupee_sync
+cd packages/sync/puupee_sync
 dart test test/sync_server_logging_test.dart
 dart test test/sync_server_test.dart
 dart analyze lib/src/sync_server.dart test/sync_server_logging_test.dart
@@ -871,7 +871,7 @@ Expected: all commands exit with code 0.
 Run:
 
 ```bash
-rg -n "final Talker _logger = talker" packages/puupee_sync/lib/src/sync_server.dart
+rg -n "final Talker _logger = talker" packages/sync/puupee_sync/lib/src/sync_server.dart
 ```
 
 Expected: no output.
@@ -879,7 +879,7 @@ Expected: no output.
 Run:
 
 ```bash
-rg -n "import 'package:talker/talker.dart';" packages/puupee_sync/lib/src/sync_server.dart
+rg -n "import 'package:talker/talker.dart';" packages/sync/puupee_sync/lib/src/sync_server.dart
 ```
 
 Expected: no output.
@@ -887,7 +887,7 @@ Expected: no output.
 Run:
 
 ```bash
-rg -n "PuupeeLogger.syncServer" packages/puupee_sync/lib/src/sync_server.dart
+rg -n "PuupeeLogger.syncServer" packages/sync/puupee_sync/lib/src/sync_server.dart
 ```
 
 Expected: one output line for the `_logger` field.
@@ -898,7 +898,7 @@ If no files changed during verification, do not commit. If formatter changed fil
 
 ```bash
 git status --short
-git add packages/puupee_utilities packages/puupee_sync
+git add packages/core/puupee_utilities packages/sync/puupee_sync
 git commit -m "chore(puupee_sync): 格式化 sync-server 日志迁移"
 ```
 
@@ -950,9 +950,9 @@ Use this summary shape:
 - 增加 puupee_utilities 与 puupee_sync 的聚焦测试。
 
 验证：
-- cd packages/puupee_utilities && dart test test/talker_test.dart
-- cd packages/puupee_utilities && dart analyze lib/talker.dart test/talker_test.dart
-- cd packages/puupee_sync && dart test test/sync_server_logging_test.dart
-- cd packages/puupee_sync && dart test test/sync_server_test.dart
-- cd packages/puupee_sync && dart analyze lib/src/sync_server.dart test/sync_server_logging_test.dart
+- cd packages/core/puupee_utilities && dart test test/talker_test.dart
+- cd packages/core/puupee_utilities && dart analyze lib/talker.dart test/talker_test.dart
+- cd packages/sync/puupee_sync && dart test test/sync_server_logging_test.dart
+- cd packages/sync/puupee_sync && dart test test/sync_server_test.dart
+- cd packages/sync/puupee_sync && dart analyze lib/src/sync_server.dart test/sync_server_logging_test.dart
 ```

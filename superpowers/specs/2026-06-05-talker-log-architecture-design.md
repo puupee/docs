@@ -2,7 +2,7 @@
 
 ## 背景
 
-仓库当前已经通过 `packages/puupee_utilities/lib/talker.dart` 暴露全局 `talker`，并在开发者日志页使用 `TalkerScreen(talker: talker)` 查看日志。`packages/puupee_sync/lib/src/sync_server.dart` 直接持有 `Talker _logger = talker`，并大量调用 `info`、`warning`、`error` 等基础日志方法。
+仓库当前已经通过 `packages/core/puupee_utilities/lib/talker.dart` 暴露全局 `talker`，并在开发者日志页使用 `TalkerScreen(talker: talker)` 查看日志。`packages/sync/puupee_sync/lib/src/sync_server.dart` 直接持有 `Talker _logger = talker`，并大量调用 `info`、`warning`、`error` 等基础日志方法。
 
 这种写法可以输出日志，但所有业务日志会落到 `info`、`warning`、`error` 这些通用 key 下。用户在 Talker UI 中只能按等级筛选，无法单独查看 `sync-server` 相关日志。Talker 5.1.17 已支持通过 `TalkerData.key` 过滤自定义日志，也支持通过 `settings.registerKeys()` 把自定义 key 放入设置页，因此可以在不重写日志 UI 的前提下建立领域日志体系。
 

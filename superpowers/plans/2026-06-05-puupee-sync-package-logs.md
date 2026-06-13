@@ -12,10 +12,10 @@
 
 ## File Structure
 
-- Modify `packages/puupee_utilities/lib/talker.dart`: add module keys, scene constants, logger factories, and key registration.
-- Modify `packages/puupee_utilities/test/talker_test.dart`: assert every sync module is registered and each factory writes the expected key.
-- Create `packages/puupee_sync/test/puupee_sync_logging_test.dart`: package-level logger contract tests for representative modules.
-- Modify `packages/puupee_sync/lib/src/manager_interface.dart`: expose `PuupeeLogger` instead of `Talker`.
+- Modify `packages/core/puupee_utilities/lib/talker.dart`: add module keys, scene constants, logger factories, and key registration.
+- Modify `packages/core/puupee_utilities/test/talker_test.dart`: assert every sync module is registered and each factory writes the expected key.
+- Create `packages/sync/puupee_sync/test/puupee_sync_logging_test.dart`: package-level logger contract tests for representative modules.
+- Modify `packages/sync/puupee_sync/lib/src/manager_interface.dart`: expose `PuupeeLogger` instead of `Talker`.
 - Modify node files: `sync_node_manager.dart`, `lan_sync_node_discoverer.dart`, `connection_quality_checker.dart`, `repos/sync_node_config_repo.dart`, `sync_node.dart`.
 - Modify client files: `sync_client.dart`, `sync_client_manager.dart`, `api_client.dart`.
 - Modify storage and transfer files: `storage/storage_manager.dart`, `storage/cloud_storage.dart`, `storage/lan_storage.dart`, `storage/local_storage.dart`, `file_transfer_manager.dart`, `cloud_transfer_impl.dart`, `transfer_manager.dart`.
@@ -24,8 +24,8 @@
 ## Task 1: Extend PuupeeLogger Modules
 
 **Files:**
-- Modify: `packages/puupee_utilities/lib/talker.dart`
-- Modify: `packages/puupee_utilities/test/talker_test.dart`
+- Modify: `packages/core/puupee_utilities/lib/talker.dart`
+- Modify: `packages/core/puupee_utilities/test/talker_test.dart`
 
 - [ ] **Step 1: Write failing tests for all module registrations and factories**
 
@@ -33,7 +33,7 @@ Add tests that expect these modules to be registered: `sync-server`, `sync-node`
 
 - [ ] **Step 2: Run the tests and verify RED**
 
-Run: `cd packages/puupee_utilities && dart test test/talker_test.dart`
+Run: `cd packages/core/puupee_utilities && dart test test/talker_test.dart`
 
 Expected: FAIL because new module constants and factories do not exist yet.
 
@@ -46,7 +46,7 @@ Add the missing `PuupeeLogModule` constants, `PuupeeLogger` factories, and inclu
 Run:
 
 ```bash
-cd packages/puupee_utilities
+cd packages/core/puupee_utilities
 dart test test/talker_test.dart
 dart analyze lib/talker.dart test/talker_test.dart
 ```
@@ -56,14 +56,14 @@ Expected: all tests pass and analyzer reports no issues.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add packages/puupee_utilities/lib/talker.dart packages/puupee_utilities/test/talker_test.dart
+git add packages/core/puupee_utilities/lib/talker.dart packages/core/puupee_utilities/test/talker_test.dart
 git commit -m "feat(puupee_utilities): 注册同步包日志模块"
 ```
 
 ## Task 2: Add puupee_sync Logger Contract Tests
 
 **Files:**
-- Create: `packages/puupee_sync/test/puupee_sync_logging_test.dart`
+- Create: `packages/sync/puupee_sync/test/puupee_sync_logging_test.dart`
 
 - [ ] **Step 1: Write failing package logger tests**
 
@@ -71,7 +71,7 @@ Create tests that instantiate each representative logger factory with `createTal
 
 - [ ] **Step 2: Run the tests and verify RED**
 
-Run: `cd packages/puupee_sync && dart test test/puupee_sync_logging_test.dart`
+Run: `cd packages/sync/puupee_sync && dart test test/puupee_sync_logging_test.dart`
 
 Expected: FAIL until Task 1 factories exist in the checked-out code.
 
@@ -81,29 +81,29 @@ Do not instantiate network services, databases, mDNS, or storage adapters in thi
 
 - [ ] **Step 4: Run tests**
 
-Run: `cd packages/puupee_sync && dart test test/puupee_sync_logging_test.dart`
+Run: `cd packages/sync/puupee_sync && dart test test/puupee_sync_logging_test.dart`
 
 Expected: all tests pass after Task 1 is implemented.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add packages/puupee_sync/test/puupee_sync_logging_test.dart
+git add packages/sync/puupee_sync/test/puupee_sync_logging_test.dart
 git commit -m "test(puupee_sync): 覆盖同步包日志模块"
 ```
 
 ## Task 3: Migrate Node and Client Logs
 
 **Files:**
-- Modify: `packages/puupee_sync/lib/src/manager_interface.dart`
-- Modify: `packages/puupee_sync/lib/src/sync_node_manager.dart`
-- Modify: `packages/puupee_sync/lib/src/lan_sync_node_discoverer.dart`
-- Modify: `packages/puupee_sync/lib/src/connection_quality_checker.dart`
-- Modify: `packages/puupee_sync/lib/src/repos/sync_node_config_repo.dart`
-- Modify: `packages/puupee_sync/lib/src/sync_node.dart`
-- Modify: `packages/puupee_sync/lib/src/api_client.dart`
-- Modify: `packages/puupee_sync/lib/src/sync_client.dart`
-- Modify: `packages/puupee_sync/lib/src/sync_client_manager.dart`
+- Modify: `packages/sync/puupee_sync/lib/src/manager_interface.dart`
+- Modify: `packages/sync/puupee_sync/lib/src/sync_node_manager.dart`
+- Modify: `packages/sync/puupee_sync/lib/src/lan_sync_node_discoverer.dart`
+- Modify: `packages/sync/puupee_sync/lib/src/connection_quality_checker.dart`
+- Modify: `packages/sync/puupee_sync/lib/src/repos/sync_node_config_repo.dart`
+- Modify: `packages/sync/puupee_sync/lib/src/sync_node.dart`
+- Modify: `packages/sync/puupee_sync/lib/src/api_client.dart`
+- Modify: `packages/sync/puupee_sync/lib/src/sync_client.dart`
+- Modify: `packages/sync/puupee_sync/lib/src/sync_client_manager.dart`
 
 - [ ] **Step 1: Migrate logger types**
 
@@ -122,7 +122,7 @@ Convert calls like `logger.error('Sync failed', e, stackTrace)` to `logger.error
 Run:
 
 ```bash
-cd packages/puupee_sync
+cd packages/sync/puupee_sync
 dart test test/sync_node_manager_test.dart test/lan_discovery_test.dart test/lan_discovery_service_entry_test.dart test/puupee_sync_logging_test.dart
 dart analyze lib/src/manager_interface.dart lib/src/sync_node_manager.dart lib/src/lan_sync_node_discoverer.dart lib/src/connection_quality_checker.dart lib/src/repos/sync_node_config_repo.dart lib/src/sync_node.dart lib/src/api_client.dart lib/src/sync_client.dart lib/src/sync_client_manager.dart test/puupee_sync_logging_test.dart
 ```
@@ -132,20 +132,20 @@ Expected: tests pass and analyzer reports no issues.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add packages/puupee_sync/lib/src/manager_interface.dart packages/puupee_sync/lib/src/sync_node_manager.dart packages/puupee_sync/lib/src/lan_sync_node_discoverer.dart packages/puupee_sync/lib/src/connection_quality_checker.dart packages/puupee_sync/lib/src/repos/sync_node_config_repo.dart packages/puupee_sync/lib/src/sync_node.dart packages/puupee_sync/lib/src/api_client.dart packages/puupee_sync/lib/src/sync_client.dart packages/puupee_sync/lib/src/sync_client_manager.dart
+git add packages/sync/puupee_sync/lib/src/manager_interface.dart packages/sync/puupee_sync/lib/src/sync_node_manager.dart packages/sync/puupee_sync/lib/src/lan_sync_node_discoverer.dart packages/sync/puupee_sync/lib/src/connection_quality_checker.dart packages/sync/puupee_sync/lib/src/repos/sync_node_config_repo.dart packages/sync/puupee_sync/lib/src/sync_node.dart packages/sync/puupee_sync/lib/src/api_client.dart packages/sync/puupee_sync/lib/src/sync_client.dart packages/sync/puupee_sync/lib/src/sync_client_manager.dart
 git commit -m "refactor(puupee_sync): 迁移节点和客户端日志"
 ```
 
 ## Task 4: Migrate Storage and Transfer Logs
 
 **Files:**
-- Modify: `packages/puupee_sync/lib/src/storage/storage_manager.dart`
-- Modify: `packages/puupee_sync/lib/src/storage/cloud_storage.dart`
-- Modify: `packages/puupee_sync/lib/src/storage/lan_storage.dart`
-- Modify: `packages/puupee_sync/lib/src/storage/local_storage.dart`
-- Modify: `packages/puupee_sync/lib/src/file_transfer_manager.dart`
-- Modify: `packages/puupee_sync/lib/src/cloud_transfer_impl.dart`
-- Modify: `packages/puupee_sync/lib/src/transfer_manager.dart`
+- Modify: `packages/sync/puupee_sync/lib/src/storage/storage_manager.dart`
+- Modify: `packages/sync/puupee_sync/lib/src/storage/cloud_storage.dart`
+- Modify: `packages/sync/puupee_sync/lib/src/storage/lan_storage.dart`
+- Modify: `packages/sync/puupee_sync/lib/src/storage/local_storage.dart`
+- Modify: `packages/sync/puupee_sync/lib/src/file_transfer_manager.dart`
+- Modify: `packages/sync/puupee_sync/lib/src/cloud_transfer_impl.dart`
+- Modify: `packages/sync/puupee_sync/lib/src/transfer_manager.dart`
 
 - [ ] **Step 1: Migrate storage loggers**
 
@@ -164,7 +164,7 @@ Use `storage`, `network`, `transfer`, `lifecycle`, and `config` scenes. Convert 
 Run:
 
 ```bash
-cd packages/puupee_sync
+cd packages/sync/puupee_sync
 dart test test/storage_manager_test.dart test/transfer_manager_test.dart test/puupee_sync_logging_test.dart
 dart analyze lib/src/storage/storage_manager.dart lib/src/storage/cloud_storage.dart lib/src/storage/lan_storage.dart lib/src/storage/local_storage.dart lib/src/file_transfer_manager.dart lib/src/cloud_transfer_impl.dart lib/src/transfer_manager.dart test/puupee_sync_logging_test.dart
 ```
@@ -174,20 +174,20 @@ Expected: tests pass and analyzer reports no issues.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add packages/puupee_sync/lib/src/storage/storage_manager.dart packages/puupee_sync/lib/src/storage/cloud_storage.dart packages/puupee_sync/lib/src/storage/lan_storage.dart packages/puupee_sync/lib/src/storage/local_storage.dart packages/puupee_sync/lib/src/file_transfer_manager.dart packages/puupee_sync/lib/src/cloud_transfer_impl.dart packages/puupee_sync/lib/src/transfer_manager.dart
+git add packages/sync/puupee_sync/lib/src/storage/storage_manager.dart packages/sync/puupee_sync/lib/src/storage/cloud_storage.dart packages/sync/puupee_sync/lib/src/storage/lan_storage.dart packages/sync/puupee_sync/lib/src/storage/local_storage.dart packages/sync/puupee_sync/lib/src/file_transfer_manager.dart packages/sync/puupee_sync/lib/src/cloud_transfer_impl.dart packages/sync/puupee_sync/lib/src/transfer_manager.dart
 git commit -m "refactor(puupee_sync): 迁移存储和传输日志"
 ```
 
 ## Task 5: Migrate Auth, CRDT, Content Event, and MCP Logs
 
 **Files:**
-- Modify: `packages/puupee_sync/lib/src/auth_strategies.dart`
-- Modify: `packages/puupee_sync/lib/src/pairing_auth.dart`
-- Modify: `packages/puupee_sync/lib/src/pairing_service.dart`
-- Modify: `packages/puupee_sync/lib/src/crdt.dart`
-- Modify: `packages/puupee_sync/lib/src/postgres_crdt.dart`
-- Modify: `packages/puupee_sync/lib/src/content_events.dart`
-- Modify: `packages/puupee_sync/lib/src/mcp_server.dart`
+- Modify: `packages/sync/puupee_sync/lib/src/auth_strategies.dart`
+- Modify: `packages/sync/puupee_sync/lib/src/pairing_auth.dart`
+- Modify: `packages/sync/puupee_sync/lib/src/pairing_service.dart`
+- Modify: `packages/sync/puupee_sync/lib/src/crdt.dart`
+- Modify: `packages/sync/puupee_sync/lib/src/postgres_crdt.dart`
+- Modify: `packages/sync/puupee_sync/lib/src/content_events.dart`
+- Modify: `packages/sync/puupee_sync/lib/src/mcp_server.dart`
 
 - [ ] **Step 1: Migrate auth and pairing loggers**
 
@@ -206,7 +206,7 @@ Use `PuupeeLogger.syncMcp()` in `mcp_server.dart`. Use `mcp`, `auth`, and `lifec
 Run:
 
 ```bash
-cd packages/puupee_sync
+cd packages/sync/puupee_sync
 dart test test/auth_strategies_test.dart test/pairing_auth_test.dart test/pairing_token_validator_test.dart test/content_events_test.dart test/crdt_merge_test.dart test/puupee_sync_logging_test.dart
 dart analyze lib/src/auth_strategies.dart lib/src/pairing_auth.dart lib/src/pairing_service.dart lib/src/crdt.dart lib/src/postgres_crdt.dart lib/src/content_events.dart lib/src/mcp_server.dart test/puupee_sync_logging_test.dart
 ```
@@ -216,29 +216,29 @@ Expected: tests pass and analyzer reports no issues.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add packages/puupee_sync/lib/src/auth_strategies.dart packages/puupee_sync/lib/src/pairing_auth.dart packages/puupee_sync/lib/src/pairing_service.dart packages/puupee_sync/lib/src/crdt.dart packages/puupee_sync/lib/src/postgres_crdt.dart packages/puupee_sync/lib/src/content_events.dart packages/puupee_sync/lib/src/mcp_server.dart
+git add packages/sync/puupee_sync/lib/src/auth_strategies.dart packages/sync/puupee_sync/lib/src/pairing_auth.dart packages/sync/puupee_sync/lib/src/pairing_service.dart packages/sync/puupee_sync/lib/src/crdt.dart packages/sync/puupee_sync/lib/src/postgres_crdt.dart packages/sync/puupee_sync/lib/src/content_events.dart packages/sync/puupee_sync/lib/src/mcp_server.dart
 git commit -m "refactor(puupee_sync): 迁移认证 CRDT 和 MCP 日志"
 ```
 
 ## Task 6: Final Audit and Verification
 
 **Files:**
-- Inspect: `packages/puupee_sync/lib`
-- Inspect: `packages/puupee_utilities/lib/talker.dart`
+- Inspect: `packages/sync/puupee_sync/lib`
+- Inspect: `packages/core/puupee_utilities/lib/talker.dart`
 
 - [ ] **Step 1: Search for raw Talker usage**
 
 Run:
 
 ```bash
-rg -n "package:talker/talker.dart|\\btalker\\.|\\bTalker\\b" packages/puupee_sync/lib packages/puupee_utilities/lib/talker.dart
+rg -n "package:talker/talker.dart|\\btalker\\.|\\bTalker\\b" packages/sync/puupee_sync/lib packages/core/puupee_utilities/lib/talker.dart
 ```
 
-Expected: raw Talker usage remains only in `packages/puupee_utilities/lib/talker.dart` and legitimate test/helper contexts outside `puupee_sync/lib`; `sync_server.dart` and other `puupee_sync/lib` files should not import `package:talker/talker.dart`.
+Expected: raw Talker usage remains only in `packages/core/puupee_utilities/lib/talker.dart` and legitimate test/helper contexts outside `puupee_sync/lib`; `sync_server.dart` and other `puupee_sync/lib` files should not import `package:talker/talker.dart`.
 
 - [ ] **Step 2: Check every migrated logger call has a scene**
 
-Run a script that scans `packages/puupee_sync/lib` for `logger.info/debug/warning/error/critical/verbose` and `_logger.info/debug/warning/error/critical/verbose` calls without `scene:`.
+Run a script that scans `packages/sync/puupee_sync/lib` for `logger.info/debug/warning/error/critical/verbose` and `_logger.info/debug/warning/error/critical/verbose` calls without `scene:`.
 
 Expected: zero missing scene calls in `puupee_sync/lib`.
 
@@ -247,7 +247,7 @@ Expected: zero missing scene calls in `puupee_sync/lib`.
 Run:
 
 ```bash
-cd packages/puupee_utilities
+cd packages/core/puupee_utilities
 dart test test/talker_test.dart
 dart analyze lib/talker.dart test/talker_test.dart
 
@@ -263,6 +263,6 @@ Expected: all selected tests pass and analyzer reports no issues.
 If the audit reveals missed files or formatting-only changes, fix and commit them with:
 
 ```bash
-git add packages/puupee_sync packages/puupee_utilities
+git add packages/sync/puupee_sync packages/core/puupee_utilities
 git commit -m "fix(puupee_sync): 补齐同步包日志迁移"
 ```

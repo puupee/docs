@@ -2,7 +2,7 @@
 
 ## 背景
 
-第一阶段已经在 `packages/puupee_utilities/lib/talker.dart` 中建立 `PuupeeTalkerLog` 与 `PuupeeLogger`，并将 `packages/puupee_sync/lib/src/sync_server.dart` 迁移到 `sync-server` 自定义 Talker key。这样可以在现有 `TalkerScreen` 中单独筛选同步服务器日志。
+第一阶段已经在 `packages/core/puupee_utilities/lib/talker.dart` 中建立 `PuupeeTalkerLog` 与 `PuupeeLogger`，并将 `packages/sync/puupee_sync/lib/src/sync_server.dart` 迁移到 `sync-server` 自定义 Talker key。这样可以在现有 `TalkerScreen` 中单独筛选同步服务器日志。
 
 `puupee_sync` 其它核心类仍大量直接使用全局 `talker` 或 `Talker` 类型，例如 `sync_node_manager.dart`、`lan_sync_node_discoverer.dart`、`sync_client_manager.dart`、`storage/*`、`transfer_manager.dart`、`auth_strategies.dart`、`pairing_auth.dart`、`content_events.dart` 和 `mcp_server.dart`。这些日志仍落入普通等级 key，导致 Talker UI 无法按同步子系统筛选。
 

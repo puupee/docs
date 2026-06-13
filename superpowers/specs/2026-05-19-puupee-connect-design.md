@@ -2,18 +2,18 @@
 
 ## 背景
 
-`apps/puupee/reevibe-server` 目前是 ReeVibe 专用 WebRTC 信令服务，只负责会话码、peer 加入、offer/answer/ICE 转发。新的目标是把它重构为通用连接层，用于所有远程操作场景，首先服务于 Ops 的远程终端，并作为可选服务挂到 `sync_node` 中。最终移除 `apps/puupee/reevibe-server`，将可复用代码迁入 `packages/puupee_connect`。
+`apps/reevibe-server` 目前是 ReeVibe 专用 WebRTC 信令服务，只负责会话码、peer 加入、offer/answer/ICE 转发。新的目标是把它重构为通用连接层，用于所有远程操作场景，首先服务于 Ops 的远程终端，并作为可选服务挂到 `sync_node` 中。最终移除 `apps/reevibe-server`，将可复用代码迁入 `packages/sync/puupee_connect`。
 
 现有代码中有几个可复用基础：
 
-- `apps/puupee/reevibe/lib/pages/session_page.dart` 已验证 Flutter 侧 `flutter_webrtc` + DataChannel + 终端 IO 的基本模式。
-- `apps/puupee/ops/lib/pages/terminal/local_terminal_page.dart` 已有成熟本地终端体验，底层是 `xterm` + `flutter_pty`。
-- `apps/puupee/sync_node/lib/sync_node_runner.dart` 已有可返回运行句柄的启动流程，适合增加可选子服务并在 stop 时统一释放。
-- `packages/puupee_api_client` 和 `puupee_shared` 已有设备列表、设备绑定和当前用户设备信息能力，可用于同账号发现的第一版身份基础。
+- `apps/reevibe/lib/pages/session_page.dart` 已验证 Flutter 侧 `flutter_webrtc` + DataChannel + 终端 IO 的基本模式。
+- `apps/ops/lib/pages/terminal/local_terminal_page.dart` 已有成熟本地终端体验，底层是 `xterm` + `flutter_pty`。
+- `apps/sync_node/lib/sync_node_runner.dart` 已有可返回运行句柄的启动流程，适合增加可选子服务并在 stop 时统一释放。
+- `packages/api/puupee_api_client` 和 `puupee_shared` 已有设备列表、设备绑定和当前用户设备信息能力，可用于同账号发现的第一版身份基础。
 
 ## 目标
 
-1. 创建 `packages/puupee_connect`，作为通用远程连接协议、信令服务、host daemon 和客户端核心的共享包。
+1. 创建 `packages/sync/puupee_connect`，作为通用远程连接协议、信令服务、host daemon 和客户端核心的共享包。
 2. 将 `reevibe-server` 的 WebSocket 信令能力迁入 `puupee_connect`，改成通用 relay/signaling server。
 3. 在 `sync_node` 中新增可选 connect relay 服务，随 sync node 一起启动和停止。
 4. 新增 Linux 服务器命令行 daemon，可作为 systemd 等服务运行，注册本机并承接远程终端连接。
@@ -21,7 +21,7 @@
 6. 默认通过 relay 完成身份、发现和 WebRTC 信令；终端数据优先通过 WebRTC DataChannel 点对点传输。
 7. 支持两种连接方式：同账号设备发现，以及设备码 + 连接密码。
 8. 配置 TURN 后允许中继兜底；未配置 TURN 时直连失败应明确提示。
-9. 从 workspace 移除 `apps/puupee/reevibe-server`。
+9. 从 workspace 移除 `apps/reevibe-server`。
 
 ## 非目标
 
@@ -41,28 +41,28 @@
 
 依赖方向：
 
-- `apps/puupee/sync_node` 依赖 `puupee_connect`，用于启动 relay。
-- `apps/puupee/ops` 依赖 `puupee_connect`，并继续使用 Flutter 侧 `flutter_webrtc` 实现客户端 WebRTC。
-- `apps/puupee/reevibe` 后续可以复用 `puupee_connect` 的信令协议，但本次核心范围是移除 `reevibe-server` 并支持 Ops 远程终端。
+- `apps/sync_node` 依赖 `puupee_connect`，用于启动 relay。
+- `apps/ops` 依赖 `puupee_connect`，并继续使用 Flutter 侧 `flutter_webrtc` 实现客户端 WebRTC。
+- `apps/reevibe` 后续可以复用 `puupee_connect` 的信令协议，但本次核心范围是移除 `reevibe-server` 并支持 Ops 远程终端。
 
 ## 包结构
 
 建议初始文件职责如下：
 
-- `packages/puupee_connect/lib/puupee_connect.dart`：公共导出。
-- `packages/puupee_connect/lib/src/protocol/connect_message.dart`：版本化消息模型、解析和编码。
-- `packages/puupee_connect/lib/src/protocol/connect_error.dart`：协议错误码和可展示错误。
-- `packages/puupee_connect/lib/src/relay/connect_relay_server.dart`：relay 生命周期、HTTP 路由、WebSocket 升级。
-- `packages/puupee_connect/lib/src/relay/host_registry.dart`：在线 host 注册、心跳、超时清理、同账号过滤。
-- `packages/puupee_connect/lib/src/relay/session_registry.dart`：连接会话、peer 关系、SDP/ICE 转发目标。
-- `packages/puupee_connect/lib/src/auth/connect_password.dart`：设备码连接密码 hash 和验证。
-- `packages/puupee_connect/lib/src/client/connect_relay_client.dart`：Ops/daemon 共用 relay WebSocket 客户端基础。
-- `packages/puupee_connect/lib/src/client/connect_terminal_client.dart`：远程终端客户端抽象。
-- `packages/puupee_connect/lib/src/host/connect_host_daemon.dart`：host 注册、连接请求处理、WebRTC 会话编排。
-- `packages/puupee_connect/lib/src/host/terminal_host_session.dart`：DataChannel 到 PTY 的桥接。
-- `packages/puupee_connect/lib/src/host/pty/terminal_pty.dart`：PTY 抽象。
-- `packages/puupee_connect/lib/src/host/pty/linux_terminal_pty.dart`：Linux PTY 实现。
-- `packages/puupee_connect/bin/puupee_connect_host.dart`：Linux host daemon CLI 入口。
+- `packages/sync/puupee_connect/lib/puupee_connect.dart`：公共导出。
+- `packages/sync/puupee_connect/lib/src/protocol/connect_message.dart`：版本化消息模型、解析和编码。
+- `packages/sync/puupee_connect/lib/src/protocol/connect_error.dart`：协议错误码和可展示错误。
+- `packages/sync/puupee_connect/lib/src/relay/connect_relay_server.dart`：relay 生命周期、HTTP 路由、WebSocket 升级。
+- `packages/sync/puupee_connect/lib/src/relay/host_registry.dart`：在线 host 注册、心跳、超时清理、同账号过滤。
+- `packages/sync/puupee_connect/lib/src/relay/session_registry.dart`：连接会话、peer 关系、SDP/ICE 转发目标。
+- `packages/sync/puupee_connect/lib/src/auth/connect_password.dart`：设备码连接密码 hash 和验证。
+- `packages/sync/puupee_connect/lib/src/client/connect_relay_client.dart`：Ops/daemon 共用 relay WebSocket 客户端基础。
+- `packages/sync/puupee_connect/lib/src/client/connect_terminal_client.dart`：远程终端客户端抽象。
+- `packages/sync/puupee_connect/lib/src/host/connect_host_daemon.dart`：host 注册、连接请求处理、WebRTC 会话编排。
+- `packages/sync/puupee_connect/lib/src/host/terminal_host_session.dart`：DataChannel 到 PTY 的桥接。
+- `packages/sync/puupee_connect/lib/src/host/pty/terminal_pty.dart`：PTY 抽象。
+- `packages/sync/puupee_connect/lib/src/host/pty/linux_terminal_pty.dart`：Linux PTY 实现。
+- `packages/sync/puupee_connect/bin/puupee_connect_host.dart`：Linux host daemon CLI 入口。
 
 ## Relay 服务
 
@@ -208,14 +208,14 @@ Ops 的“终端”能力改为本地和远程两种来源：
 
 迁移顺序：
 
-1. 创建 `packages/puupee_connect`。
+1. 创建 `packages/sync/puupee_connect`。
 2. 将 `reevibe-server` 的 session 和 WebSocket 转发逻辑迁入 relay 模块，并改成通用 host/session 命名。
 3. 增加协议模型和 relay 单元测试。
 4. 增加 Linux host daemon CLI。
 5. 在 `sync_node` 增加可选 relay 服务。
 6. 在 Ops 增加远程终端入口和 DataChannel IO 后端。
-7. 从根 `pubspec.yaml` workspace 移除 `apps/puupee/reevibe-server`。
-8. 删除 `apps/puupee/reevibe-server` 目录。
+7. 从根 `pubspec.yaml` workspace 移除 `apps/reevibe-server`。
+8. 删除 `apps/reevibe-server` 目录。
 9. 更新或删除 `scripts/reevibe_server.dart` 中的旧引用。
 
 ## 测试策略
@@ -246,11 +246,11 @@ WebRTC 真实联通作为集成 smoke test，使用本地 relay 和本机两个 
 
 ## 验收标准
 
-- `packages/puupee_connect` 存在并可 `dart test`。
+- `packages/sync/puupee_connect` 存在并可 `dart test`。
 - `sync_node` 可以通过参数启用 connect relay。
 - Linux 服务器可以运行 `puupee_connect_host` 并注册在线。
 - Ops 可以看到同账号在线机器并打开远程终端。
 - Ops 可以通过设备码和连接密码打开远程终端。
 - 成功连接时终端数据不经过 relay WebSocket 转发。
 - 配置 TURN 时可以作为 ICE 兜底，并在 UI 中标记中继模式。
-- `apps/puupee/reevibe-server` 从 workspace 和文件系统移除。
+- `apps/reevibe-server` 从 workspace 和文件系统移除。

@@ -4,7 +4,7 @@
 
 **目标：** 创建新的 `handcraft` Flutter 子应用，让用户创建手工作品，上传款式图和布料图，填写或模拟估算尺寸，并跑通成品效果图、裁剪图、过程视频引用的本地模拟生成流程。
 
-**架构：** `apps/puupee/handcraft` 作为标准 Puupee 子应用接入，启动走 `runMyApp`，路由走类型化 `go_router`，状态走 Riverpod 注解，UI 使用 `shadcn_flutter`、`puupee_ui` 和 `puupee_shared`。作品读写全部放在 `HandcraftProjectRepo` 后面，生成逻辑全部放在 `HandcraftGenerationService` 后面，第一版使用内存数据源和本地模拟结果，字段和接口按后续 Puupee/Sync、对象存储、真实 AI 生成预留。
+**架构：** `apps/handcraft` 作为标准 Puupee 子应用接入，启动走 `runMyApp`，路由走类型化 `go_router`，状态走 Riverpod 注解，UI 使用 `shadcn_flutter`、`puupee_ui` 和 `puupee_shared`。作品读写全部放在 `HandcraftProjectRepo` 后面，生成逻辑全部放在 `HandcraftGenerationService` 后面，第一版使用内存数据源和本地模拟结果，字段和接口按后续 Puupee/Sync、对象存储、真实 AI 生成预留。
 
 **技术栈：** Dart 3.8、Flutter、shadcn_flutter、go_router / go_router_builder、Riverpod 注解、hooks_riverpod、puupee_shared、puupee_ui、build_runner、Android Kotlin/Java 17。
 
@@ -12,23 +12,23 @@
 
 ## 文件结构
 
-- 修改 `pubspec.yaml`：把 `apps/puupee/handcraft` 加入工作区。
-- 创建 `apps/puupee/handcraft/pubspec.yaml`：定义 `puupee_handcraft` Flutter 包。
-- 创建 `apps/puupee/handcraft/.metadata`：让 Flutter 工具识别为应用项目。
-- 创建 `apps/puupee/handcraft/lib/env.dart`：实现 `HandcraftEnvConfig`。
-- 创建 `apps/puupee/handcraft/lib/main.dart`：通过 `runMyApp` 启动。
-- 创建 `apps/puupee/handcraft/lib/models/handcraft_project.dart`：作品模型、枚举、尺寸逻辑、状态标签。
-- 创建 `apps/puupee/handcraft/lib/services/handcraft_generation_service.dart`：本地模拟生成服务。
-- 创建 `apps/puupee/handcraft/lib/repo/handcraft_project_repo.dart`：作品仓库接口和内存实现。
-- 创建 `apps/puupee/handcraft/lib/providers/handcraft_providers.dart`：仓库、项目流、当前工作台、生成控制器提供器。
-- 生成 `apps/puupee/handcraft/lib/providers/handcraft_providers.g.dart`。
-- 创建 `apps/puupee/handcraft/lib/router.dart`：创作、作品、素材、我的四个分支路由。
-- 生成 `apps/puupee/handcraft/lib/router.g.dart`。
-- 创建 `apps/puupee/handcraft/lib/components/` 下的工作台组件：自适应 Shell、作品卡、媒体输入卡、尺寸编辑器、生成结果面板。
-- 创建 `apps/puupee/handcraft/lib/pages/` 下的页面：创作页、作品页、素材页。
-- 创建 `apps/puupee/handcraft/android/`：从现有 Puupee 应用复制 Android 模板并改为 `com.puupee.handcraft`。
-- 创建 `apps/puupee/handcraft/README.md`：说明第一版范围和验证命令。
-- 创建 `apps/puupee/handcraft/test/` 下的测试：EnvConfig、模型、生成服务、仓库、提供器、页面冒烟测试。
+- 修改 `pubspec.yaml`：把 `apps/handcraft` 加入工作区。
+- 创建 `apps/handcraft/pubspec.yaml`：定义 `puupee_handcraft` Flutter 包。
+- 创建 `apps/handcraft/.metadata`：让 Flutter 工具识别为应用项目。
+- 创建 `apps/handcraft/lib/env.dart`：实现 `HandcraftEnvConfig`。
+- 创建 `apps/handcraft/lib/main.dart`：通过 `runMyApp` 启动。
+- 创建 `apps/handcraft/lib/models/handcraft_project.dart`：作品模型、枚举、尺寸逻辑、状态标签。
+- 创建 `apps/handcraft/lib/services/handcraft_generation_service.dart`：本地模拟生成服务。
+- 创建 `apps/handcraft/lib/repo/handcraft_project_repo.dart`：作品仓库接口和内存实现。
+- 创建 `apps/handcraft/lib/providers/handcraft_providers.dart`：仓库、项目流、当前工作台、生成控制器提供器。
+- 生成 `apps/handcraft/lib/providers/handcraft_providers.g.dart`。
+- 创建 `apps/handcraft/lib/router.dart`：创作、作品、素材、我的四个分支路由。
+- 生成 `apps/handcraft/lib/router.g.dart`。
+- 创建 `apps/handcraft/lib/components/` 下的工作台组件：自适应 Shell、作品卡、媒体输入卡、尺寸编辑器、生成结果面板。
+- 创建 `apps/handcraft/lib/pages/` 下的页面：创作页、作品页、素材页。
+- 创建 `apps/handcraft/android/`：从现有 Puupee 应用复制 Android 模板并改为 `com.puupee.handcraft`。
+- 创建 `apps/handcraft/README.md`：说明第一版范围和验证命令。
+- 创建 `apps/handcraft/test/` 下的测试：EnvConfig、模型、生成服务、仓库、提供器、页面冒烟测试。
 
 ---
 
@@ -36,15 +36,15 @@
 
 **文件：**
 - 修改：`pubspec.yaml`
-- 创建：`apps/puupee/handcraft/pubspec.yaml`
-- 创建：`apps/puupee/handcraft/.metadata`
-- 创建：`apps/puupee/handcraft/lib/env.dart`
-- 创建：`apps/puupee/handcraft/lib/main.dart`
-- 测试：`apps/puupee/handcraft/test/env_test.dart`
+- 创建：`apps/handcraft/pubspec.yaml`
+- 创建：`apps/handcraft/.metadata`
+- 创建：`apps/handcraft/lib/env.dart`
+- 创建：`apps/handcraft/lib/main.dart`
+- 测试：`apps/handcraft/test/env_test.dart`
 
 - [ ] **步骤 1：先写失败的 EnvConfig 测试**
 
-创建 `apps/puupee/handcraft/test/env_test.dart`：
+创建 `apps/handcraft/test/env_test.dart`：
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
@@ -71,7 +71,7 @@ void main() {
 运行：
 
 ```bash
-cd /Users/j/repos/puupees/puupee-apps/apps/puupee/handcraft
+cd /Users/j/repos/puupees/puupee-apps/apps/handcraft
 flutter test test/env_test.dart --no-pub
 ```
 
@@ -79,15 +79,15 @@ flutter test test/env_test.dart --no-pub
 
 - [ ] **步骤 3：加入工作区**
 
-在根目录 `pubspec.yaml` 的工作区列表中，紧跟 `apps/puupee/builder` 后加入：
+在根目录 `pubspec.yaml` 的工作区列表中，紧跟 `apps/builder` 后加入：
 
 ```yaml
-  - apps/puupee/handcraft
+  - apps/handcraft
 ```
 
 - [ ] **步骤 4：创建应用 pubspec**
 
-创建 `apps/puupee/handcraft/pubspec.yaml`：
+创建 `apps/handcraft/pubspec.yaml`：
 
 ```yaml
 name: puupee_handcraft
@@ -134,7 +134,7 @@ flutter:
 
 - [ ] **步骤 5：创建 Flutter 项目元数据**
 
-创建 `apps/puupee/handcraft/.metadata`：
+创建 `apps/handcraft/.metadata`：
 
 ```yaml
 # This file tracks properties of this Flutter project.
@@ -163,7 +163,7 @@ migration:
 
 - [ ] **步骤 6：实现 EnvConfig**
 
-创建 `apps/puupee/handcraft/lib/env.dart`：
+创建 `apps/handcraft/lib/env.dart`：
 
 ```dart
 import 'package:puupee_shared/env.dart';
@@ -201,7 +201,7 @@ class HandcraftEnvConfig extends EnvConfig {
 
 - [ ] **步骤 7：实现应用入口**
 
-创建 `apps/puupee/handcraft/lib/main.dart`：
+创建 `apps/handcraft/lib/main.dart`：
 
 ```dart
 import 'package:go_router/go_router.dart';
@@ -226,7 +226,7 @@ void main() async {
 运行：
 
 ```bash
-cd /Users/j/repos/puupees/puupee-apps/apps/puupee/handcraft
+cd /Users/j/repos/puupees/puupee-apps/apps/handcraft
 flutter test test/env_test.dart --no-pub
 ```
 
@@ -237,7 +237,7 @@ flutter test test/env_test.dart --no-pub
 运行：
 
 ```bash
-git add pubspec.yaml apps/puupee/handcraft/pubspec.yaml apps/puupee/handcraft/.metadata apps/puupee/handcraft/lib/env.dart apps/puupee/handcraft/lib/main.dart apps/puupee/handcraft/test/env_test.dart
+git add pubspec.yaml apps/handcraft/pubspec.yaml apps/handcraft/.metadata apps/handcraft/lib/env.dart apps/handcraft/lib/main.dart apps/handcraft/test/env_test.dart
 git commit -m "feat(handcraft): 创建小汪手工应用骨架"
 ```
 
@@ -246,12 +246,12 @@ git commit -m "feat(handcraft): 创建小汪手工应用骨架"
 ### 任务 2：实现作品模型和尺寸逻辑
 
 **文件：**
-- 创建：`apps/puupee/handcraft/lib/models/handcraft_project.dart`
-- 测试：`apps/puupee/handcraft/test/handcraft_project_test.dart`
+- 创建：`apps/handcraft/lib/models/handcraft_project.dart`
+- 测试：`apps/handcraft/test/handcraft_project_test.dart`
 
 - [ ] **步骤 1：先写失败的模型测试**
 
-创建 `apps/puupee/handcraft/test/handcraft_project_test.dart`：
+创建 `apps/handcraft/test/handcraft_project_test.dart`：
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
@@ -333,7 +333,7 @@ void main() {
 运行：
 
 ```bash
-cd /Users/j/repos/puupees/puupee-apps/apps/puupee/handcraft
+cd /Users/j/repos/puupees/puupee-apps/apps/handcraft
 flutter test test/handcraft_project_test.dart --no-pub
 ```
 
@@ -341,7 +341,7 @@ flutter test test/handcraft_project_test.dart --no-pub
 
 - [ ] **步骤 3：实现模型**
 
-创建 `apps/puupee/handcraft/lib/models/handcraft_project.dart`，必须包含：
+创建 `apps/handcraft/lib/models/handcraft_project.dart`，必须包含：
 
 - 枚举：`HandcraftItemType`、`HandcraftProjectStatus`、`HandcraftGenerationStage`、`HandcraftUploadStatus`、`HandcraftDimensionMode`。
 - 类：`HandcraftDimensions`，包含 `estimatedFor` 和 `copyWith`。
@@ -402,7 +402,7 @@ HandcraftGenerationStage.completed => '完成'
 运行：
 
 ```bash
-cd /Users/j/repos/puupees/puupee-apps/apps/puupee/handcraft
+cd /Users/j/repos/puupees/puupee-apps/apps/handcraft
 flutter test test/handcraft_project_test.dart --no-pub
 ```
 
@@ -413,7 +413,7 @@ flutter test test/handcraft_project_test.dart --no-pub
 运行：
 
 ```bash
-git add apps/puupee/handcraft/lib/models/handcraft_project.dart apps/puupee/handcraft/test/handcraft_project_test.dart
+git add apps/handcraft/lib/models/handcraft_project.dart apps/handcraft/test/handcraft_project_test.dart
 git commit -m "feat(handcraft): 添加手工作品模型"
 ```
 
@@ -422,12 +422,12 @@ git commit -m "feat(handcraft): 添加手工作品模型"
 ### 任务 3：实现本地模拟生成服务
 
 **文件：**
-- 创建：`apps/puupee/handcraft/lib/services/handcraft_generation_service.dart`
-- 测试：`apps/puupee/handcraft/test/handcraft_generation_service_test.dart`
+- 创建：`apps/handcraft/lib/services/handcraft_generation_service.dart`
+- 测试：`apps/handcraft/test/handcraft_generation_service_test.dart`
 
 - [ ] **步骤 1：先写失败的生成服务测试**
 
-创建 `apps/puupee/handcraft/test/handcraft_generation_service_test.dart`：
+创建 `apps/handcraft/test/handcraft_generation_service_test.dart`：
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
@@ -512,7 +512,7 @@ void main() {
 运行：
 
 ```bash
-cd /Users/j/repos/puupees/puupee-apps/apps/puupee/handcraft
+cd /Users/j/repos/puupees/puupee-apps/apps/handcraft
 flutter test test/handcraft_generation_service_test.dart --no-pub
 ```
 
@@ -520,7 +520,7 @@ flutter test test/handcraft_generation_service_test.dart --no-pub
 
 - [ ] **步骤 3：实现生成服务**
 
-创建 `apps/puupee/handcraft/lib/services/handcraft_generation_service.dart`，内容结构如下：
+创建 `apps/handcraft/lib/services/handcraft_generation_service.dart`，内容结构如下：
 
 ```dart
 import 'dart:async';
@@ -642,7 +642,7 @@ class MockHandcraftGenerationService implements HandcraftGenerationService {
 运行：
 
 ```bash
-cd /Users/j/repos/puupees/puupee-apps/apps/puupee/handcraft
+cd /Users/j/repos/puupees/puupee-apps/apps/handcraft
 flutter test test/handcraft_generation_service_test.dart --no-pub
 ```
 
@@ -653,7 +653,7 @@ flutter test test/handcraft_generation_service_test.dart --no-pub
 运行：
 
 ```bash
-git add apps/puupee/handcraft/lib/services/handcraft_generation_service.dart apps/puupee/handcraft/test/handcraft_generation_service_test.dart
+git add apps/handcraft/lib/services/handcraft_generation_service.dart apps/handcraft/test/handcraft_generation_service_test.dart
 git commit -m "feat(handcraft): 添加模拟生成服务"
 ```
 
@@ -662,15 +662,15 @@ git commit -m "feat(handcraft): 添加模拟生成服务"
 ### 任务 4：实现作品仓库和 Riverpod 状态
 
 **文件：**
-- 创建：`apps/puupee/handcraft/lib/repo/handcraft_project_repo.dart`
-- 创建：`apps/puupee/handcraft/lib/providers/handcraft_providers.dart`
-- 生成：`apps/puupee/handcraft/lib/providers/handcraft_providers.g.dart`
-- 测试：`apps/puupee/handcraft/test/handcraft_project_repo_test.dart`
-- 测试：`apps/puupee/handcraft/test/handcraft_providers_test.dart`
+- 创建：`apps/handcraft/lib/repo/handcraft_project_repo.dart`
+- 创建：`apps/handcraft/lib/providers/handcraft_providers.dart`
+- 生成：`apps/handcraft/lib/providers/handcraft_providers.g.dart`
+- 测试：`apps/handcraft/test/handcraft_project_repo_test.dart`
+- 测试：`apps/handcraft/test/handcraft_providers_test.dart`
 
 - [ ] **步骤 1：先写仓库测试**
 
-创建 `apps/puupee/handcraft/test/handcraft_project_repo_test.dart`，覆盖：
+创建 `apps/handcraft/test/handcraft_project_repo_test.dart`，覆盖：
 
 - `createProject` 新建草稿。
 - `saveProject` 更新本地图片路径。
@@ -689,7 +689,7 @@ expect(drafts, isEmpty);
 
 - [ ] **步骤 2：实现仓库**
 
-创建 `apps/puupee/handcraft/lib/repo/handcraft_project_repo.dart`，必须包含：
+创建 `apps/handcraft/lib/repo/handcraft_project_repo.dart`，必须包含：
 
 - 抽象类 `HandcraftProjectRepo`。
 - 方法 `createProject`、`getProject`、`listProjects`、`watchProjects`、`saveProject`。
@@ -703,7 +703,7 @@ expect(drafts, isEmpty);
 运行：
 
 ```bash
-cd /Users/j/repos/puupees/puupee-apps/apps/puupee/handcraft
+cd /Users/j/repos/puupees/puupee-apps/apps/handcraft
 flutter test test/handcraft_project_repo_test.dart --no-pub
 ```
 
@@ -711,7 +711,7 @@ flutter test test/handcraft_project_repo_test.dart --no-pub
 
 - [ ] **步骤 4：先写提供器测试**
 
-创建 `apps/puupee/handcraft/test/handcraft_providers_test.dart`：
+创建 `apps/handcraft/test/handcraft_providers_test.dart`：
 
 ```dart
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -760,7 +760,7 @@ void main() {
 
 - [ ] **步骤 5：实现提供器**
 
-创建 `apps/puupee/handcraft/lib/providers/handcraft_providers.dart`，必须包含：
+创建 `apps/handcraft/lib/providers/handcraft_providers.dart`，必须包含：
 
 - `@Riverpod(keepAlive: true) HandcraftProjectRepo handcraftProjectRepo(Ref ref)`。
 - `@riverpod HandcraftGenerationService handcraftGenerationService(Ref ref)`。
@@ -774,7 +774,7 @@ void main() {
 运行：
 
 ```bash
-cd /Users/j/repos/puupees/puupee-apps/apps/puupee/handcraft
+cd /Users/j/repos/puupees/puupee-apps/apps/handcraft
 dart run build_runner build --delete-conflicting-outputs
 ```
 
@@ -785,7 +785,7 @@ dart run build_runner build --delete-conflicting-outputs
 运行：
 
 ```bash
-cd /Users/j/repos/puupees/puupee-apps/apps/puupee/handcraft
+cd /Users/j/repos/puupees/puupee-apps/apps/handcraft
 flutter test test/handcraft_providers_test.dart --no-pub
 ```
 
@@ -796,7 +796,7 @@ flutter test test/handcraft_providers_test.dart --no-pub
 运行：
 
 ```bash
-git add apps/puupee/handcraft/lib/repo/handcraft_project_repo.dart apps/puupee/handcraft/lib/providers/handcraft_providers.dart apps/puupee/handcraft/lib/providers/handcraft_providers.g.dart apps/puupee/handcraft/test/handcraft_project_repo_test.dart apps/puupee/handcraft/test/handcraft_providers_test.dart
+git add apps/handcraft/lib/repo/handcraft_project_repo.dart apps/handcraft/lib/providers/handcraft_providers.dart apps/handcraft/lib/providers/handcraft_providers.g.dart apps/handcraft/test/handcraft_project_repo_test.dart apps/handcraft/test/handcraft_providers_test.dart
 git commit -m "feat(handcraft): 添加作品仓库和状态管理"
 ```
 
@@ -805,21 +805,21 @@ git commit -m "feat(handcraft): 添加作品仓库和状态管理"
 ### 任务 5：实现路由、页面和组件
 
 **文件：**
-- 创建：`apps/puupee/handcraft/lib/router.dart`
-- 生成：`apps/puupee/handcraft/lib/router.g.dart`
-- 创建：`apps/puupee/handcraft/lib/components/adaptive_handcraft_shell.dart`
-- 创建：`apps/puupee/handcraft/lib/components/handcraft_project_card.dart`
-- 创建：`apps/puupee/handcraft/lib/components/handcraft_media_input_card.dart`
-- 创建：`apps/puupee/handcraft/lib/components/handcraft_dimension_editor.dart`
-- 创建：`apps/puupee/handcraft/lib/components/handcraft_generation_panel.dart`
-- 创建：`apps/puupee/handcraft/lib/pages/handcraft_studio_page.dart`
-- 创建：`apps/puupee/handcraft/lib/pages/handcraft_projects_page.dart`
-- 创建：`apps/puupee/handcraft/lib/pages/handcraft_assets_page.dart`
-- 测试：`apps/puupee/handcraft/test/handcraft_page_smoke_test.dart`
+- 创建：`apps/handcraft/lib/router.dart`
+- 生成：`apps/handcraft/lib/router.g.dart`
+- 创建：`apps/handcraft/lib/components/adaptive_handcraft_shell.dart`
+- 创建：`apps/handcraft/lib/components/handcraft_project_card.dart`
+- 创建：`apps/handcraft/lib/components/handcraft_media_input_card.dart`
+- 创建：`apps/handcraft/lib/components/handcraft_dimension_editor.dart`
+- 创建：`apps/handcraft/lib/components/handcraft_generation_panel.dart`
+- 创建：`apps/handcraft/lib/pages/handcraft_studio_page.dart`
+- 创建：`apps/handcraft/lib/pages/handcraft_projects_page.dart`
+- 创建：`apps/handcraft/lib/pages/handcraft_assets_page.dart`
+- 测试：`apps/handcraft/test/handcraft_page_smoke_test.dart`
 
 - [ ] **步骤 1：先写页面冒烟测试**
 
-创建 `apps/puupee/handcraft/test/handcraft_page_smoke_test.dart`：
+创建 `apps/handcraft/test/handcraft_page_smoke_test.dart`：
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
@@ -850,7 +850,7 @@ void main() {
 运行：
 
 ```bash
-cd /Users/j/repos/puupees/puupee-apps/apps/puupee/handcraft
+cd /Users/j/repos/puupees/puupee-apps/apps/handcraft
 flutter test test/handcraft_page_smoke_test.dart --no-pub
 ```
 
@@ -858,7 +858,7 @@ flutter test test/handcraft_page_smoke_test.dart --no-pub
 
 - [ ] **步骤 3：实现自适应 Shell**
 
-创建 `apps/puupee/handcraft/lib/components/adaptive_handcraft_shell.dart`，结构参考 `apps/puupee/inventory/lib/components/adaptive_inventory_shell.dart`。
+创建 `apps/handcraft/lib/components/adaptive_handcraft_shell.dart`，结构参考 `apps/inventory/lib/components/adaptive_inventory_shell.dart`。
 
 桌面端使用：
 
@@ -941,7 +941,7 @@ onPressed: canGenerate ? onGenerate : null
 
 - [ ] **步骤 6：实现类型化路由和设置页路由**
 
-创建 `apps/puupee/handcraft/lib/router.dart`：
+创建 `apps/handcraft/lib/router.dart`：
 
 - `@TypedStatefulShellRoute<HandcraftMainStatefulShellRoute>`
 - 四个分支：`/handcraft`、`/handcraft/projects`、`/handcraft/assets`、`/handcraft/settings`
@@ -953,7 +953,7 @@ onPressed: canGenerate ? onGenerate : null
 运行：
 
 ```bash
-cd /Users/j/repos/puupees/puupee-apps/apps/puupee/handcraft
+cd /Users/j/repos/puupees/puupee-apps/apps/handcraft
 dart run build_runner build --delete-conflicting-outputs
 ```
 
@@ -964,7 +964,7 @@ dart run build_runner build --delete-conflicting-outputs
 运行：
 
 ```bash
-cd /Users/j/repos/puupees/puupee-apps/apps/puupee/handcraft
+cd /Users/j/repos/puupees/puupee-apps/apps/handcraft
 flutter test test/handcraft_page_smoke_test.dart --no-pub
 ```
 
@@ -975,7 +975,7 @@ flutter test test/handcraft_page_smoke_test.dart --no-pub
 运行：
 
 ```bash
-git add apps/puupee/handcraft/lib/router.dart apps/puupee/handcraft/lib/router.g.dart apps/puupee/handcraft/lib/components apps/puupee/handcraft/lib/pages apps/puupee/handcraft/lib/models/handcraft_project.dart apps/puupee/handcraft/test/handcraft_page_smoke_test.dart
+git add apps/handcraft/lib/router.dart apps/handcraft/lib/router.g.dart apps/handcraft/lib/components apps/handcraft/lib/pages apps/handcraft/lib/models/handcraft_project.dart apps/handcraft/test/handcraft_page_smoke_test.dart
 git commit -m "feat(handcraft): 添加创作工作台和导航页面"
 ```
 
@@ -984,32 +984,32 @@ git commit -m "feat(handcraft): 添加创作工作台和导航页面"
 ### 任务 6：添加 Android 平台工程
 
 **文件：**
-- 创建：`apps/puupee/handcraft/android/.gitignore`
-- 创建：`apps/puupee/handcraft/android/app/build.gradle.kts`
-- 创建：`apps/puupee/handcraft/android/app/proguard-rules.pro`
-- 创建：`apps/puupee/handcraft/android/app/src/debug/AndroidManifest.xml`
-- 创建：`apps/puupee/handcraft/android/app/src/main/AndroidManifest.xml`
-- 创建：`apps/puupee/handcraft/android/app/src/main/kotlin/com/puupee/handcraft/MainActivity.kt`
-- 创建：`apps/puupee/handcraft/android/app/src/main/res/values/strings.xml`
-- 创建：`apps/puupee/handcraft/android/app/src/main/res/values-zh/strings.xml`
-- 创建：`apps/puupee/handcraft/android/app/src/main/res/values/styles.xml`
-- 创建：`apps/puupee/handcraft/android/app/src/main/res/values-night/styles.xml`
-- 创建：`apps/puupee/handcraft/android/app/src/main/res/drawable/launch_background.xml`
-- 创建：`apps/puupee/handcraft/android/app/src/main/res/drawable-v21/launch_background.xml`
-- 创建：`apps/puupee/handcraft/android/app/src/main/res/xml/file_paths.xml`
-- 创建：`apps/puupee/handcraft/android/app/src/profile/AndroidManifest.xml`
-- 创建：`apps/puupee/handcraft/android/build.gradle.kts`
-- 创建：`apps/puupee/handcraft/android/gradle.properties`
-- 创建：`apps/puupee/handcraft/android/settings.gradle.kts`
-- 创建：`apps/puupee/handcraft/android/gradle/wrapper/gradle-wrapper.properties`
-- 复制：`apps/puupee/inventory/android/app/src/main/res/mipmap-*` 下的启动图标资源。
+- 创建：`apps/handcraft/android/.gitignore`
+- 创建：`apps/handcraft/android/app/build.gradle.kts`
+- 创建：`apps/handcraft/android/app/proguard-rules.pro`
+- 创建：`apps/handcraft/android/app/src/debug/AndroidManifest.xml`
+- 创建：`apps/handcraft/android/app/src/main/AndroidManifest.xml`
+- 创建：`apps/handcraft/android/app/src/main/kotlin/com/puupee/handcraft/MainActivity.kt`
+- 创建：`apps/handcraft/android/app/src/main/res/values/strings.xml`
+- 创建：`apps/handcraft/android/app/src/main/res/values-zh/strings.xml`
+- 创建：`apps/handcraft/android/app/src/main/res/values/styles.xml`
+- 创建：`apps/handcraft/android/app/src/main/res/values-night/styles.xml`
+- 创建：`apps/handcraft/android/app/src/main/res/drawable/launch_background.xml`
+- 创建：`apps/handcraft/android/app/src/main/res/drawable-v21/launch_background.xml`
+- 创建：`apps/handcraft/android/app/src/main/res/xml/file_paths.xml`
+- 创建：`apps/handcraft/android/app/src/profile/AndroidManifest.xml`
+- 创建：`apps/handcraft/android/build.gradle.kts`
+- 创建：`apps/handcraft/android/gradle.properties`
+- 创建：`apps/handcraft/android/settings.gradle.kts`
+- 创建：`apps/handcraft/android/gradle/wrapper/gradle-wrapper.properties`
+- 复制：`apps/inventory/android/app/src/main/res/mipmap-*` 下的启动图标资源。
 
 - [ ] **步骤 1：从 inventory 复制 Android 模板**
 
 运行：
 
 ```bash
-mkdir -p apps/puupee/handcraft
+mkdir -p apps/handcraft
 rsync -a \
   --exclude='.gradle' \
   --exclude='local.properties' \
@@ -1017,21 +1017,21 @@ rsync -a \
   --exclude='gradlew.bat' \
   --exclude='gradle/wrapper/gradle-wrapper.jar' \
   --exclude='app/src/main/java' \
-  apps/puupee/inventory/android/ \
-  apps/puupee/handcraft/android/
+  apps/inventory/android/ \
+  apps/handcraft/android/
 ```
 
-预期：`apps/puupee/handcraft/android/app/src/main/AndroidManifest.xml` 存在。
+预期：`apps/handcraft/android/app/src/main/AndroidManifest.xml` 存在。
 
 - [ ] **步骤 2：修改 Kotlin 包路径**
 
 运行：
 
 ```bash
-mkdir -p apps/puupee/handcraft/android/app/src/main/kotlin/com/puupee/handcraft
-mv apps/puupee/handcraft/android/app/src/main/kotlin/com/puupee/inventory/MainActivity.kt \
-  apps/puupee/handcraft/android/app/src/main/kotlin/com/puupee/handcraft/MainActivity.kt
-find apps/puupee/handcraft/android -type d -empty -delete
+mkdir -p apps/handcraft/android/app/src/main/kotlin/com/puupee/handcraft
+mv apps/handcraft/android/app/src/main/kotlin/com/puupee/inventory/MainActivity.kt \
+  apps/handcraft/android/app/src/main/kotlin/com/puupee/handcraft/MainActivity.kt
+find apps/handcraft/android -type d -empty -delete
 ```
 
 替换 `MainActivity.kt` 内容：
@@ -1046,7 +1046,7 @@ class MainActivity : FlutterActivity()
 
 - [ ] **步骤 3：修改 Gradle 包名和应用 ID**
 
-在 `apps/puupee/handcraft/android/app/build.gradle.kts` 中替换：
+在 `apps/handcraft/android/app/build.gradle.kts` 中替换：
 
 ```kotlin
 namespace = "com.puupee.inventory"
@@ -1080,7 +1080,7 @@ dependencies {
 
 - [ ] **步骤 4：修改应用名称**
 
-替换 `apps/puupee/handcraft/android/app/src/main/res/values/strings.xml`：
+替换 `apps/handcraft/android/app/src/main/res/values/strings.xml`：
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -1089,7 +1089,7 @@ dependencies {
 </resources>
 ```
 
-替换 `apps/puupee/handcraft/android/app/src/main/res/values-zh/strings.xml`：
+替换 `apps/handcraft/android/app/src/main/res/values-zh/strings.xml`：
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -1125,12 +1125,12 @@ android:label="@string/app_name"
 运行：
 
 ```bash
-rm -rf apps/puupee/handcraft/android/.gradle \
-  apps/puupee/handcraft/android/local.properties \
-  apps/puupee/handcraft/android/app/src/main/java \
-  apps/puupee/handcraft/android/gradle/wrapper/gradle-wrapper.jar \
-  apps/puupee/handcraft/android/gradlew \
-  apps/puupee/handcraft/android/gradlew.bat
+rm -rf apps/handcraft/android/.gradle \
+  apps/handcraft/android/local.properties \
+  apps/handcraft/android/app/src/main/java \
+  apps/handcraft/android/gradle/wrapper/gradle-wrapper.jar \
+  apps/handcraft/android/gradlew \
+  apps/handcraft/android/gradlew.bat
 ```
 
 - [ ] **步骤 7：运行 Android 文件存在性检查**
@@ -1138,10 +1138,10 @@ rm -rf apps/puupee/handcraft/android/.gradle \
 运行：
 
 ```bash
-test -f apps/puupee/handcraft/android/app/src/main/AndroidManifest.xml
-test -f apps/puupee/handcraft/android/app/src/main/kotlin/com/puupee/handcraft/MainActivity.kt
-test -f apps/puupee/handcraft/android/app/src/main/res/values/strings.xml
-test -f apps/puupee/handcraft/android/app/src/main/res/values-zh/strings.xml
+test -f apps/handcraft/android/app/src/main/AndroidManifest.xml
+test -f apps/handcraft/android/app/src/main/kotlin/com/puupee/handcraft/MainActivity.kt
+test -f apps/handcraft/android/app/src/main/res/values/strings.xml
+test -f apps/handcraft/android/app/src/main/res/values-zh/strings.xml
 ```
 
 预期：全部退出码为 0。
@@ -1151,7 +1151,7 @@ test -f apps/puupee/handcraft/android/app/src/main/res/values-zh/strings.xml
 运行：
 
 ```bash
-git add apps/puupee/handcraft/android
+git add apps/handcraft/android
 git commit -m "build(handcraft): 添加 Android 平台配置"
 ```
 
@@ -1160,13 +1160,13 @@ git commit -m "build(handcraft): 添加 Android 平台配置"
 ### 任务 7：添加 README 并完成最终验证
 
 **文件：**
-- 创建：`apps/puupee/handcraft/README.md`
-- 验证：`apps/puupee/handcraft/lib/router.g.dart`
-- 验证：`apps/puupee/handcraft/lib/providers/handcraft_providers.g.dart`
+- 创建：`apps/handcraft/README.md`
+- 验证：`apps/handcraft/lib/router.g.dart`
+- 验证：`apps/handcraft/lib/providers/handcraft_providers.g.dart`
 
 - [ ] **步骤 1：创建 README**
 
-创建 `apps/puupee/handcraft/README.md`：
+创建 `apps/handcraft/README.md`：
 
 ```markdown
 # 小汪手工
@@ -1184,7 +1184,7 @@ git commit -m "build(handcraft): 添加 Android 平台配置"
 ## 开发
 
 ```bash
-cd apps/puupee/handcraft
+cd apps/handcraft
 dart run build_runner build --delete-conflicting-outputs
 dart analyze
 flutter test
@@ -1197,7 +1197,7 @@ flutter build apk --debug --target-platform android-arm64 --no-pub
 运行：
 
 ```bash
-cd /Users/j/repos/puupees/puupee-apps/apps/puupee/handcraft
+cd /Users/j/repos/puupees/puupee-apps/apps/handcraft
 dart run build_runner build --delete-conflicting-outputs
 ```
 
@@ -1209,7 +1209,7 @@ dart run build_runner build --delete-conflicting-outputs
 
 ```bash
 cd /Users/j/repos/puupees/puupee-apps
-dart analyze apps/puupee/handcraft/lib/env.dart apps/puupee/handcraft/lib/main.dart apps/puupee/handcraft/test/env_test.dart
+dart analyze apps/handcraft/lib/env.dart apps/handcraft/lib/main.dart apps/handcraft/test/env_test.dart
 ```
 
 预期：输出 `No issues found!`。
@@ -1219,7 +1219,7 @@ dart analyze apps/puupee/handcraft/lib/env.dart apps/puupee/handcraft/lib/main.d
 运行：
 
 ```bash
-cd /Users/j/repos/puupees/puupee-apps/apps/puupee/handcraft
+cd /Users/j/repos/puupees/puupee-apps/apps/handcraft
 flutter test --no-pub
 ```
 
@@ -1230,7 +1230,7 @@ flutter test --no-pub
 运行：
 
 ```bash
-cd /Users/j/repos/puupees/puupee-apps/apps/puupee/handcraft
+cd /Users/j/repos/puupees/puupee-apps/apps/handcraft
 flutter build apk --debug --target-platform android-arm64 --no-pub
 ```
 
@@ -1247,11 +1247,11 @@ git status --short
 预期：输出中不包含：
 
 ```text
-apps/puupee/handcraft/android/.gradle
-apps/puupee/handcraft/android/local.properties
-apps/puupee/handcraft/android/gradle/wrapper/gradle-wrapper.jar
-apps/puupee/handcraft/android/gradlew
-apps/puupee/handcraft/android/gradlew.bat
+apps/handcraft/android/.gradle
+apps/handcraft/android/local.properties
+apps/handcraft/android/gradle/wrapper/gradle-wrapper.jar
+apps/handcraft/android/gradlew
+apps/handcraft/android/gradlew.bat
 ```
 
 - [ ] **步骤 7：提交任务 7**
@@ -1259,14 +1259,14 @@ apps/puupee/handcraft/android/gradlew.bat
 如果 generated 文件有变化，运行：
 
 ```bash
-git add apps/puupee/handcraft/README.md apps/puupee/handcraft/lib/router.g.dart apps/puupee/handcraft/lib/providers/handcraft_providers.g.dart
+git add apps/handcraft/README.md apps/handcraft/lib/router.g.dart apps/handcraft/lib/providers/handcraft_providers.g.dart
 git commit -m "docs(handcraft): 添加应用说明和生成文件"
 ```
 
 如果只有 README 有变化，运行：
 
 ```bash
-git add apps/puupee/handcraft/README.md
+git add apps/handcraft/README.md
 git commit -m "docs(handcraft): 添加应用说明"
 ```
 

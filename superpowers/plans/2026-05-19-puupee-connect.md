@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** 将 `reevibe-server` 重构为 `packages/puupee_connect` 通用 WebRTC 连接层，并在 `sync_node` 和 Ops 中落地远程终端。
+**Goal:** 将 `reevibe-server` 重构为 `packages/sync/puupee_connect` 通用 WebRTC 连接层，并在 `sync_node` 和 Ops 中落地远程终端。
 
 **Architecture:** `puupee_connect` 提供纯 Dart relay/signaling、host daemon、协议模型和终端连接抽象；`sync_node` 以可选子服务启动 relay；Ops 复用现有终端 UI，通过 relay 建立 WebRTC DataChannel 与远程 Linux host 直连。
 
@@ -16,54 +16,54 @@
 
 ## File Structure
 
-### 新增 `packages/puupee_connect`
+### 新增 `packages/sync/puupee_connect`
 
-- `packages/puupee_connect/pubspec.yaml`：包依赖，包含 `args`、`crypto`、`uuid`、`webrtc_dart`、`test`。
-- `packages/puupee_connect/analysis_options.yaml`：复用仓库 lint 风格。
-- `packages/puupee_connect/lib/puupee_connect.dart`：公共导出，不导出 Flutter 依赖。
-- `packages/puupee_connect/lib/src/protocol/connect_message.dart`：版本化 JSON 消息。
-- `packages/puupee_connect/lib/src/protocol/connect_error.dart`：错误码。
-- `packages/puupee_connect/lib/src/auth/connect_password.dart`：连接密码 hash/verify。
-- `packages/puupee_connect/lib/src/relay/host_registry.dart`：在线 host 注册表。
-- `packages/puupee_connect/lib/src/relay/session_registry.dart`：连接会话注册表。
-- `packages/puupee_connect/lib/src/relay/connect_relay_server.dart`：HTTP + WebSocket relay。
-- `packages/puupee_connect/lib/src/client/connect_relay_client.dart`：relay WebSocket 客户端。
-- `packages/puupee_connect/lib/src/client/connect_terminal_client.dart`：终端客户端抽象和 DataChannel 桥。
-- `packages/puupee_connect/lib/src/host/connect_host_daemon.dart`：host daemon 编排。
-- `packages/puupee_connect/lib/src/host/connect_host_config.dart`：CLI/env 配置解析。
-- `packages/puupee_connect/lib/src/host/terminal_host_session.dart`：远程终端会话。
-- `packages/puupee_connect/lib/src/host/pty/terminal_pty.dart`：PTY 抽象。
-- `packages/puupee_connect/lib/src/host/pty/linux_terminal_pty.dart`：Linux PTY 实现，封装在抽象后。
-- `packages/puupee_connect/bin/puupee_connect_host.dart`：Linux host daemon CLI。
-- `packages/puupee_connect/test/...`：协议、密码、注册表、relay、daemon 配置测试。
+- `packages/sync/puupee_connect/pubspec.yaml`：包依赖，包含 `args`、`crypto`、`uuid`、`webrtc_dart`、`test`。
+- `packages/sync/puupee_connect/analysis_options.yaml`：复用仓库 lint 风格。
+- `packages/sync/puupee_connect/lib/puupee_connect.dart`：公共导出，不导出 Flutter 依赖。
+- `packages/sync/puupee_connect/lib/src/protocol/connect_message.dart`：版本化 JSON 消息。
+- `packages/sync/puupee_connect/lib/src/protocol/connect_error.dart`：错误码。
+- `packages/sync/puupee_connect/lib/src/auth/connect_password.dart`：连接密码 hash/verify。
+- `packages/sync/puupee_connect/lib/src/relay/host_registry.dart`：在线 host 注册表。
+- `packages/sync/puupee_connect/lib/src/relay/session_registry.dart`：连接会话注册表。
+- `packages/sync/puupee_connect/lib/src/relay/connect_relay_server.dart`：HTTP + WebSocket relay。
+- `packages/sync/puupee_connect/lib/src/client/connect_relay_client.dart`：relay WebSocket 客户端。
+- `packages/sync/puupee_connect/lib/src/client/connect_terminal_client.dart`：终端客户端抽象和 DataChannel 桥。
+- `packages/sync/puupee_connect/lib/src/host/connect_host_daemon.dart`：host daemon 编排。
+- `packages/sync/puupee_connect/lib/src/host/connect_host_config.dart`：CLI/env 配置解析。
+- `packages/sync/puupee_connect/lib/src/host/terminal_host_session.dart`：远程终端会话。
+- `packages/sync/puupee_connect/lib/src/host/pty/terminal_pty.dart`：PTY 抽象。
+- `packages/sync/puupee_connect/lib/src/host/pty/linux_terminal_pty.dart`：Linux PTY 实现，封装在抽象后。
+- `packages/sync/puupee_connect/bin/puupee_connect_host.dart`：Linux host daemon CLI。
+- `packages/sync/puupee_connect/test/...`：协议、密码、注册表、relay、daemon 配置测试。
 
-### 修改 `apps/puupee/sync_node`
+### 修改 `apps/sync_node`
 
-- `apps/puupee/sync_node/pubspec.yaml`：新增 `puupee_connect` 依赖。
-- `apps/puupee/sync_node/lib/sync_node_arg_parser.dart`：新增 connect relay 参数。
-- `apps/puupee/sync_node/lib/sync_node_connect_relay.dart`：connect relay 启动 helper，便于生命周期单测。
-- `apps/puupee/sync_node/lib/sync_node_runner.dart`：启动/停止 connect relay。
-- `apps/puupee/sync_node/test/sync_node_arg_parser_test.dart`：参数测试。
-- `apps/puupee/sync_node/test/connect_relay_lifecycle_test.dart`：生命周期测试。
+- `apps/sync_node/pubspec.yaml`：新增 `puupee_connect` 依赖。
+- `apps/sync_node/lib/sync_node_arg_parser.dart`：新增 connect relay 参数。
+- `apps/sync_node/lib/sync_node_connect_relay.dart`：connect relay 启动 helper，便于生命周期单测。
+- `apps/sync_node/lib/sync_node_runner.dart`：启动/停止 connect relay。
+- `apps/sync_node/test/sync_node_arg_parser_test.dart`：参数测试。
+- `apps/sync_node/test/connect_relay_lifecycle_test.dart`：生命周期测试。
 
-### 修改 `apps/puupee/ops`
+### 修改 `apps/ops`
 
-- `apps/puupee/ops/pubspec.yaml`：新增 `puupee_connect` 和 `flutter_webrtc` 依赖；`flutter_webrtc` 现仅在 reevibe 使用，Ops 需要显式依赖。
-- `apps/puupee/ops/lib/pages/terminal/terminal_page.dart`：本地/远程模式入口。
-- `apps/puupee/ops/lib/pages/terminal/remote_terminal_page.dart`：远程终端页面。
-- `apps/puupee/ops/lib/pages/terminal/remote_terminal_connection_dialog.dart`：设备码连接表单。
-- `apps/puupee/ops/lib/pages/terminal/ops_terminal_surface.dart`：共享 `TerminalView` 外壳。
-- `apps/puupee/ops/lib/services/connect_relay_service.dart`：Ops relay 查询和连接服务。
-- `apps/puupee/ops/lib/services/flutter_webrtc_terminal_peer.dart`：Ops 侧 WebRTC adapter。
-- `apps/puupee/ops/lib/providers/connect_provider.dart`：远程 host 列表和连接状态 provider。
-- `apps/puupee/ops/lib/models/connect_host.dart`：Ops UI host model。
-- `apps/puupee/ops/lib/router.dart`：`/ops/terminal` 返回新的 `OpsTerminalPage`。
-- `apps/puupee/ops/test/pages/terminal_remote_connection_form_test.dart`：设备码表单测试。
+- `apps/ops/pubspec.yaml`：新增 `puupee_connect` 和 `flutter_webrtc` 依赖；`flutter_webrtc` 现仅在 reevibe 使用，Ops 需要显式依赖。
+- `apps/ops/lib/pages/terminal/terminal_page.dart`：本地/远程模式入口。
+- `apps/ops/lib/pages/terminal/remote_terminal_page.dart`：远程终端页面。
+- `apps/ops/lib/pages/terminal/remote_terminal_connection_dialog.dart`：设备码连接表单。
+- `apps/ops/lib/pages/terminal/ops_terminal_surface.dart`：共享 `TerminalView` 外壳。
+- `apps/ops/lib/services/connect_relay_service.dart`：Ops relay 查询和连接服务。
+- `apps/ops/lib/services/flutter_webrtc_terminal_peer.dart`：Ops 侧 WebRTC adapter。
+- `apps/ops/lib/providers/connect_provider.dart`：远程 host 列表和连接状态 provider。
+- `apps/ops/lib/models/connect_host.dart`：Ops UI host model。
+- `apps/ops/lib/router.dart`：`/ops/terminal` 返回新的 `OpsTerminalPage`。
+- `apps/ops/test/pages/terminal_remote_connection_form_test.dart`：设备码表单测试。
 
 ### 移除旧项目
 
-- `pubspec.yaml`：workspace 移除 `apps/puupee/reevibe-server`，新增 `packages/puupee_connect`。
-- `apps/puupee/reevibe-server/`：删除。
+- `pubspec.yaml`：workspace 移除 `apps/reevibe-server`，新增 `packages/sync/puupee_connect`。
+- `apps/reevibe-server/`：删除。
 - `scripts/reevibe_server.dart`：删除旧启动脚本。
 
 ---
@@ -71,17 +71,17 @@
 ## Task 1: Scaffold `puupee_connect` and Protocol Messages
 
 **Files:**
-- Create: `packages/puupee_connect/pubspec.yaml`
-- Create: `packages/puupee_connect/analysis_options.yaml`
-- Create: `packages/puupee_connect/lib/puupee_connect.dart`
-- Create: `packages/puupee_connect/lib/src/protocol/connect_message.dart`
-- Create: `packages/puupee_connect/lib/src/protocol/connect_error.dart`
-- Create: `packages/puupee_connect/test/protocol/connect_message_test.dart`
+- Create: `packages/sync/puupee_connect/pubspec.yaml`
+- Create: `packages/sync/puupee_connect/analysis_options.yaml`
+- Create: `packages/sync/puupee_connect/lib/puupee_connect.dart`
+- Create: `packages/sync/puupee_connect/lib/src/protocol/connect_message.dart`
+- Create: `packages/sync/puupee_connect/lib/src/protocol/connect_error.dart`
+- Create: `packages/sync/puupee_connect/test/protocol/connect_message_test.dart`
 - Modify: `pubspec.yaml`
 
 - [ ] **Step 1: Add package skeleton**
 
-Create `packages/puupee_connect/pubspec.yaml`:
+Create `packages/sync/puupee_connect/pubspec.yaml`:
 
 ```yaml
 name: puupee_connect
@@ -104,7 +104,7 @@ dev_dependencies:
   test: ^1.26.2
 ```
 
-Create `packages/puupee_connect/analysis_options.yaml`:
+Create `packages/sync/puupee_connect/analysis_options.yaml`:
 
 ```yaml
 include: package:lints/recommended.yaml
@@ -114,7 +114,7 @@ linter:
     prefer_single_quotes: true
 ```
 
-Create `packages/puupee_connect/lib/puupee_connect.dart`:
+Create `packages/sync/puupee_connect/lib/puupee_connect.dart`:
 
 ```dart
 library;
@@ -126,14 +126,14 @@ export 'src/protocol/connect_message.dart';
 Modify root `pubspec.yaml` workspace section:
 
 ```yaml
-  - packages/puupee_connect
+  - packages/sync/puupee_connect
 ```
 
-Keep `apps/puupee/reevibe-server` in the workspace until Task 15 removes the old app.
+Keep `apps/reevibe-server` in the workspace until Task 15 removes the old app.
 
 - [ ] **Step 2: Write failing protocol tests**
 
-Create `packages/puupee_connect/test/protocol/connect_message_test.dart`:
+Create `packages/sync/puupee_connect/test/protocol/connect_message_test.dart`:
 
 ```dart
 import 'dart:convert';
@@ -197,14 +197,14 @@ void main() {
 Run:
 
 ```bash
-cd packages/puupee_connect && dart test test/protocol/connect_message_test.dart
+cd packages/sync/puupee_connect && dart test test/protocol/connect_message_test.dart
 ```
 
 Expected: FAIL because `ConnectMessage`, `ConnectMessageType`, and `ConnectProtocolException` are not defined.
 
 - [ ] **Step 4: Implement protocol errors**
 
-Create `packages/puupee_connect/lib/src/protocol/connect_error.dart`:
+Create `packages/sync/puupee_connect/lib/src/protocol/connect_error.dart`:
 
 ```dart
 enum ConnectErrorCode {
@@ -231,7 +231,7 @@ class ConnectProtocolException implements Exception {
 
 - [ ] **Step 5: Implement protocol messages**
 
-Create `packages/puupee_connect/lib/src/protocol/connect_message.dart`:
+Create `packages/sync/puupee_connect/lib/src/protocol/connect_message.dart`:
 
 ```dart
 import 'connect_error.dart';
@@ -354,7 +354,7 @@ class ConnectMessage {
 Run:
 
 ```bash
-cd packages/puupee_connect && dart test test/protocol/connect_message_test.dart
+cd packages/sync/puupee_connect && dart test test/protocol/connect_message_test.dart
 ```
 
 Expected: PASS.
@@ -362,7 +362,7 @@ Expected: PASS.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add pubspec.yaml packages/puupee_connect
+git add pubspec.yaml packages/sync/puupee_connect
 git commit -m "feat(puupee_connect): 添加连接协议包骨架"
 ```
 
@@ -371,12 +371,12 @@ git commit -m "feat(puupee_connect): 添加连接协议包骨架"
 ## Task 2: Password Hashing for Device-Code Connections
 
 **Files:**
-- Create: `packages/puupee_connect/lib/src/auth/connect_password.dart`
-- Create: `packages/puupee_connect/test/auth/connect_password_test.dart`
+- Create: `packages/sync/puupee_connect/lib/src/auth/connect_password.dart`
+- Create: `packages/sync/puupee_connect/test/auth/connect_password_test.dart`
 
 - [ ] **Step 1: Write failing password tests**
 
-Create `packages/puupee_connect/test/auth/connect_password_test.dart`:
+Create `packages/sync/puupee_connect/test/auth/connect_password_test.dart`:
 
 ```dart
 import 'package:puupee_connect/puupee_connect.dart';
@@ -420,14 +420,14 @@ void main() {
 Run:
 
 ```bash
-cd packages/puupee_connect && dart test test/auth/connect_password_test.dart
+cd packages/sync/puupee_connect && dart test test/auth/connect_password_test.dart
 ```
 
 Expected: FAIL because `ConnectPassword` is not defined.
 
 - [ ] **Step 3: Implement password hashing**
 
-Create `packages/puupee_connect/lib/src/auth/connect_password.dart`:
+Create `packages/sync/puupee_connect/lib/src/auth/connect_password.dart`:
 
 ```dart
 import 'dart:convert';
@@ -507,7 +507,7 @@ class ConnectPassword {
 
 - [ ] **Step 4: Export password helper**
 
-Modify `packages/puupee_connect/lib/puupee_connect.dart`:
+Modify `packages/sync/puupee_connect/lib/puupee_connect.dart`:
 
 ```dart
 library;
@@ -522,7 +522,7 @@ export 'src/protocol/connect_message.dart';
 Run:
 
 ```bash
-cd packages/puupee_connect && dart test test/auth/connect_password_test.dart
+cd packages/sync/puupee_connect && dart test test/auth/connect_password_test.dart
 ```
 
 Expected: PASS.
@@ -530,7 +530,7 @@ Expected: PASS.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add packages/puupee_connect/lib/src/auth packages/puupee_connect/test/auth
+git add packages/sync/puupee_connect/lib/src/auth packages/sync/puupee_connect/test/auth
 git commit -m "feat(puupee_connect): 添加设备码连接密码校验"
 ```
 
@@ -539,12 +539,12 @@ git commit -m "feat(puupee_connect): 添加设备码连接密码校验"
 ## Task 3: Host Registry
 
 **Files:**
-- Create: `packages/puupee_connect/lib/src/relay/host_registry.dart`
-- Create: `packages/puupee_connect/test/relay/host_registry_test.dart`
+- Create: `packages/sync/puupee_connect/lib/src/relay/host_registry.dart`
+- Create: `packages/sync/puupee_connect/test/relay/host_registry_test.dart`
 
 - [ ] **Step 1: Write failing host registry tests**
 
-Create `packages/puupee_connect/test/relay/host_registry_test.dart`:
+Create `packages/sync/puupee_connect/test/relay/host_registry_test.dart`:
 
 ```dart
 import 'package:puupee_connect/puupee_connect.dart';
@@ -639,14 +639,14 @@ void main() {
 Run:
 
 ```bash
-cd packages/puupee_connect && dart test test/relay/host_registry_test.dart
+cd packages/sync/puupee_connect && dart test test/relay/host_registry_test.dart
 ```
 
 Expected: FAIL because registry classes are not defined.
 
 - [ ] **Step 3: Implement host registry**
 
-Create `packages/puupee_connect/lib/src/relay/host_registry.dart`:
+Create `packages/sync/puupee_connect/lib/src/relay/host_registry.dart`:
 
 ```dart
 class ConnectHostRegistration {
@@ -785,7 +785,7 @@ class ConnectHostRegistry {
 
 - [ ] **Step 4: Export host registry**
 
-Modify `packages/puupee_connect/lib/puupee_connect.dart`:
+Modify `packages/sync/puupee_connect/lib/puupee_connect.dart`:
 
 ```dart
 library;
@@ -801,7 +801,7 @@ export 'src/relay/host_registry.dart';
 Run:
 
 ```bash
-cd packages/puupee_connect && dart test test/relay/host_registry_test.dart
+cd packages/sync/puupee_connect && dart test test/relay/host_registry_test.dart
 ```
 
 Expected: PASS.
@@ -809,7 +809,7 @@ Expected: PASS.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add packages/puupee_connect/lib/src/relay/host_registry.dart packages/puupee_connect/test/relay/host_registry_test.dart
+git add packages/sync/puupee_connect/lib/src/relay/host_registry.dart packages/sync/puupee_connect/test/relay/host_registry_test.dart
 git commit -m "feat(puupee_connect): 添加在线主机注册表"
 ```
 
@@ -818,12 +818,12 @@ git commit -m "feat(puupee_connect): 添加在线主机注册表"
 ## Task 4: Session Registry and Signaling Routing
 
 **Files:**
-- Create: `packages/puupee_connect/lib/src/relay/session_registry.dart`
-- Create: `packages/puupee_connect/test/relay/session_registry_test.dart`
+- Create: `packages/sync/puupee_connect/lib/src/relay/session_registry.dart`
+- Create: `packages/sync/puupee_connect/test/relay/session_registry_test.dart`
 
 - [ ] **Step 1: Write failing session registry tests**
 
-Create `packages/puupee_connect/test/relay/session_registry_test.dart`:
+Create `packages/sync/puupee_connect/test/relay/session_registry_test.dart`:
 
 ```dart
 import 'package:puupee_connect/puupee_connect.dart';
@@ -894,14 +894,14 @@ void main() {
 Run:
 
 ```bash
-cd packages/puupee_connect && dart test test/relay/session_registry_test.dart
+cd packages/sync/puupee_connect && dart test test/relay/session_registry_test.dart
 ```
 
 Expected: FAIL because `ConnectSessionRegistry` is not defined.
 
 - [ ] **Step 3: Implement session registry**
 
-Create `packages/puupee_connect/lib/src/relay/session_registry.dart`:
+Create `packages/sync/puupee_connect/lib/src/relay/session_registry.dart`:
 
 ```dart
 import 'package:uuid/uuid.dart';
@@ -1004,7 +1004,7 @@ class ConnectSessionRegistry {
 
 - [ ] **Step 4: Export session registry**
 
-Modify `packages/puupee_connect/lib/puupee_connect.dart`:
+Modify `packages/sync/puupee_connect/lib/puupee_connect.dart`:
 
 ```dart
 library;
@@ -1021,7 +1021,7 @@ export 'src/relay/session_registry.dart';
 Run:
 
 ```bash
-cd packages/puupee_connect && dart test test/relay/session_registry_test.dart
+cd packages/sync/puupee_connect && dart test test/relay/session_registry_test.dart
 ```
 
 Expected: PASS.
@@ -1029,7 +1029,7 @@ Expected: PASS.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add packages/puupee_connect/lib/src/relay/session_registry.dart packages/puupee_connect/test/relay/session_registry_test.dart
+git add packages/sync/puupee_connect/lib/src/relay/session_registry.dart packages/sync/puupee_connect/test/relay/session_registry_test.dart
 git commit -m "feat(puupee_connect): 添加连接会话注册表"
 ```
 
@@ -1038,12 +1038,12 @@ git commit -m "feat(puupee_connect): 添加连接会话注册表"
 ## Task 5: Relay Server Health, Info, and WebSocket Registration
 
 **Files:**
-- Create: `packages/puupee_connect/lib/src/relay/connect_relay_server.dart`
-- Create: `packages/puupee_connect/test/relay/connect_relay_server_test.dart`
+- Create: `packages/sync/puupee_connect/lib/src/relay/connect_relay_server.dart`
+- Create: `packages/sync/puupee_connect/test/relay/connect_relay_server_test.dart`
 
 - [ ] **Step 1: Write failing relay server tests**
 
-Create `packages/puupee_connect/test/relay/connect_relay_server_test.dart`:
+Create `packages/sync/puupee_connect/test/relay/connect_relay_server_test.dart`:
 
 ```dart
 import 'dart:convert';
@@ -1131,14 +1131,14 @@ void main() {
 Run:
 
 ```bash
-cd packages/puupee_connect && dart test test/relay/connect_relay_server_test.dart
+cd packages/sync/puupee_connect && dart test test/relay/connect_relay_server_test.dart
 ```
 
 Expected: FAIL because `ConnectRelayServer` is not defined.
 
 - [ ] **Step 3: Implement relay server**
 
-Create `packages/puupee_connect/lib/src/relay/connect_relay_server.dart` with:
+Create `packages/sync/puupee_connect/lib/src/relay/connect_relay_server.dart` with:
 
 ```dart
 import 'dart:async';
@@ -1446,7 +1446,7 @@ class ConnectRelayServer {
 
 - [ ] **Step 4: Export relay server**
 
-Modify `packages/puupee_connect/lib/puupee_connect.dart`:
+Modify `packages/sync/puupee_connect/lib/puupee_connect.dart`:
 
 ```dart
 library;
@@ -1464,7 +1464,7 @@ export 'src/relay/session_registry.dart';
 Run:
 
 ```bash
-cd packages/puupee_connect && dart test test/relay/connect_relay_server_test.dart
+cd packages/sync/puupee_connect && dart test test/relay/connect_relay_server_test.dart
 ```
 
 Expected: PASS.
@@ -1472,7 +1472,7 @@ Expected: PASS.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add packages/puupee_connect/lib/src/relay/connect_relay_server.dart packages/puupee_connect/test/relay/connect_relay_server_test.dart
+git add packages/sync/puupee_connect/lib/src/relay/connect_relay_server.dart packages/sync/puupee_connect/test/relay/connect_relay_server_test.dart
 git commit -m "feat(puupee_connect): 添加通用连接中继服务"
 ```
 
@@ -1481,13 +1481,13 @@ git commit -m "feat(puupee_connect): 添加通用连接中继服务"
 ## Task 6: Relay Client and Terminal Transport Abstractions
 
 **Files:**
-- Create: `packages/puupee_connect/lib/src/client/connect_relay_client.dart`
-- Create: `packages/puupee_connect/lib/src/client/connect_terminal_client.dart`
-- Create: `packages/puupee_connect/test/client/connect_relay_client_test.dart`
+- Create: `packages/sync/puupee_connect/lib/src/client/connect_relay_client.dart`
+- Create: `packages/sync/puupee_connect/lib/src/client/connect_terminal_client.dart`
+- Create: `packages/sync/puupee_connect/test/client/connect_relay_client_test.dart`
 
 - [ ] **Step 1: Write failing relay client test**
 
-Create `packages/puupee_connect/test/client/connect_relay_client_test.dart`:
+Create `packages/sync/puupee_connect/test/client/connect_relay_client_test.dart`:
 
 ```dart
 import 'dart:async';
@@ -1524,14 +1524,14 @@ void main() {
 Run:
 
 ```bash
-cd packages/puupee_connect && dart test test/client/connect_relay_client_test.dart
+cd packages/sync/puupee_connect && dart test test/client/connect_relay_client_test.dart
 ```
 
 Expected: FAIL because `ConnectRelayClient` is not defined.
 
 - [ ] **Step 3: Implement relay client**
 
-Create `packages/puupee_connect/lib/src/client/connect_relay_client.dart`:
+Create `packages/sync/puupee_connect/lib/src/client/connect_relay_client.dart`:
 
 ```dart
 import 'dart:async';
@@ -1599,7 +1599,7 @@ class ConnectRelayClient implements ConnectRelayConnection {
 
 - [ ] **Step 4: Export client abstractions**
 
-Modify `packages/puupee_connect/lib/puupee_connect.dart`:
+Modify `packages/sync/puupee_connect/lib/puupee_connect.dart`:
 
 ```dart
 library;
@@ -1616,7 +1616,7 @@ export 'src/relay/session_registry.dart';
 
 - [ ] **Step 5: Implement terminal client abstractions**
 
-Create `packages/puupee_connect/lib/src/client/connect_terminal_client.dart`:
+Create `packages/sync/puupee_connect/lib/src/client/connect_terminal_client.dart`:
 
 ```dart
 import 'dart:async';
@@ -1657,7 +1657,7 @@ abstract class ConnectTerminalChannel {
 Run:
 
 ```bash
-cd packages/puupee_connect && dart test test/client/connect_relay_client_test.dart
+cd packages/sync/puupee_connect && dart test test/client/connect_relay_client_test.dart
 ```
 
 Expected: PASS.
@@ -1665,7 +1665,7 @@ Expected: PASS.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add packages/puupee_connect/lib/src/client packages/puupee_connect/test/client
+git add packages/sync/puupee_connect/lib/src/client packages/sync/puupee_connect/test/client
 git commit -m "feat(puupee_connect): 添加中继客户端抽象"
 ```
 
@@ -1674,14 +1674,14 @@ git commit -m "feat(puupee_connect): 添加中继客户端抽象"
 ## Task 7: Host Daemon Configuration and Registration
 
 **Files:**
-- Create: `packages/puupee_connect/lib/src/host/connect_host_config.dart`
-- Create: `packages/puupee_connect/lib/src/host/connect_host_daemon.dart`
-- Create: `packages/puupee_connect/bin/puupee_connect_host.dart`
-- Create: `packages/puupee_connect/test/host/connect_host_config_test.dart`
+- Create: `packages/sync/puupee_connect/lib/src/host/connect_host_config.dart`
+- Create: `packages/sync/puupee_connect/lib/src/host/connect_host_daemon.dart`
+- Create: `packages/sync/puupee_connect/bin/puupee_connect_host.dart`
+- Create: `packages/sync/puupee_connect/test/host/connect_host_config_test.dart`
 
 - [ ] **Step 1: Write failing config tests**
 
-Create `packages/puupee_connect/test/host/connect_host_config_test.dart`:
+Create `packages/sync/puupee_connect/test/host/connect_host_config_test.dart`:
 
 ```dart
 import 'package:puupee_connect/puupee_connect.dart';
@@ -1736,14 +1736,14 @@ void main() {
 Run:
 
 ```bash
-cd packages/puupee_connect && dart test test/host/connect_host_config_test.dart
+cd packages/sync/puupee_connect && dart test test/host/connect_host_config_test.dart
 ```
 
 Expected: FAIL because `ConnectHostConfig` is not defined.
 
 - [ ] **Step 3: Implement config parser**
 
-Create `packages/puupee_connect/lib/src/host/connect_host_config.dart`:
+Create `packages/sync/puupee_connect/lib/src/host/connect_host_config.dart`:
 
 ```dart
 import 'dart:io';
@@ -1848,7 +1848,7 @@ class ConnectHostConfig {
 
 - [ ] **Step 4: Implement daemon skeleton**
 
-Create `packages/puupee_connect/lib/src/host/connect_host_daemon.dart`:
+Create `packages/sync/puupee_connect/lib/src/host/connect_host_daemon.dart`:
 
 ```dart
 import '../client/connect_relay_client.dart';
@@ -1898,7 +1898,7 @@ class ConnectHostDaemon {
 }
 ```
 
-Create `packages/puupee_connect/bin/puupee_connect_host.dart`:
+Create `packages/sync/puupee_connect/bin/puupee_connect_host.dart`:
 
 ```dart
 import 'dart:io';
@@ -1934,7 +1934,7 @@ Future<void> main(List<String> args) async {
 
 - [ ] **Step 5: Export host config and daemon**
 
-Modify `packages/puupee_connect/lib/puupee_connect.dart`:
+Modify `packages/sync/puupee_connect/lib/puupee_connect.dart`:
 
 ```dart
 library;
@@ -1956,7 +1956,7 @@ export 'src/relay/session_registry.dart';
 Run:
 
 ```bash
-cd packages/puupee_connect && dart test test/host/connect_host_config_test.dart
+cd packages/sync/puupee_connect && dart test test/host/connect_host_config_test.dart
 ```
 
 Expected: PASS.
@@ -1964,7 +1964,7 @@ Expected: PASS.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add packages/puupee_connect/lib/src/host packages/puupee_connect/bin packages/puupee_connect/test/host
+git add packages/sync/puupee_connect/lib/src/host packages/sync/puupee_connect/bin packages/sync/puupee_connect/test/host
 git commit -m "feat(puupee_connect): 添加 Linux 主机守护进程入口"
 ```
 
@@ -1973,14 +1973,14 @@ git commit -m "feat(puupee_connect): 添加 Linux 主机守护进程入口"
 ## Task 8: PTY Abstraction and Linux Adapter
 
 **Files:**
-- Create: `packages/puupee_connect/lib/src/host/pty/terminal_pty.dart`
-- Create: `packages/puupee_connect/lib/src/host/pty/linux_terminal_pty.dart`
-- Create: `packages/puupee_connect/lib/src/host/terminal_host_session.dart`
-- Create: `packages/puupee_connect/test/host/terminal_host_session_test.dart`
+- Create: `packages/sync/puupee_connect/lib/src/host/pty/terminal_pty.dart`
+- Create: `packages/sync/puupee_connect/lib/src/host/pty/linux_terminal_pty.dart`
+- Create: `packages/sync/puupee_connect/lib/src/host/terminal_host_session.dart`
+- Create: `packages/sync/puupee_connect/test/host/terminal_host_session_test.dart`
 
 - [ ] **Step 1: Write failing terminal session test with fake PTY**
 
-Create `packages/puupee_connect/test/host/terminal_host_session_test.dart`:
+Create `packages/sync/puupee_connect/test/host/terminal_host_session_test.dart`:
 
 ```dart
 import 'dart:async';
@@ -2055,14 +2055,14 @@ void main() {
 Run:
 
 ```bash
-cd packages/puupee_connect && dart test test/host/terminal_host_session_test.dart
+cd packages/sync/puupee_connect && dart test test/host/terminal_host_session_test.dart
 ```
 
 Expected: FAIL because `TerminalPty` and `TerminalHostSession` are not defined.
 
 - [ ] **Step 3: Implement PTY abstraction**
 
-Create `packages/puupee_connect/lib/src/host/pty/terminal_pty.dart`:
+Create `packages/sync/puupee_connect/lib/src/host/pty/terminal_pty.dart`:
 
 ```dart
 import 'dart:typed_data';
@@ -2080,7 +2080,7 @@ abstract class TerminalPty {
 
 - [ ] **Step 4: Implement terminal host session**
 
-Create `packages/puupee_connect/lib/src/host/terminal_host_session.dart`:
+Create `packages/sync/puupee_connect/lib/src/host/terminal_host_session.dart`:
 
 ```dart
 import 'dart:async';
@@ -2142,7 +2142,7 @@ class TerminalHostSession {
 
 - [ ] **Step 5: Implement Linux process adapter with PTY seam**
 
-Create `packages/puupee_connect/lib/src/host/pty/linux_terminal_pty.dart`:
+Create `packages/sync/puupee_connect/lib/src/host/pty/linux_terminal_pty.dart`:
 
 ```dart
 import 'dart:async';
@@ -2214,7 +2214,7 @@ This adapter uses `Process.start` as the compile-safe first implementation behin
 Run:
 
 ```bash
-cd packages/puupee_connect && dart test test/host/terminal_host_session_test.dart
+cd packages/sync/puupee_connect && dart test test/host/terminal_host_session_test.dart
 ```
 
 Expected: PASS.
@@ -2222,7 +2222,7 @@ Expected: PASS.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add packages/puupee_connect/lib/src/host/pty packages/puupee_connect/lib/src/host/terminal_host_session.dart packages/puupee_connect/test/host/terminal_host_session_test.dart
+git add packages/sync/puupee_connect/lib/src/host/pty packages/sync/puupee_connect/lib/src/host/terminal_host_session.dart packages/sync/puupee_connect/test/host/terminal_host_session_test.dart
 git commit -m "feat(puupee_connect): 添加远程终端 PTY 桥接"
 ```
 
@@ -2231,13 +2231,13 @@ git commit -m "feat(puupee_connect): 添加远程终端 PTY 桥接"
 ## Task 9: Host WebRTC DataChannel Integration
 
 **Files:**
-- Create: `packages/puupee_connect/lib/src/host/webrtc_dart_terminal_peer.dart`
-- Modify: `packages/puupee_connect/lib/src/host/connect_host_daemon.dart`
-- Create: `packages/puupee_connect/test/host/connect_host_daemon_test.dart`
+- Create: `packages/sync/puupee_connect/lib/src/host/webrtc_dart_terminal_peer.dart`
+- Modify: `packages/sync/puupee_connect/lib/src/host/connect_host_daemon.dart`
+- Create: `packages/sync/puupee_connect/test/host/connect_host_daemon_test.dart`
 
 - [ ] **Step 1: Write failing daemon request handling test**
 
-Create `packages/puupee_connect/test/host/connect_host_daemon_test.dart`:
+Create `packages/sync/puupee_connect/test/host/connect_host_daemon_test.dart`:
 
 ```dart
 import 'dart:async';
@@ -2307,14 +2307,14 @@ void main() {
 Run:
 
 ```bash
-cd packages/puupee_connect && dart test test/host/connect_host_daemon_test.dart
+cd packages/sync/puupee_connect && dart test test/host/connect_host_daemon_test.dart
 ```
 
 Expected: FAIL because current daemon does not listen for `connectRequest`.
 
 - [ ] **Step 3: Implement host-side peer abstraction**
 
-Create `packages/puupee_connect/lib/src/host/webrtc_dart_terminal_peer.dart`:
+Create `packages/sync/puupee_connect/lib/src/host/webrtc_dart_terminal_peer.dart`:
 
 ```dart
 import 'dart:async';
@@ -2387,7 +2387,7 @@ class WebRtcDartTerminalPeer {
 
 - [ ] **Step 4: Update daemon to accept connect requests**
 
-Modify `packages/puupee_connect/lib/src/host/connect_host_daemon.dart` so `start()` listens to messages:
+Modify `packages/sync/puupee_connect/lib/src/host/connect_host_daemon.dart` so `start()` listens to messages:
 
 ```dart
 StreamSubscription<ConnectMessage>? _relaySub;
@@ -2445,7 +2445,7 @@ Future<void> stop() async {
 Run:
 
 ```bash
-cd packages/puupee_connect && dart test test/host/connect_host_daemon_test.dart
+cd packages/sync/puupee_connect && dart test test/host/connect_host_daemon_test.dart
 ```
 
 Expected: PASS.
@@ -2453,7 +2453,7 @@ Expected: PASS.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add packages/puupee_connect/lib/src/host packages/puupee_connect/test/host/connect_host_daemon_test.dart
+git add packages/sync/puupee_connect/lib/src/host packages/sync/puupee_connect/test/host/connect_host_daemon_test.dart
 git commit -m "feat(puupee_connect): 添加主机侧 WebRTC 会话入口"
 ```
 
@@ -2462,16 +2462,16 @@ git commit -m "feat(puupee_connect): 添加主机侧 WebRTC 会话入口"
 ## Task 10: sync_node Connect Relay Parameters and Lifecycle
 
 **Files:**
-- Modify: `apps/puupee/sync_node/pubspec.yaml`
-- Modify: `apps/puupee/sync_node/lib/sync_node_arg_parser.dart`
-- Create: `apps/puupee/sync_node/lib/sync_node_connect_relay.dart`
-- Modify: `apps/puupee/sync_node/lib/sync_node_runner.dart`
-- Create: `apps/puupee/sync_node/test/sync_node_arg_parser_test.dart`
-- Create: `apps/puupee/sync_node/test/connect_relay_lifecycle_test.dart`
+- Modify: `apps/sync_node/pubspec.yaml`
+- Modify: `apps/sync_node/lib/sync_node_arg_parser.dart`
+- Create: `apps/sync_node/lib/sync_node_connect_relay.dart`
+- Modify: `apps/sync_node/lib/sync_node_runner.dart`
+- Create: `apps/sync_node/test/sync_node_arg_parser_test.dart`
+- Create: `apps/sync_node/test/connect_relay_lifecycle_test.dart`
 
 - [ ] **Step 1: Write failing arg parser test**
 
-Create `apps/puupee/sync_node/test/sync_node_arg_parser_test.dart`:
+Create `apps/sync_node/test/sync_node_arg_parser_test.dart`:
 
 ```dart
 import 'package:puupee_sync_node/sync_node_arg_parser.dart';
@@ -2499,21 +2499,21 @@ void main() {
 Run:
 
 ```bash
-cd apps/puupee/sync_node && dart test test/sync_node_arg_parser_test.dart
+cd apps/sync_node && dart test test/sync_node_arg_parser_test.dart
 ```
 
 Expected: FAIL because connect relay options are missing.
 
 - [ ] **Step 3: Add dependency and parser options**
 
-Modify `apps/puupee/sync_node/pubspec.yaml`:
+Modify `apps/sync_node/pubspec.yaml`:
 
 ```yaml
 dependencies:
   puupee_connect: ^0.1.0
 ```
 
-Modify `apps/puupee/sync_node/lib/sync_node_arg_parser.dart` by adding before `help`:
+Modify `apps/sync_node/lib/sync_node_arg_parser.dart` by adding before `help`:
 
 ```dart
     ..addFlag(
@@ -2551,14 +2551,14 @@ Modify `apps/puupee/sync_node/lib/sync_node_arg_parser.dart` by adding before `h
 Run:
 
 ```bash
-cd apps/puupee/sync_node && dart test test/sync_node_arg_parser_test.dart
+cd apps/sync_node && dart test test/sync_node_arg_parser_test.dart
 ```
 
 Expected: PASS.
 
 - [ ] **Step 5: Write lifecycle test**
 
-Create `apps/puupee/sync_node/test/connect_relay_lifecycle_test.dart`:
+Create `apps/sync_node/test/connect_relay_lifecycle_test.dart`:
 
 ```dart
 import 'dart:convert';
@@ -2604,7 +2604,7 @@ void main() {
 
 - [ ] **Step 6: Add sync_node connect relay helper**
 
-Create `apps/puupee/sync_node/lib/sync_node_connect_relay.dart`:
+Create `apps/sync_node/lib/sync_node_connect_relay.dart`:
 
 ```dart
 import 'package:puupee_connect/puupee_connect.dart';
@@ -2629,7 +2629,7 @@ Future<ConnectRelayServer?> startSyncNodeConnectRelay({
 
 - [ ] **Step 7: Update runner lifecycle**
 
-Modify `apps/puupee/sync_node/lib/sync_node_runner.dart`:
+Modify `apps/sync_node/lib/sync_node_runner.dart`:
 
 ```dart
 import 'package:puupee_connect/puupee_connect.dart';
@@ -2701,9 +2701,9 @@ Return handle with `connectRelayServer: connectRelayServer`.
 Run:
 
 ```bash
-cd apps/puupee/sync_node && dart test test/sync_node_arg_parser_test.dart
+cd apps/sync_node && dart test test/sync_node_arg_parser_test.dart
 dart test test/connect_relay_lifecycle_test.dart
-cd /Users/j/repos/puupees/puupee-apps && dart analyze apps/puupee/sync_node packages/puupee_connect
+cd /Users/j/repos/puupees/puupee-apps && dart analyze apps/sync_node packages/sync/puupee_connect
 ```
 
 Expected: tests PASS and analysis reports no errors for touched packages.
@@ -2711,7 +2711,7 @@ Expected: tests PASS and analysis reports no errors for touched packages.
 - [ ] **Step 9: Commit**
 
 ```bash
-git add apps/puupee/sync_node/pubspec.yaml apps/puupee/sync_node/lib apps/puupee/sync_node/test
+git add apps/sync_node/pubspec.yaml apps/sync_node/lib apps/sync_node/test
 git commit -m "feat(sync_node): 集成 Puupee Connect 中继服务"
 ```
 
@@ -2720,15 +2720,15 @@ git commit -m "feat(sync_node): 集成 Puupee Connect 中继服务"
 ## Task 11: Ops Models, Providers, and Relay Service
 
 **Files:**
-- Modify: `apps/puupee/ops/pubspec.yaml`
-- Create: `apps/puupee/ops/lib/models/connect_host.dart`
-- Create: `apps/puupee/ops/lib/services/connect_relay_service.dart`
-- Create: `apps/puupee/ops/lib/providers/connect_provider.dart`
-- Create: `apps/puupee/ops/test/services/connect_relay_service_test.dart`
+- Modify: `apps/ops/pubspec.yaml`
+- Create: `apps/ops/lib/models/connect_host.dart`
+- Create: `apps/ops/lib/services/connect_relay_service.dart`
+- Create: `apps/ops/lib/providers/connect_provider.dart`
+- Create: `apps/ops/test/services/connect_relay_service_test.dart`
 
 - [ ] **Step 1: Write failing service test**
 
-Create `apps/puupee/ops/test/services/connect_relay_service_test.dart`:
+Create `apps/ops/test/services/connect_relay_service_test.dart`:
 
 ```dart
 import 'package:puupee_ops/models/connect_host.dart';
@@ -2757,14 +2757,14 @@ void main() {
 Run:
 
 ```bash
-cd apps/puupee/ops && flutter test test/services/connect_relay_service_test.dart
+cd apps/ops && flutter test test/services/connect_relay_service_test.dart
 ```
 
 Expected: FAIL because `ConnectHost` is missing.
 
 - [ ] **Step 3: Add Ops dependencies**
 
-Modify `apps/puupee/ops/pubspec.yaml`:
+Modify `apps/ops/pubspec.yaml`:
 
 ```yaml
 dependencies:
@@ -2774,7 +2774,7 @@ dependencies:
 
 - [ ] **Step 4: Implement model**
 
-Create `apps/puupee/ops/lib/models/connect_host.dart`:
+Create `apps/ops/lib/models/connect_host.dart`:
 
 ```dart
 class ConnectHost {
@@ -2816,7 +2816,7 @@ class ConnectHost {
 
 - [ ] **Step 5: Implement relay service**
 
-Create `apps/puupee/ops/lib/services/connect_relay_service.dart`:
+Create `apps/ops/lib/services/connect_relay_service.dart`:
 
 ```dart
 import 'dart:async';
@@ -2868,7 +2868,7 @@ class OpsConnectRelayService {
 
 - [ ] **Step 6: Implement provider shell**
 
-Create `apps/puupee/ops/lib/providers/connect_provider.dart`:
+Create `apps/ops/lib/providers/connect_provider.dart`:
 
 ```dart
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -2890,7 +2890,7 @@ Run generator later in Task 14 with the Ops build_runner command.
 Run:
 
 ```bash
-cd apps/puupee/ops && flutter test test/services/connect_relay_service_test.dart
+cd apps/ops && flutter test test/services/connect_relay_service_test.dart
 ```
 
 Expected: PASS.
@@ -2898,7 +2898,7 @@ Expected: PASS.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add apps/puupee/ops/pubspec.yaml apps/puupee/ops/lib/models/connect_host.dart apps/puupee/ops/lib/services/connect_relay_service.dart apps/puupee/ops/lib/providers/connect_provider.dart apps/puupee/ops/test/services/connect_relay_service_test.dart
+git add apps/ops/pubspec.yaml apps/ops/lib/models/connect_host.dart apps/ops/lib/services/connect_relay_service.dart apps/ops/lib/providers/connect_provider.dart apps/ops/test/services/connect_relay_service_test.dart
 git commit -m "feat(ops): 添加 Connect 远程主机模型"
 ```
 
@@ -2907,15 +2907,15 @@ git commit -m "feat(ops): 添加 Connect 远程主机模型"
 ## Task 12: Ops Terminal Mode Shell and Device-Code Form
 
 **Files:**
-- Create: `apps/puupee/ops/lib/pages/terminal/terminal_page.dart`
-- Create: `apps/puupee/ops/lib/pages/terminal/remote_terminal_connection_dialog.dart`
-- Create: `apps/puupee/ops/lib/pages/terminal/remote_terminal_page.dart`
-- Modify: `apps/puupee/ops/lib/router.dart`
-- Create: `apps/puupee/ops/test/pages/terminal_remote_connection_form_test.dart`
+- Create: `apps/ops/lib/pages/terminal/terminal_page.dart`
+- Create: `apps/ops/lib/pages/terminal/remote_terminal_connection_dialog.dart`
+- Create: `apps/ops/lib/pages/terminal/remote_terminal_page.dart`
+- Modify: `apps/ops/lib/router.dart`
+- Create: `apps/ops/test/pages/terminal_remote_connection_form_test.dart`
 
 - [ ] **Step 1: Write failing widget test**
 
-Create `apps/puupee/ops/test/pages/terminal_remote_connection_form_test.dart`:
+Create `apps/ops/test/pages/terminal_remote_connection_form_test.dart`:
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
@@ -2938,14 +2938,14 @@ void main() {
 Run:
 
 ```bash
-cd apps/puupee/ops && flutter test test/pages/terminal_remote_connection_form_test.dart
+cd apps/ops && flutter test test/pages/terminal_remote_connection_form_test.dart
 ```
 
 Expected: FAIL because form widget is missing.
 
 - [ ] **Step 3: Implement terminal mode shell**
 
-Create `apps/puupee/ops/lib/pages/terminal/terminal_page.dart`:
+Create `apps/ops/lib/pages/terminal/terminal_page.dart`:
 
 ```dart
 import 'package:shadcn_flutter/shadcn_flutter.dart';
@@ -3000,7 +3000,7 @@ class _OpsTerminalPageState extends State<OpsTerminalPage> {
 
 - [ ] **Step 4: Implement device-code form**
 
-Create `apps/puupee/ops/lib/pages/terminal/remote_terminal_connection_dialog.dart`:
+Create `apps/ops/lib/pages/terminal/remote_terminal_connection_dialog.dart`:
 
 ```dart
 import 'package:shadcn_flutter/shadcn_flutter.dart';
@@ -3080,7 +3080,7 @@ class _RemoteTerminalConnectionFormState
 
 - [ ] **Step 5: Implement remote terminal page shell**
 
-Create `apps/puupee/ops/lib/pages/terminal/remote_terminal_page.dart`:
+Create `apps/ops/lib/pages/terminal/remote_terminal_page.dart`:
 
 ```dart
 import 'package:shadcn_flutter/shadcn_flutter.dart';
@@ -3141,7 +3141,7 @@ class RemoteTerminalPage extends StatelessWidget {
 
 - [ ] **Step 6: Update router**
 
-Modify `apps/puupee/ops/lib/router.dart` imports:
+Modify `apps/ops/lib/router.dart` imports:
 
 ```dart
 import 'package:puupee_ops/pages/terminal/terminal_page.dart';
@@ -3158,7 +3158,7 @@ return const OpsTerminalPage();
 Run:
 
 ```bash
-cd apps/puupee/ops && flutter test test/pages/terminal_remote_connection_form_test.dart
+cd apps/ops && flutter test test/pages/terminal_remote_connection_form_test.dart
 ```
 
 Expected: PASS.
@@ -3166,7 +3166,7 @@ Expected: PASS.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add apps/puupee/ops/lib/pages/terminal apps/puupee/ops/lib/router.dart apps/puupee/ops/test/pages/terminal_remote_connection_form_test.dart
+git add apps/ops/lib/pages/terminal apps/ops/lib/router.dart apps/ops/test/pages/terminal_remote_connection_form_test.dart
 git commit -m "feat(ops): 添加本地和远程终端入口"
 ```
 
@@ -3175,13 +3175,13 @@ git commit -m "feat(ops): 添加本地和远程终端入口"
 ## Task 13: Ops Flutter WebRTC Terminal Peer
 
 **Files:**
-- Create: `apps/puupee/ops/lib/services/flutter_webrtc_terminal_peer.dart`
-- Modify: `apps/puupee/ops/lib/pages/terminal/remote_terminal_page.dart`
-- Create: `apps/puupee/ops/test/services/flutter_webrtc_terminal_peer_test.dart`
+- Create: `apps/ops/lib/services/flutter_webrtc_terminal_peer.dart`
+- Modify: `apps/ops/lib/pages/terminal/remote_terminal_page.dart`
+- Create: `apps/ops/test/services/flutter_webrtc_terminal_peer_test.dart`
 
 - [ ] **Step 1: Write data-channel message encoding test**
 
-Create `apps/puupee/ops/test/services/flutter_webrtc_terminal_peer_test.dart`:
+Create `apps/ops/test/services/flutter_webrtc_terminal_peer_test.dart`:
 
 ```dart
 import 'dart:convert';
@@ -3208,14 +3208,14 @@ void main() {
 Run:
 
 ```bash
-cd apps/puupee/ops && flutter test test/services/flutter_webrtc_terminal_peer_test.dart
+cd apps/ops && flutter test test/services/flutter_webrtc_terminal_peer_test.dart
 ```
 
 Expected: FAIL because peer service is missing.
 
 - [ ] **Step 3: Implement peer encoding and adapter skeleton**
 
-Create `apps/puupee/ops/lib/services/flutter_webrtc_terminal_peer.dart`:
+Create `apps/ops/lib/services/flutter_webrtc_terminal_peer.dart`:
 
 ```dart
 import 'dart:async';
@@ -3316,7 +3316,7 @@ class FlutterWebRtcTerminalPeer {
 Run:
 
 ```bash
-cd apps/puupee/ops && flutter test test/services/flutter_webrtc_terminal_peer_test.dart
+cd apps/ops && flutter test test/services/flutter_webrtc_terminal_peer_test.dart
 ```
 
 Expected: PASS.
@@ -3324,7 +3324,7 @@ Expected: PASS.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add apps/puupee/ops/lib/services/flutter_webrtc_terminal_peer.dart apps/puupee/ops/test/services/flutter_webrtc_terminal_peer_test.dart
+git add apps/ops/lib/services/flutter_webrtc_terminal_peer.dart apps/ops/test/services/flutter_webrtc_terminal_peer_test.dart
 git commit -m "feat(ops): 添加远程终端 WebRTC 客户端"
 ```
 
@@ -3333,7 +3333,7 @@ git commit -m "feat(ops): 添加远程终端 WebRTC 客户端"
 ## Task 14: Code Generation, Analysis, and Local Smoke Tests
 
 **Files:**
-- Generated: `apps/puupee/ops/lib/providers/connect_provider.g.dart`
+- Generated: `apps/ops/lib/providers/connect_provider.g.dart`
 - Generated or lockfile updates from workspace bootstrap if present.
 
 - [ ] **Step 1: Run dependency resolution**
@@ -3344,14 +3344,14 @@ Run:
 dart pub get
 ```
 
-Expected: package graph resolves with `packages/puupee_connect`, `sync_node`, and Ops dependencies.
+Expected: package graph resolves with `packages/sync/puupee_connect`, `sync_node`, and Ops dependencies.
 
 - [ ] **Step 2: Run Ops provider generation**
 
 Run:
 
 ```bash
-cd apps/puupee/ops && dart run build_runner build --delete-conflicting-outputs
+cd apps/ops && dart run build_runner build --delete-conflicting-outputs
 ```
 
 Expected: `lib/providers/connect_provider.g.dart` is generated and command exits 0.
@@ -3361,7 +3361,7 @@ Expected: `lib/providers/connect_provider.g.dart` is generated and command exits
 Run:
 
 ```bash
-cd packages/puupee_connect && dart test
+cd packages/sync/puupee_connect && dart test
 ```
 
 Expected: all `puupee_connect` tests PASS.
@@ -3371,7 +3371,7 @@ Expected: all `puupee_connect` tests PASS.
 Run:
 
 ```bash
-cd apps/puupee/sync_node && dart test
+cd apps/sync_node && dart test
 ```
 
 Expected: sync_node tests PASS.
@@ -3381,7 +3381,7 @@ Expected: sync_node tests PASS.
 Run:
 
 ```bash
-cd apps/puupee/ops && flutter test test/services/connect_relay_service_test.dart test/pages/terminal_remote_connection_form_test.dart test/services/flutter_webrtc_terminal_peer_test.dart
+cd apps/ops && flutter test test/services/connect_relay_service_test.dart test/pages/terminal_remote_connection_form_test.dart test/services/flutter_webrtc_terminal_peer_test.dart
 ```
 
 Expected: focused Ops tests PASS.
@@ -3391,7 +3391,7 @@ Expected: focused Ops tests PASS.
 Run:
 
 ```bash
-dart analyze packages/puupee_connect apps/puupee/sync_node apps/puupee/ops
+dart analyze packages/sync/puupee_connect apps/sync_node apps/ops
 ```
 
 Expected: no analyzer errors in touched packages.
@@ -3399,7 +3399,7 @@ Expected: no analyzer errors in touched packages.
 - [ ] **Step 7: Commit generated files and dependency updates**
 
 ```bash
-git add pubspec.lock apps/puupee/ops/lib/providers/connect_provider.g.dart
+git add pubspec.lock apps/ops/lib/providers/connect_provider.g.dart
 git commit -m "build(connect): 更新依赖解析和生成文件"
 ```
 
@@ -3411,11 +3411,11 @@ If `pubspec.lock` does not change, stage only generated files.
 
 **Files:**
 - Modify: `pubspec.yaml`
-- Delete: `apps/puupee/reevibe-server/src/main.dart`
-- Delete: `apps/puupee/reevibe-server/pubspec.yaml`
-- Delete: `apps/puupee/reevibe-server/docs/FEATURES.md`
-- Delete: `apps/puupee/reevibe-server/docs/PRICING.md`
-- Delete: `apps/puupee/reevibe-server/CHANGELOG.md`
+- Delete: `apps/reevibe-server/src/main.dart`
+- Delete: `apps/reevibe-server/pubspec.yaml`
+- Delete: `apps/reevibe-server/docs/FEATURES.md`
+- Delete: `apps/reevibe-server/docs/PRICING.md`
+- Delete: `apps/reevibe-server/CHANGELOG.md`
 - Delete: `scripts/reevibe_server.dart`
 
 - [ ] **Step 1: Verify no live references remain**
@@ -3423,7 +3423,7 @@ If `pubspec.lock` does not change, stage only generated files.
 Run:
 
 ```bash
-rg -n "reevibe-server|reevibe_server|reevibe_server.dart" pubspec.yaml scripts apps packages .puupee --glob '!apps/puupee/reevibe-server/**'
+rg -n "reevibe-server|reevibe_server|reevibe_server.dart" pubspec.yaml scripts apps packages .puupee --glob '!apps/reevibe-server/**'
 ```
 
 Expected: remaining matches are documentation or builder tests that intentionally exercise app-name conversion. Inspect each match and update only runtime/workspace references.
@@ -3433,7 +3433,7 @@ Expected: remaining matches are documentation or builder tests that intentionall
 Modify root `pubspec.yaml` by deleting:
 
 ```yaml
-  - apps/puupee/reevibe-server
+  - apps/reevibe-server
 ```
 
 - [ ] **Step 3: Delete old app and script**
@@ -3441,7 +3441,7 @@ Modify root `pubspec.yaml` by deleting:
 Run:
 
 ```bash
-rm -rf apps/puupee/reevibe-server
+rm -rf apps/reevibe-server
 rm scripts/reevibe_server.dart
 ```
 
@@ -3451,7 +3451,7 @@ Run:
 
 ```bash
 dart pub get
-rg -n "apps/puupee/reevibe-server|name: reevibe_server" pubspec.yaml apps packages scripts
+rg -n "apps/reevibe-server|name: reevibe_server" pubspec.yaml apps packages scripts
 ```
 
 Expected: `dart pub get` succeeds; `rg` finds no workspace/runtime references to the deleted project.
@@ -3459,7 +3459,7 @@ Expected: `dart pub get` succeeds; `rg` finds no workspace/runtime references to
 - [ ] **Step 5: Commit removal**
 
 ```bash
-git add pubspec.yaml apps/puupee/reevibe-server scripts/reevibe_server.dart
+git add pubspec.yaml apps/reevibe-server scripts/reevibe_server.dart
 git commit -m "refactor(connect): 移除 reevibe-server 独立项目"
 ```
 
@@ -3475,7 +3475,7 @@ git commit -m "refactor(connect): 移除 reevibe-server 独立项目"
 Run:
 
 ```bash
-cd packages/puupee_connect
+cd packages/sync/puupee_connect
 dart run bin/puupee_connect_host.dart --help
 ```
 
@@ -3486,19 +3486,19 @@ Expected: CLI usage prints successfully and exits 0.
 Run:
 
 ```bash
-cd packages/puupee_connect
+cd packages/sync/puupee_connect
 dart compile exe bin/puupee_connect_host.dart -o build/puupee-connect-host
 ```
 
-Expected: executable is created at `packages/puupee_connect/build/puupee-connect-host`.
+Expected: executable is created at `packages/sync/puupee_connect/build/puupee-connect-host`.
 
 - [ ] **Step 3: Run all focused tests again**
 
 Run:
 
 ```bash
-cd packages/puupee_connect && dart test
-cd ../../apps/puupee/sync_node && dart test
+cd packages/sync/puupee_connect && dart test
+cd ../../apps/sync_node && dart test
 cd ../ops && flutter test test/services/connect_relay_service_test.dart test/pages/terminal_remote_connection_form_test.dart test/services/flutter_webrtc_terminal_peer_test.dart
 ```
 
@@ -3510,7 +3510,7 @@ Run:
 
 ```bash
 cd /Users/j/repos/puupees/puupee-apps
-dart analyze packages/puupee_connect apps/puupee/sync_node apps/puupee/ops
+dart analyze packages/sync/puupee_connect apps/sync_node apps/ops
 ```
 
 Expected: no analyzer errors in touched packages.
@@ -3532,7 +3532,7 @@ If no files changed, skip this commit.
 
 Spec coverage:
 
-- `packages/puupee_connect` package, protocol, relay, host daemon, client abstraction: Tasks 1-9.
+- `packages/sync/puupee_connect` package, protocol, relay, host daemon, client abstraction: Tasks 1-9.
 - sync_node optional relay service: Task 10.
 - Ops local/remote terminal distinction and device-code form: Tasks 11-13.
 - TURN/STUN and direct WebRTC path: Tasks 5, 9, 13.

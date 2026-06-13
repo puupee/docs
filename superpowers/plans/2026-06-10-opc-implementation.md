@@ -16,57 +16,57 @@
 
 | 文件路径 | 职责 |
 |----------|------|
-| `apps/puupee/opc/lib/main.dart` | 应用入口，配置启动参数 |
-| `apps/puupee/opc/lib/env.dart` | 环境配置，继承 EnvConfig |
-| `apps/puupee/opc/lib/router.dart` | 路由定义，类型化 GoRoute |
-| `apps/puupee/opc/lib/provider.dart` | 全局 provider 定义 |
+| `apps/opc/lib/main.dart` | 应用入口，配置启动参数 |
+| `apps/opc/lib/env.dart` | 环境配置，继承 EnvConfig |
+| `apps/opc/lib/router.dart` | 路由定义，类型化 GoRoute |
+| `apps/opc/lib/provider.dart` | 全局 provider 定义 |
 
 ### 数据模型
 
 | 文件路径 | 职责 |
 |----------|------|
-| `apps/puupee/opc/lib/models/agent.dart` | 智能体数据模型 |
-| `apps/puupee/opc/lib/models/workstation.dart` | 工位数据模型 |
-| `apps/puupee/opc/lib/models/task.dart` | 任务数据模型 |
-| `apps/puupee/opc/lib/models/layout.dart` | 布局数据模型 |
+| `apps/opc/lib/models/agent.dart` | 智能体数据模型 |
+| `apps/opc/lib/models/workstation.dart` | 工位数据模型 |
+| `apps/opc/lib/models/task.dart` | 任务数据模型 |
+| `apps/opc/lib/models/layout.dart` | 布局数据模型 |
 
 ### 状态管理
 
 | 文件路径 | 职责 |
 |----------|------|
-| `apps/puupee/opc/lib/providers/agents/agent_provider.dart` | 智能体状态管理 |
-| `apps/puupee/opc/lib/providers/layout/layout_provider.dart` | 布局状态管理 |
-| `apps/puupee/opc/lib/providers/tasks/task_provider.dart` | 任务状态管理 |
-| `apps/puupee/opc/lib/providers/workspace/workspace_provider.dart` | 工作区状态管理 |
+| `apps/opc/lib/providers/agents/agent_provider.dart` | 智能体状态管理 |
+| `apps/opc/lib/providers/layout/layout_provider.dart` | 布局状态管理 |
+| `apps/opc/lib/providers/tasks/task_provider.dart` | 任务状态管理 |
+| `apps/opc/lib/providers/workspace/workspace_provider.dart` | 工作区状态管理 |
 
 ### 业务逻辑
 
 | 文件路径 | 职责 |
 |----------|------|
-| `apps/puupee/opc/lib/services/ai_service.dart` | AI 服务，调用云端 API |
-| `apps/puupee/opc/lib/services/layout_engine.dart` | 布局引擎，动态生成布局 |
-| `apps/puupee/opc/lib/services/task_allocator.dart` | 任务分配器，智能分配任务 |
+| `apps/opc/lib/services/ai_service.dart` | AI 服务，调用云端 API |
+| `apps/opc/lib/services/layout_engine.dart` | 布局引擎，动态生成布局 |
+| `apps/opc/lib/services/task_allocator.dart` | 任务分配器，智能分配任务 |
 
 ### 数据访问
 
 | 文件路径 | 职责 |
 |----------|------|
-| `apps/puupee/opc/lib/repositories/agent_repo.dart` | 智能体数据仓库 |
-| `apps/puupee/opc/lib/repositories/task_repo.dart` | 任务数据仓库 |
-| `apps/puupee/opc/lib/repositories/layout_repo.dart` | 布局数据仓库 |
+| `apps/opc/lib/repositories/agent_repo.dart` | 智能体数据仓库 |
+| `apps/opc/lib/repositories/task_repo.dart` | 任务数据仓库 |
+| `apps/opc/lib/repositories/layout_repo.dart` | 布局数据仓库 |
 
 ### UI 组件
 
 | 文件路径 | 职责 |
 |----------|------|
-| `apps/puupee/opc/lib/pages/home/home_page.dart` | 主页面 |
-| `apps/puupee/opc/lib/pages/workspace/workspace_page.dart` | 工作区页面 |
-| `apps/puupee/opc/lib/pages/agents/agents_page.dart` | 智能体管理页面 |
-| `apps/puupee/opc/lib/pages/settings/settings_page.dart` | 设置页面 |
-| `apps/puupee/opc/lib/components/workstation/workstation_card.dart` | 工位卡片组件 |
-| `apps/puupee/opc/lib/components/agent_card/agent_card.dart` | 智能体卡片组件 |
-| `apps/puupee/opc/lib/components/task_panel/task_panel.dart` | 任务面板组件 |
-| `apps/puupee/opc/lib/components/layout/office_layout.dart` | 办公室布局组件 |
+| `apps/opc/lib/pages/home/home_page.dart` | 主页面 |
+| `apps/opc/lib/pages/workspace/workspace_page.dart` | 工作区页面 |
+| `apps/opc/lib/pages/agents/agents_page.dart` | 智能体管理页面 |
+| `apps/opc/lib/pages/settings/settings_page.dart` | 设置页面 |
+| `apps/opc/lib/components/workstation/workstation_card.dart` | 工位卡片组件 |
+| `apps/opc/lib/components/agent_card/agent_card.dart` | 智能体卡片组件 |
+| `apps/opc/lib/components/task_panel/task_panel.dart` | 任务面板组件 |
+| `apps/opc/lib/components/layout/office_layout.dart` | 办公室布局组件 |
 
 ---
 
@@ -75,11 +75,11 @@
 ### Task 1: 创建 opc 子应用基础结构
 
 **Files:**
-- Create: `apps/puupee/opc/pubspec.yaml`
-- Create: `apps/puupee/opc/lib/main.dart`
-- Create: `apps/puupee/opc/lib/env.dart`
-- Create: `apps/puupee/opc/lib/router.dart`
-- Create: `apps/puupee/opc/lib/provider.dart`
+- Create: `apps/opc/pubspec.yaml`
+- Create: `apps/opc/lib/main.dart`
+- Create: `apps/opc/lib/env.dart`
+- Create: `apps/opc/lib/router.dart`
+- Create: `apps/opc/lib/provider.dart`
 
 - [ ] **Step 1: 创建 pubspec.yaml**
 
@@ -369,13 +369,13 @@ class OpcConfigState {
 - [ ] **Step 6: 运行 build_runner 生成代码**
 
 ```bash
-cd apps/puupee/opc && dart run build_runner build --delete-conflicting-outputs
+cd apps/opc && dart run build_runner build --delete-conflicting-outputs
 ```
 
 - [ ] **Step 7: 提交代码**
 
 ```bash
-git add apps/puupee/opc/
+git add apps/opc/
 git commit -m "feat(opc): 创建 opc 子应用基础结构"
 ```
 
@@ -384,10 +384,10 @@ git commit -m "feat(opc): 创建 opc 子应用基础结构"
 ### Task 2: 创建数据模型
 
 **Files:**
-- Create: `apps/puupee/opc/lib/models/agent.dart`
-- Create: `apps/puupee/opc/lib/models/workstation.dart`
-- Create: `apps/puupee/opc/lib/models/task.dart`
-- Create: `apps/puupee/opc/lib/models/layout.dart`
+- Create: `apps/opc/lib/models/agent.dart`
+- Create: `apps/opc/lib/models/workstation.dart`
+- Create: `apps/opc/lib/models/task.dart`
+- Create: `apps/opc/lib/models/layout.dart`
 
 - [ ] **Step 1: 创建 agent.dart**
 
@@ -761,13 +761,13 @@ extension LayoutTypeExtension on LayoutType {
 - [ ] **Step 5: 运行 build_runner 生成代码**
 
 ```bash
-cd apps/puupee/opc && dart run build_runner build --delete-conflicting-outputs
+cd apps/opc && dart run build_runner build --delete-conflicting-outputs
 ```
 
 - [ ] **Step 6: 提交代码**
 
 ```bash
-git add apps/puupee/opc/lib/models/
+git add apps/opc/lib/models/
 git commit -m "feat(opc): 创建数据模型"
 ```
 
@@ -776,9 +776,9 @@ git commit -m "feat(opc): 创建数据模型"
 ### Task 3: 创建数据仓库
 
 **Files:**
-- Create: `apps/puupee/opc/lib/repositories/agent_repo.dart`
-- Create: `apps/puupee/opc/lib/repositories/task_repo.dart`
-- Create: `apps/puupee/opc/lib/repositories/layout_repo.dart`
+- Create: `apps/opc/lib/repositories/agent_repo.dart`
+- Create: `apps/opc/lib/repositories/task_repo.dart`
+- Create: `apps/opc/lib/repositories/layout_repo.dart`
 
 - [ ] **Step 1: 创建 agent_repo.dart**
 
@@ -1064,7 +1064,7 @@ class LayoutRepository {
 - [ ] **Step 4: 提交代码**
 
 ```bash
-git add apps/puupee/opc/lib/repositories/
+git add apps/opc/lib/repositories/
 git commit -m "feat(opc): 创建数据仓库"
 ```
 
@@ -1073,10 +1073,10 @@ git commit -m "feat(opc): 创建数据仓库"
 ### Task 4: 创建状态管理 Provider
 
 **Files:**
-- Create: `apps/puupee/opc/lib/providers/agents/agent_provider.dart`
-- Create: `apps/puupee/opc/lib/providers/layout/layout_provider.dart`
-- Create: `apps/puupee/opc/lib/providers/tasks/task_provider.dart`
-- Create: `apps/puupee/opc/lib/providers/workspace/workspace_provider.dart`
+- Create: `apps/opc/lib/providers/agents/agent_provider.dart`
+- Create: `apps/opc/lib/providers/layout/layout_provider.dart`
+- Create: `apps/opc/lib/providers/tasks/task_provider.dart`
+- Create: `apps/opc/lib/providers/workspace/workspace_provider.dart`
 
 - [ ] **Step 1: 创建 agent_provider.dart**
 
@@ -1370,13 +1370,13 @@ class WorkspaceState {
 - [ ] **Step 5: 运行 build_runner 生成代码**
 
 ```bash
-cd apps/puupee/opc && dart run build_runner build --delete-conflicting-outputs
+cd apps/opc && dart run build_runner build --delete-conflicting-outputs
 ```
 
 - [ ] **Step 6: 提交代码**
 
 ```bash
-git add apps/puupee/opc/lib/providers/
+git add apps/opc/lib/providers/
 git commit -m "feat(opc): 创建状态管理 Provider"
 ```
 
@@ -1385,9 +1385,9 @@ git commit -m "feat(opc): 创建状态管理 Provider"
 ### Task 5: 创建业务服务
 
 **Files:**
-- Create: `apps/puupee/opc/lib/services/ai_service.dart`
-- Create: `apps/puupee/opc/lib/services/layout_engine.dart`
-- Create: `apps/puupee/opc/lib/services/task_allocator.dart`
+- Create: `apps/opc/lib/services/ai_service.dart`
+- Create: `apps/opc/lib/services/layout_engine.dart`
+- Create: `apps/opc/lib/services/task_allocator.dart`
 
 - [ ] **Step 1: 创建 ai_service.dart**
 
@@ -1715,7 +1715,7 @@ class TaskAllocator {
 - [ ] **Step 4: 提交代码**
 
 ```bash
-git add apps/puupee/opc/lib/services/
+git add apps/opc/lib/services/
 git commit -m "feat(opc): 创建业务服务"
 ```
 
@@ -1724,11 +1724,11 @@ git commit -m "feat(opc): 创建业务服务"
 ### Task 6: 创建 UI 组件
 
 **Files:**
-- Create: `apps/puupee/opc/lib/components/workstation/workstation_card.dart`
-- Create: `apps/puupee/opc/lib/components/agent_card/agent_card.dart`
-- Create: `apps/puupee/opc/lib/components/task_panel/task_panel.dart`
-- Create: `apps/puupee/opc/lib/components/layout/office_layout.dart`
-- Create: `apps/puupee/opc/lib/components/layout/adaptive_shell.dart`
+- Create: `apps/opc/lib/components/workstation/workstation_card.dart`
+- Create: `apps/opc/lib/components/agent_card/agent_card.dart`
+- Create: `apps/opc/lib/components/task_panel/task_panel.dart`
+- Create: `apps/opc/lib/components/layout/office_layout.dart`
+- Create: `apps/opc/lib/components/layout/adaptive_shell.dart`
 
 - [ ] **Step 1: 创建 workstation_card.dart**
 
@@ -2383,7 +2383,7 @@ class AdaptiveShell extends StatelessWidget {
 - [ ] **Step 6: 提交代码**
 
 ```bash
-git add apps/puupee/opc/lib/components/
+git add apps/opc/lib/components/
 git commit -m "feat(opc): 创建 UI 组件"
 ```
 
@@ -2392,10 +2392,10 @@ git commit -m "feat(opc): 创建 UI 组件"
 ### Task 7: 创建页面
 
 **Files:**
-- Create: `apps/puupee/opc/lib/pages/home/home_page.dart`
-- Create: `apps/puupee/opc/lib/pages/workspace/workspace_page.dart`
-- Create: `apps/puupee/opc/lib/pages/agents/agents_page.dart`
-- Create: `apps/puupee/opc/lib/pages/settings/settings_page.dart`
+- Create: `apps/opc/lib/pages/home/home_page.dart`
+- Create: `apps/opc/lib/pages/workspace/workspace_page.dart`
+- Create: `apps/opc/lib/pages/agents/agents_page.dart`
+- Create: `apps/opc/lib/pages/settings/settings_page.dart`
 
 - [ ] **Step 1: 创建 home_page.dart**
 
@@ -2828,7 +2828,7 @@ class SettingsPage extends ConsumerWidget {
 - [ ] **Step 5: 提交代码**
 
 ```bash
-git add apps/puupee/opc/lib/pages/
+git add apps/opc/lib/pages/
 git commit -m "feat(opc): 创建页面"
 ```
 
@@ -2837,9 +2837,9 @@ git commit -m "feat(opc): 创建页面"
 ### Task 8: 创建测试
 
 **Files:**
-- Create: `apps/puupee/opc/test/models/agent_test.dart`
-- Create: `apps/puupee/opc/test/repositories/agent_repo_test.dart`
-- Create: `apps/puupee/opc/test/services/task_allocator_test.dart`
+- Create: `apps/opc/test/models/agent_test.dart`
+- Create: `apps/opc/test/repositories/agent_repo_test.dart`
+- Create: `apps/opc/test/services/task_allocator_test.dart`
 
 - [ ] **Step 1: 创建 agent_test.dart**
 
@@ -3220,13 +3220,13 @@ void main() {
 - [ ] **Step 4: 运行测试**
 
 ```bash
-cd apps/puupee/opc && flutter test
+cd apps/opc && flutter test
 ```
 
 - [ ] **Step 5: 提交代码**
 
 ```bash
-git add apps/puupee/opc/test/
+git add apps/opc/test/
 git commit -m "test(opc): 创建测试"
 ```
 
@@ -3235,52 +3235,52 @@ git commit -m "test(opc): 创建测试"
 ### Task 9: 配置和构建
 
 **Files:**
-- Create: `apps/puupee/opc/android/app/src/main/AndroidManifest.xml`
-- Create: `apps/puupee/opc/ios/Runner/Info.plist`
-- Create: `apps/puupee/opc/macos/Runner/Info.plist`
-- Create: `apps/puupee/opc/linux/CMakeLists.txt`
-- Create: `apps/puupee/opc/windows/CMakeLists.txt`
+- Create: `apps/opc/android/app/src/main/AndroidManifest.xml`
+- Create: `apps/opc/ios/Runner/Info.plist`
+- Create: `apps/opc/macos/Runner/Info.plist`
+- Create: `apps/opc/linux/CMakeLists.txt`
+- Create: `apps/opc/windows/CMakeLists.txt`
 
 - [ ] **Step 1: 配置 Android**
 
 ```bash
-cd apps/puupee/opc && flutter create --org com.puupee --project-name puupee_opc .
+cd apps/opc && flutter create --org com.puupee --project-name puupee_opc .
 ```
 
 - [ ] **Step 2: 配置 iOS**
 
 ```bash
-cd apps/puupee/opc && flutter create --org com.puupee --project-name puupee_opc .
+cd apps/opc && flutter create --org com.puupee --project-name puupee_opc .
 ```
 
 - [ ] **Step 3: 配置 macOS**
 
 ```bash
-cd apps/puupee/opc && flutter create --org com.puupee --project-name puupee_opc .
+cd apps/opc && flutter create --org com.puupee --project-name puupee_opc .
 ```
 
 - [ ] **Step 4: 配置 Linux**
 
 ```bash
-cd apps/puupee/opc && flutter create --org com.puupee --project-name puupee_opc .
+cd apps/opc && flutter create --org com.puupee --project-name puupee_opc .
 ```
 
 - [ ] **Step 5: 配置 Windows**
 
 ```bash
-cd apps/puupee/opc && flutter create --org com.puupee --project-name puupee_opc .
+cd apps/opc && flutter create --org com.puupee --project-name puupee_opc .
 ```
 
 - [ ] **Step 6: 运行应用**
 
 ```bash
-cd apps/puupee/opc && flutter run
+cd apps/opc && flutter run
 ```
 
 - [ ] **Step 7: 提交代码**
 
 ```bash
-git add apps/puupee/opc/
+git add apps/opc/
 git commit -m "chore(opc): 配置平台文件"
 ```
 
