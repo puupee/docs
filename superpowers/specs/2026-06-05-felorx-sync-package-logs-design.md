@@ -1,14 +1,14 @@
-# puupee_sync Package 自定义日志迁移设计
+# felorx_sync Package 自定义日志迁移设计
 
 ## 背景
 
-第一阶段已经在 `packages/core/puupee_utilities/lib/talker.dart` 中建立 `PuupeeTalkerLog` 与 `PuupeeLogger`，并将 `packages/sync/puupee_sync/lib/src/sync_server.dart` 迁移到 `sync-server` 自定义 Talker key。这样可以在现有 `TalkerScreen` 中单独筛选同步服务器日志。
+第一阶段已经在 `packages/core/felorx_utilities/lib/talker.dart` 中建立 `FelorxTalkerLog` 与 `FelorxLogger`，并将 `packages/sync/felorx_sync/lib/src/sync_server.dart` 迁移到 `sync-server` 自定义 Talker key。这样可以在现有 `TalkerScreen` 中单独筛选同步服务器日志。
 
-`puupee_sync` 其它核心类仍大量直接使用全局 `talker` 或 `Talker` 类型，例如 `sync_node_manager.dart`、`lan_sync_node_discoverer.dart`、`sync_client_manager.dart`、`storage/*`、`transfer_manager.dart`、`auth_strategies.dart`、`pairing_auth.dart`、`content_events.dart` 和 `mcp_server.dart`。这些日志仍落入普通等级 key，导致 Talker UI 无法按同步子系统筛选。
+`felorx_sync` 其它核心类仍大量直接使用全局 `talker` 或 `Talker` 类型，例如 `sync_node_manager.dart`、`lan_sync_node_discoverer.dart`、`sync_client_manager.dart`、`storage/*`、`transfer_manager.dart`、`auth_strategies.dart`、`pairing_auth.dart`、`content_events.dart` 和 `mcp_server.dart`。这些日志仍落入普通等级 key，导致 Talker UI 无法按同步子系统筛选。
 
 ## 目标
 
-- 将 `puupee_sync/lib` 内业务日志统一迁移到 `PuupeeLogger`。
+- 将 `felorx_sync/lib` 内业务日志统一迁移到 `FelorxLogger`。
 - 允许用户在 Talker UI 中按同步子系统筛选日志，例如 `sync-node`、`sync-client`、`sync-storage`。
 - 保留现有日志文本、等级、异常和堆栈语义。
 - 给每条迁移后的日志补充 scene，便于在模块筛选后继续搜索。
@@ -54,43 +54,43 @@
 
 ## API 变更
 
-在 `PuupeeLogModule` 中补齐第二阶段模块 key，并在 `registerPuupeeTalkerKeys` 中注册这些 key。`PuupeeLogger` 增加对应工厂：
+在 `FelorxLogModule` 中补齐第二阶段模块 key，并在 `registerFelorxTalkerKeys` 中注册这些 key。`FelorxLogger` 增加对应工厂：
 
-- `PuupeeLogger.syncNode()`
-- `PuupeeLogger.syncClient()`
-- `PuupeeLogger.syncStorage()`
-- `PuupeeLogger.syncTransfer()`
-- `PuupeeLogger.syncAuth()`
-- `PuupeeLogger.syncCrdt()`
-- `PuupeeLogger.syncMcp()`
+- `FelorxLogger.syncNode()`
+- `FelorxLogger.syncClient()`
+- `FelorxLogger.syncStorage()`
+- `FelorxLogger.syncTransfer()`
+- `FelorxLogger.syncAuth()`
+- `FelorxLogger.syncCrdt()`
+- `FelorxLogger.syncMcp()`
 
-保留现有 `PuupeeLogger.syncServer()`，避免破坏第一阶段行为。
+保留现有 `FelorxLogger.syncServer()`，避免破坏第一阶段行为。
 
 ## 迁移策略
 
 迁移时按文件职责选择模块：
 
-- 节点类使用 `PuupeeLogger.syncNode()`。
-- 客户端类使用 `PuupeeLogger.syncClient()`。
-- 存储类使用 `PuupeeLogger.syncStorage()`。
-- 任务调度类 `transfer_manager.dart` 使用 `PuupeeLogger.syncTransfer()`。
-- 认证与配对类使用 `PuupeeLogger.syncAuth()`。
-- CRDT 和内容事件类使用 `PuupeeLogger.syncCrdt()`。
-- MCP 类使用 `PuupeeLogger.syncMcp()`。
+- 节点类使用 `FelorxLogger.syncNode()`。
+- 客户端类使用 `FelorxLogger.syncClient()`。
+- 存储类使用 `FelorxLogger.syncStorage()`。
+- 任务调度类 `transfer_manager.dart` 使用 `FelorxLogger.syncTransfer()`。
+- 认证与配对类使用 `FelorxLogger.syncAuth()`。
+- CRDT 和内容事件类使用 `FelorxLogger.syncCrdt()`。
+- MCP 类使用 `FelorxLogger.syncMcp()`。
 
 原来 `logger.error('msg', e, stackTrace)` 这类 Talker 位置参数调用改为 `logger.error('msg', exception: e, stackTrace: stackTrace)`。只有确实没有堆栈的调用传 `exception`，不为了迁移额外捕获堆栈。
 
 ## 验收标准
 
-- `puupee_sync/lib` 中除 `sync_server.dart` 既有自定义 logger 外，不再有业务代码直接依赖 `package:talker/talker.dart` 或全局 `talker.*` 输出日志。
-- 所有迁移后的日志都通过 `PuupeeLogger` 写入自定义 key。
+- `felorx_sync/lib` 中除 `sync_server.dart` 既有自定义 logger 外，不再有业务代码直接依赖 `package:talker/talker.dart` 或全局 `talker.*` 输出日志。
+- 所有迁移后的日志都通过 `FelorxLogger` 写入自定义 key。
 - 迁移后的日志调用都带有 `scene:`。
-- `PuupeeLogger` 测试覆盖所有新模块 key 的注册与工厂。
-- `puupee_sync` 新增日志迁移测试，覆盖至少 `sync-node`、`sync-client`、`sync-storage`、`sync-transfer`、`sync-auth`、`sync-crdt`、`sync-mcp`。
+- `FelorxLogger` 测试覆盖所有新模块 key 的注册与工厂。
+- `felorx_sync` 新增日志迁移测试，覆盖至少 `sync-node`、`sync-client`、`sync-storage`、`sync-transfer`、`sync-auth`、`sync-crdt`、`sync-mcp`。
 - 相关 `dart test` 与 `dart analyze` 通过。
 
 ## 风险
 
-- `puupee_sync` 日志调用数量多，机械迁移容易漏掉位置参数异常。通过搜索和测试检查兜底。
-- 部分文件通过 `ManagerInterface` 暴露 `logger` getter。该接口需要从 `Talker` 改为 `PuupeeLogger`，实现类同步调整。
+- `felorx_sync` 日志调用数量多，机械迁移容易漏掉位置参数异常。通过搜索和测试检查兜底。
+- 部分文件通过 `ManagerInterface` 暴露 `logger` getter。该接口需要从 `Talker` 改为 `FelorxLogger`，实现类同步调整。
 - `sync_client_manager.dart` 当前使用独立 `Talker()`，迁移后会进入全局 Talker；这是符合统一筛选目标的行为变化。

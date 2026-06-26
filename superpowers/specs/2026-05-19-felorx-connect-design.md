@@ -1,20 +1,20 @@
-# Puupee Connect 通用远程连接设计
+# Felorx Connect 通用远程连接设计
 
 ## 背景
 
-`apps/reevibe-server` 目前是 ReeVibe 专用 WebRTC 信令服务，只负责会话码、peer 加入、offer/answer/ICE 转发。新的目标是把它重构为通用连接层，用于所有远程操作场景，首先服务于 Ops 的远程终端，并作为可选服务挂到 `sync_node` 中。最终移除 `apps/reevibe-server`，将可复用代码迁入 `packages/sync/puupee_connect`。
+`apps/reevibe-server` 目前是 ReeVibe 专用 WebRTC 信令服务，只负责会话码、peer 加入、offer/answer/ICE 转发。新的目标是把它重构为通用连接层，用于所有远程操作场景，首先服务于 Ops 的远程终端，并作为可选服务挂到 `sync_node` 中。最终移除 `apps/reevibe-server`，将可复用代码迁入 `packages/sync/felorx_connect`。
 
 现有代码中有几个可复用基础：
 
 - `apps/reevibe/lib/pages/session_page.dart` 已验证 Flutter 侧 `flutter_webrtc` + DataChannel + 终端 IO 的基本模式。
 - `apps/ops/lib/pages/terminal/local_terminal_page.dart` 已有成熟本地终端体验，底层是 `xterm` + `flutter_pty`。
 - `apps/sync_node/lib/sync_node_runner.dart` 已有可返回运行句柄的启动流程，适合增加可选子服务并在 stop 时统一释放。
-- `packages/api/felorx_api_client` 和 `puupee_shared` 已有设备列表、设备绑定和当前用户设备信息能力，可用于同账号发现的第一版身份基础。
+- `packages/api/felorx_api_client` 和 `felorx_shared` 已有设备列表、设备绑定和当前用户设备信息能力，可用于同账号发现的第一版身份基础。
 
 ## 目标
 
-1. 创建 `packages/sync/puupee_connect`，作为通用远程连接协议、信令服务、host daemon 和客户端核心的共享包。
-2. 将 `reevibe-server` 的 WebSocket 信令能力迁入 `puupee_connect`，改成通用 relay/signaling server。
+1. 创建 `packages/sync/felorx_connect`，作为通用远程连接协议、信令服务、host daemon 和客户端核心的共享包。
+2. 将 `reevibe-server` 的 WebSocket 信令能力迁入 `felorx_connect`，改成通用 relay/signaling server。
 3. 在 `sync_node` 中新增可选 connect relay 服务，随 sync node 一起启动和停止。
 4. 新增 Linux 服务器命令行 daemon，可作为 systemd 等服务运行，注册本机并承接远程终端连接。
 5. 给 Ops 增加远程终端能力，并明确区分本地终端和远程终端。
@@ -33,7 +33,7 @@
 
 ## 总体架构
 
-`puupee_connect` 自包含连接层，提供三个主要模块：
+`felorx_connect` 自包含连接层，提供三个主要模块：
 
 - Relay/Signaling Server：HTTP + WebSocket 服务，维护在线 host、同账号发现、设备码认证、连接会话和 SDP/ICE 转发。
 - Host Daemon：纯 Dart Linux 服务进程，连接 relay 后注册本机，收到连接请求后创建 WebRTC PeerConnection，DataChannel 打开后连接到本机 PTY shell。
@@ -41,28 +41,28 @@
 
 依赖方向：
 
-- `apps/sync_node` 依赖 `puupee_connect`，用于启动 relay。
-- `apps/ops` 依赖 `puupee_connect`，并继续使用 Flutter 侧 `flutter_webrtc` 实现客户端 WebRTC。
-- `apps/reevibe` 后续可以复用 `puupee_connect` 的信令协议，但本次核心范围是移除 `reevibe-server` 并支持 Ops 远程终端。
+- `apps/sync_node` 依赖 `felorx_connect`，用于启动 relay。
+- `apps/ops` 依赖 `felorx_connect`，并继续使用 Flutter 侧 `flutter_webrtc` 实现客户端 WebRTC。
+- `apps/reevibe` 后续可以复用 `felorx_connect` 的信令协议，但本次核心范围是移除 `reevibe-server` 并支持 Ops 远程终端。
 
 ## 包结构
 
 建议初始文件职责如下：
 
-- `packages/sync/puupee_connect/lib/puupee_connect.dart`：公共导出。
-- `packages/sync/puupee_connect/lib/src/protocol/connect_message.dart`：版本化消息模型、解析和编码。
-- `packages/sync/puupee_connect/lib/src/protocol/connect_error.dart`：协议错误码和可展示错误。
-- `packages/sync/puupee_connect/lib/src/relay/connect_relay_server.dart`：relay 生命周期、HTTP 路由、WebSocket 升级。
-- `packages/sync/puupee_connect/lib/src/relay/host_registry.dart`：在线 host 注册、心跳、超时清理、同账号过滤。
-- `packages/sync/puupee_connect/lib/src/relay/session_registry.dart`：连接会话、peer 关系、SDP/ICE 转发目标。
-- `packages/sync/puupee_connect/lib/src/auth/connect_password.dart`：设备码连接密码 hash 和验证。
-- `packages/sync/puupee_connect/lib/src/client/connect_relay_client.dart`：Ops/daemon 共用 relay WebSocket 客户端基础。
-- `packages/sync/puupee_connect/lib/src/client/connect_terminal_client.dart`：远程终端客户端抽象。
-- `packages/sync/puupee_connect/lib/src/host/connect_host_daemon.dart`：host 注册、连接请求处理、WebRTC 会话编排。
-- `packages/sync/puupee_connect/lib/src/host/terminal_host_session.dart`：DataChannel 到 PTY 的桥接。
-- `packages/sync/puupee_connect/lib/src/host/pty/terminal_pty.dart`：PTY 抽象。
-- `packages/sync/puupee_connect/lib/src/host/pty/linux_terminal_pty.dart`：Linux PTY 实现。
-- `packages/sync/puupee_connect/bin/puupee_connect_host.dart`：Linux host daemon CLI 入口。
+- `packages/sync/felorx_connect/lib/felorx_connect.dart`：公共导出。
+- `packages/sync/felorx_connect/lib/src/protocol/connect_message.dart`：版本化消息模型、解析和编码。
+- `packages/sync/felorx_connect/lib/src/protocol/connect_error.dart`：协议错误码和可展示错误。
+- `packages/sync/felorx_connect/lib/src/relay/connect_relay_server.dart`：relay 生命周期、HTTP 路由、WebSocket 升级。
+- `packages/sync/felorx_connect/lib/src/relay/host_registry.dart`：在线 host 注册、心跳、超时清理、同账号过滤。
+- `packages/sync/felorx_connect/lib/src/relay/session_registry.dart`：连接会话、peer 关系、SDP/ICE 转发目标。
+- `packages/sync/felorx_connect/lib/src/auth/connect_password.dart`：设备码连接密码 hash 和验证。
+- `packages/sync/felorx_connect/lib/src/client/connect_relay_client.dart`：Ops/daemon 共用 relay WebSocket 客户端基础。
+- `packages/sync/felorx_connect/lib/src/client/connect_terminal_client.dart`：远程终端客户端抽象。
+- `packages/sync/felorx_connect/lib/src/host/connect_host_daemon.dart`：host 注册、连接请求处理、WebRTC 会话编排。
+- `packages/sync/felorx_connect/lib/src/host/terminal_host_session.dart`：DataChannel 到 PTY 的桥接。
+- `packages/sync/felorx_connect/lib/src/host/pty/terminal_pty.dart`：PTY 抽象。
+- `packages/sync/felorx_connect/lib/src/host/pty/linux_terminal_pty.dart`：Linux PTY 实现。
+- `packages/sync/felorx_connect/bin/felorx_connect_host.dart`：Linux host daemon CLI 入口。
 
 ## Relay 服务
 
@@ -142,7 +142,7 @@ Relay 只转发以下信令：
 
 ## Linux Host Daemon
 
-新增 CLI：`puupee_connect_host`。
+新增 CLI：`felorx_connect_host`。
 
 主要参数：
 
@@ -165,7 +165,7 @@ Daemon 需要适合 systemd 运行：
 - 启动失败返回非 0 退出码。
 - 不依赖 Flutter。
 
-PTY 实现优先使用可兼容 Dart 3.8+ 的纯 Dart/FFI 方案。如果现成 `pty` 包不兼容当前 SDK，则在 `puupee_connect` 内实现薄 Linux PTY FFI 适配层，接口保持在 `TerminalPty` 抽象之后。
+PTY 实现优先使用可兼容 Dart 3.8+ 的纯 Dart/FFI 方案。如果现成 `pty` 包不兼容当前 SDK，则在 `felorx_connect` 内实现薄 Linux PTY FFI 适配层，接口保持在 `TerminalPty` 抽象之后。
 
 ## sync_node 集成
 
@@ -180,9 +180,9 @@ PTY 实现优先使用可兼容 Dart 3.8+ 的纯 Dart/FFI 方案。如果现成 
 - `--connect-turn-credential`
 - `--connect-host-heartbeat-timeout`
 
-对应环境变量使用 `PUUPEE_SYNC_NODE_CONNECT_*` 前缀。`runSyncNode` 启动 `PuupeeSyncServer` 后，如果启用 connect relay，则启动 `ConnectRelayServer`。`SyncNodeRunHandle.stop()` 增加 connect relay 停止逻辑，确保端口释放。
+对应环境变量使用 `PUUPEE_SYNC_NODE_CONNECT_*` 前缀。`runSyncNode` 启动 `FelorxSyncServer` 后，如果启用 connect relay，则启动 `ConnectRelayServer`。`SyncNodeRunHandle.stop()` 增加 connect relay 停止逻辑，确保端口释放。
 
-第一期 relay 可以单独监听 `connect-port`。后续如果需要同端口挂载到 sync server 的 shelf router，再调整 `PuupeeSyncServer` 对外暴露 mount 能力。
+第一期 relay 可以单独监听 `connect-port`。后续如果需要同端口挂载到 sync server 的 shelf router，再调整 `FelorxSyncServer` 对外暴露 mount 能力。
 
 ## Ops 远程终端体验
 
@@ -190,7 +190,7 @@ Ops 的“终端”能力改为本地和远程两种来源：
 
 - 本地终端继续使用现有 `xterm` + `flutter_pty`。
 - 远程终端复用现有终端外观、字体设置、标签页、复制、粘贴、保存输出等交互。
-- 远程终端 IO 后端替换为 `puupee_connect` 客户端 DataChannel。
+- 远程终端 IO 后端替换为 `felorx_connect` 客户端 DataChannel。
 
 页面结构：
 
@@ -208,7 +208,7 @@ Ops 的“终端”能力改为本地和远程两种来源：
 
 迁移顺序：
 
-1. 创建 `packages/sync/puupee_connect`。
+1. 创建 `packages/sync/felorx_connect`。
 2. 将 `reevibe-server` 的 session 和 WebSocket 转发逻辑迁入 relay 模块，并改成通用 host/session 命名。
 3. 增加协议模型和 relay 单元测试。
 4. 增加 Linux host daemon CLI。
@@ -220,7 +220,7 @@ Ops 的“终端”能力改为本地和远程两种来源：
 
 ## 测试策略
 
-`puupee_connect` 单元测试：
+`felorx_connect` 单元测试：
 
 - 消息解析和编码拒绝未知版本。
 - host 注册后可以被同 userId 客户端发现。
@@ -246,9 +246,9 @@ WebRTC 真实联通作为集成 smoke test，使用本地 relay 和本机两个 
 
 ## 验收标准
 
-- `packages/sync/puupee_connect` 存在并可 `dart test`。
+- `packages/sync/felorx_connect` 存在并可 `dart test`。
 - `sync_node` 可以通过参数启用 connect relay。
-- Linux 服务器可以运行 `puupee_connect_host` 并注册在线。
+- Linux 服务器可以运行 `felorx_connect_host` 并注册在线。
 - Ops 可以看到同账号在线机器并打开远程终端。
 - Ops 可以通过设备码和连接密码打开远程终端。
 - 成功连接时终端数据不经过 relay WebSocket 转发。

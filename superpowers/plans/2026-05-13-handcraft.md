@@ -4,16 +4,16 @@
 
 **目标：** 创建新的 `handcraft` Flutter 子应用，让用户创建手工作品，上传款式图和布料图，填写或模拟估算尺寸，并跑通成品效果图、裁剪图、过程视频引用的本地模拟生成流程。
 
-**架构：** `apps/handcraft` 作为标准 Puupee 子应用接入，启动走 `runMyApp`，路由走类型化 `go_router`，状态走 Riverpod 注解，UI 使用 `shadcn_flutter`、`puupee_ui` 和 `puupee_shared`。作品读写全部放在 `HandcraftProjectRepo` 后面，生成逻辑全部放在 `HandcraftGenerationService` 后面，第一版使用内存数据源和本地模拟结果，字段和接口按后续 Puupee/Sync、对象存储、真实 AI 生成预留。
+**架构：** `apps/handcraft` 作为标准 Felorx 子应用接入，启动走 `runMyApp`，路由走类型化 `go_router`，状态走 Riverpod 注解，UI 使用 `shadcn_flutter`、`felorx_ui` 和 `felorx_shared`。作品读写全部放在 `HandcraftProjectRepo` 后面，生成逻辑全部放在 `HandcraftGenerationService` 后面，第一版使用内存数据源和本地模拟结果，字段和接口按后续 Felorx/Sync、对象存储、真实 AI 生成预留。
 
-**技术栈：** Dart 3.8、Flutter、shadcn_flutter、go_router / go_router_builder、Riverpod 注解、hooks_riverpod、puupee_shared、puupee_ui、build_runner、Android Kotlin/Java 17。
+**技术栈：** Dart 3.8、Flutter、shadcn_flutter、go_router / go_router_builder、Riverpod 注解、hooks_riverpod、felorx_shared、felorx_ui、build_runner、Android Kotlin/Java 17。
 
 ---
 
 ## 文件结构
 
 - 修改 `pubspec.yaml`：把 `apps/handcraft` 加入工作区。
-- 创建 `apps/handcraft/pubspec.yaml`：定义 `puupee_handcraft` Flutter 包。
+- 创建 `apps/handcraft/pubspec.yaml`：定义 `felorx_handcraft` Flutter 包。
 - 创建 `apps/handcraft/.metadata`：让 Flutter 工具识别为应用项目。
 - 创建 `apps/handcraft/lib/env.dart`：实现 `HandcraftEnvConfig`。
 - 创建 `apps/handcraft/lib/main.dart`：通过 `runMyApp` 启动。
@@ -26,7 +26,7 @@
 - 生成 `apps/handcraft/lib/router.g.dart`。
 - 创建 `apps/handcraft/lib/components/` 下的工作台组件：自适应 Shell、作品卡、媒体输入卡、尺寸编辑器、生成结果面板。
 - 创建 `apps/handcraft/lib/pages/` 下的页面：创作页、作品页、素材页。
-- 创建 `apps/handcraft/android/`：从现有 Puupee 应用复制 Android 模板并改为 `com.puupee.handcraft`。
+- 创建 `apps/handcraft/android/`：从现有 Felorx 应用复制 Android 模板并改为 `com.felorx.handcraft`。
 - 创建 `apps/handcraft/README.md`：说明第一版范围和验证命令。
 - 创建 `apps/handcraft/test/` 下的测试：EnvConfig、模型、生成服务、仓库、提供器、页面冒烟测试。
 
@@ -48,7 +48,7 @@
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
-import 'package:puupee_handcraft/env.dart';
+import 'package:felorx_handcraft/env.dart';
 
 void main() {
   test('HandcraftEnvConfig 提供必需的左右布局默认值', () {
@@ -71,7 +71,7 @@ void main() {
 运行：
 
 ```bash
-cd /Users/j/repos/puupees/puupee-apps/apps/handcraft
+cd /Users/j/repos/puupees/felorx-apps/apps/handcraft
 flutter test test/env_test.dart --no-pub
 ```
 
@@ -90,7 +90,7 @@ flutter test test/env_test.dart --no-pub
 创建 `apps/handcraft/pubspec.yaml`：
 
 ```yaml
-name: puupee_handcraft
+name: felorx_handcraft
 resolution: workspace
 version: 0.1.0
 publish_to: none
@@ -105,11 +105,11 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
-  puupee_shared: ^0.0.41
-  puupee_ui: ^0.0.3+3
-  puupee_utilities: ^0.0.13+3
-  puupee: ^1.1.3
-  puupee_sync: ^0.0.30+2
+  felorx_shared: ^0.0.41
+  felorx_ui: ^0.0.3+3
+  felorx_utilities: ^0.0.13+3
+  felorx: ^1.1.3
+  felorx_sync: ^0.0.30+2
 
   flutter_riverpod: ^2.5.1
   hooks_riverpod: ^2.5.1
@@ -166,7 +166,7 @@ migration:
 创建 `apps/handcraft/lib/env.dart`：
 
 ```dart
-import 'package:puupee_shared/env.dart';
+import 'package:felorx_shared/env.dart';
 
 /// 小汪手工应用环境配置。
 class HandcraftEnvConfig extends EnvConfig {
@@ -177,19 +177,19 @@ class HandcraftEnvConfig extends EnvConfig {
         appTitle: '小汪手工',
         apiUrl: const String.fromEnvironment(
           'API_URL',
-          defaultValue: 'https://api.puupee.com',
+          defaultValue: 'https://api.felorx.com',
         ),
         authUrl: const String.fromEnvironment(
           'AUTH_URL',
-          defaultValue: 'https://auth.puupee.com',
+          defaultValue: 'https://auth.felorx.com',
         ),
         authClientId: const String.fromEnvironment(
           'AUTH_CLIENT_ID',
-          defaultValue: 'Puupee_Sync_Node',
+          defaultValue: 'Felorx_Sync_Node',
         ),
         feedbackUrl: const String.fromEnvironment(
           'FEEDBACK_URL',
-          defaultValue: 'https://feedback.puupee.com',
+          defaultValue: 'https://feedback.felorx.com',
         ),
         defaultLeftFlex: 0.5,
         defaultRightFlex: 0.5,
@@ -205,9 +205,9 @@ class HandcraftEnvConfig extends EnvConfig {
 
 ```dart
 import 'package:go_router/go_router.dart';
-import 'package:puupee_handcraft/env.dart';
-import 'package:puupee_handcraft/router.dart';
-import 'package:puupee_shared/app/startup.dart';
+import 'package:felorx_handcraft/env.dart';
+import 'package:felorx_handcraft/router.dart';
+import 'package:felorx_shared/app/startup.dart';
 
 /// 小汪手工应用入口。
 void main() async {
@@ -226,7 +226,7 @@ void main() async {
 运行：
 
 ```bash
-cd /Users/j/repos/puupees/puupee-apps/apps/handcraft
+cd /Users/j/repos/puupees/felorx-apps/apps/handcraft
 flutter test test/env_test.dart --no-pub
 ```
 
@@ -255,7 +255,7 @@ git commit -m "feat(handcraft): 创建小汪手工应用骨架"
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
-import 'package:puupee_handcraft/models/handcraft_project.dart';
+import 'package:felorx_handcraft/models/handcraft_project.dart';
 
 void main() {
   test('新建项目默认是草稿并使用本地媒体状态', () {
@@ -333,7 +333,7 @@ void main() {
 运行：
 
 ```bash
-cd /Users/j/repos/puupees/puupee-apps/apps/handcraft
+cd /Users/j/repos/puupees/felorx-apps/apps/handcraft
 flutter test test/handcraft_project_test.dart --no-pub
 ```
 
@@ -402,7 +402,7 @@ HandcraftGenerationStage.completed => '完成'
 运行：
 
 ```bash
-cd /Users/j/repos/puupees/puupee-apps/apps/handcraft
+cd /Users/j/repos/puupees/felorx-apps/apps/handcraft
 flutter test test/handcraft_project_test.dart --no-pub
 ```
 
@@ -431,8 +431,8 @@ git commit -m "feat(handcraft): 添加手工作品模型"
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
-import 'package:puupee_handcraft/models/handcraft_project.dart';
-import 'package:puupee_handcraft/services/handcraft_generation_service.dart';
+import 'package:felorx_handcraft/models/handcraft_project.dart';
+import 'package:felorx_handcraft/services/handcraft_generation_service.dart';
 
 void main() {
   HandcraftProject readyProject() {
@@ -512,7 +512,7 @@ void main() {
 运行：
 
 ```bash
-cd /Users/j/repos/puupees/puupee-apps/apps/handcraft
+cd /Users/j/repos/puupees/felorx-apps/apps/handcraft
 flutter test test/handcraft_generation_service_test.dart --no-pub
 ```
 
@@ -525,7 +525,7 @@ flutter test test/handcraft_generation_service_test.dart --no-pub
 ```dart
 import 'dart:async';
 
-import 'package:puupee_handcraft/models/handcraft_project.dart';
+import 'package:felorx_handcraft/models/handcraft_project.dart';
 
 abstract class HandcraftGenerationService {
   Future<HandcraftProject> generate(
@@ -642,7 +642,7 @@ class MockHandcraftGenerationService implements HandcraftGenerationService {
 运行：
 
 ```bash
-cd /Users/j/repos/puupees/puupee-apps/apps/handcraft
+cd /Users/j/repos/puupees/felorx-apps/apps/handcraft
 flutter test test/handcraft_generation_service_test.dart --no-pub
 ```
 
@@ -703,7 +703,7 @@ expect(drafts, isEmpty);
 运行：
 
 ```bash
-cd /Users/j/repos/puupees/puupee-apps/apps/handcraft
+cd /Users/j/repos/puupees/felorx-apps/apps/handcraft
 flutter test test/handcraft_project_repo_test.dart --no-pub
 ```
 
@@ -716,10 +716,10 @@ flutter test test/handcraft_project_repo_test.dart --no-pub
 ```dart
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:puupee_handcraft/models/handcraft_project.dart';
-import 'package:puupee_handcraft/providers/handcraft_providers.dart';
-import 'package:puupee_handcraft/repo/handcraft_project_repo.dart';
-import 'package:puupee_handcraft/services/handcraft_generation_service.dart';
+import 'package:felorx_handcraft/models/handcraft_project.dart';
+import 'package:felorx_handcraft/providers/handcraft_providers.dart';
+import 'package:felorx_handcraft/repo/handcraft_project_repo.dart';
+import 'package:felorx_handcraft/services/handcraft_generation_service.dart';
 
 void main() {
   test('工作台控制器可以创建草稿并完成模拟生成', () async {
@@ -774,7 +774,7 @@ void main() {
 运行：
 
 ```bash
-cd /Users/j/repos/puupees/puupee-apps/apps/handcraft
+cd /Users/j/repos/puupees/felorx-apps/apps/handcraft
 dart run build_runner build --delete-conflicting-outputs
 ```
 
@@ -785,7 +785,7 @@ dart run build_runner build --delete-conflicting-outputs
 运行：
 
 ```bash
-cd /Users/j/repos/puupees/puupee-apps/apps/handcraft
+cd /Users/j/repos/puupees/felorx-apps/apps/handcraft
 flutter test test/handcraft_providers_test.dart --no-pub
 ```
 
@@ -824,7 +824,7 @@ git commit -m "feat(handcraft): 添加作品仓库和状态管理"
 ```dart
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:puupee_handcraft/pages/handcraft_studio_page.dart';
+import 'package:felorx_handcraft/pages/handcraft_studio_page.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 
 void main() {
@@ -850,7 +850,7 @@ void main() {
 运行：
 
 ```bash
-cd /Users/j/repos/puupees/puupee-apps/apps/handcraft
+cd /Users/j/repos/puupees/felorx-apps/apps/handcraft
 flutter test test/handcraft_page_smoke_test.dart --no-pub
 ```
 
@@ -953,7 +953,7 @@ onPressed: canGenerate ? onGenerate : null
 运行：
 
 ```bash
-cd /Users/j/repos/puupees/puupee-apps/apps/handcraft
+cd /Users/j/repos/puupees/felorx-apps/apps/handcraft
 dart run build_runner build --delete-conflicting-outputs
 ```
 
@@ -964,7 +964,7 @@ dart run build_runner build --delete-conflicting-outputs
 运行：
 
 ```bash
-cd /Users/j/repos/puupees/puupee-apps/apps/handcraft
+cd /Users/j/repos/puupees/felorx-apps/apps/handcraft
 flutter test test/handcraft_page_smoke_test.dart --no-pub
 ```
 
@@ -989,7 +989,7 @@ git commit -m "feat(handcraft): 添加创作工作台和导航页面"
 - 创建：`apps/handcraft/android/app/proguard-rules.pro`
 - 创建：`apps/handcraft/android/app/src/debug/AndroidManifest.xml`
 - 创建：`apps/handcraft/android/app/src/main/AndroidManifest.xml`
-- 创建：`apps/handcraft/android/app/src/main/kotlin/com/puupee/handcraft/MainActivity.kt`
+- 创建：`apps/handcraft/android/app/src/main/kotlin/com/felorx/handcraft/MainActivity.kt`
 - 创建：`apps/handcraft/android/app/src/main/res/values/strings.xml`
 - 创建：`apps/handcraft/android/app/src/main/res/values-zh/strings.xml`
 - 创建：`apps/handcraft/android/app/src/main/res/values/styles.xml`
@@ -1028,16 +1028,16 @@ rsync -a \
 运行：
 
 ```bash
-mkdir -p apps/handcraft/android/app/src/main/kotlin/com/puupee/handcraft
-mv apps/handcraft/android/app/src/main/kotlin/com/puupee/inventory/MainActivity.kt \
-  apps/handcraft/android/app/src/main/kotlin/com/puupee/handcraft/MainActivity.kt
+mkdir -p apps/handcraft/android/app/src/main/kotlin/com/felorx/handcraft
+mv apps/handcraft/android/app/src/main/kotlin/com/felorx/inventory/MainActivity.kt \
+  apps/handcraft/android/app/src/main/kotlin/com/felorx/handcraft/MainActivity.kt
 find apps/handcraft/android -type d -empty -delete
 ```
 
 替换 `MainActivity.kt` 内容：
 
 ```kotlin
-package com.puupee.handcraft
+package com.felorx.handcraft
 
 import io.flutter.embedding.android.FlutterActivity
 
@@ -1049,15 +1049,15 @@ class MainActivity : FlutterActivity()
 在 `apps/handcraft/android/app/build.gradle.kts` 中替换：
 
 ```kotlin
-namespace = "com.puupee.inventory"
-applicationId = "com.puupee.inventory"
+namespace = "com.felorx.inventory"
+applicationId = "com.felorx.inventory"
 ```
 
 为：
 
 ```kotlin
-namespace = "com.puupee.handcraft"
-applicationId = "com.puupee.handcraft"
+namespace = "com.felorx.handcraft"
+applicationId = "com.felorx.handcraft"
 ```
 
 确认文件仍包含：
@@ -1085,7 +1085,7 @@ dependencies {
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Puupee Handcraft</string>
+    <string name="app_name">Felorx Handcraft</string>
 </resources>
 ```
 
@@ -1139,7 +1139,7 @@ rm -rf apps/handcraft/android/.gradle \
 
 ```bash
 test -f apps/handcraft/android/app/src/main/AndroidManifest.xml
-test -f apps/handcraft/android/app/src/main/kotlin/com/puupee/handcraft/MainActivity.kt
+test -f apps/handcraft/android/app/src/main/kotlin/com/felorx/handcraft/MainActivity.kt
 test -f apps/handcraft/android/app/src/main/res/values/strings.xml
 test -f apps/handcraft/android/app/src/main/res/values-zh/strings.xml
 ```
@@ -1197,7 +1197,7 @@ flutter build apk --debug --target-platform android-arm64 --no-pub
 运行：
 
 ```bash
-cd /Users/j/repos/puupees/puupee-apps/apps/handcraft
+cd /Users/j/repos/puupees/felorx-apps/apps/handcraft
 dart run build_runner build --delete-conflicting-outputs
 ```
 
@@ -1208,7 +1208,7 @@ dart run build_runner build --delete-conflicting-outputs
 运行：
 
 ```bash
-cd /Users/j/repos/puupees/puupee-apps
+cd /Users/j/repos/puupees/felorx-apps
 dart analyze apps/handcraft/lib/env.dart apps/handcraft/lib/main.dart apps/handcraft/test/env_test.dart
 ```
 
@@ -1219,7 +1219,7 @@ dart analyze apps/handcraft/lib/env.dart apps/handcraft/lib/main.dart apps/handc
 运行：
 
 ```bash
-cd /Users/j/repos/puupees/puupee-apps/apps/handcraft
+cd /Users/j/repos/puupees/felorx-apps/apps/handcraft
 flutter test --no-pub
 ```
 
@@ -1230,7 +1230,7 @@ flutter test --no-pub
 运行：
 
 ```bash
-cd /Users/j/repos/puupees/puupee-apps/apps/handcraft
+cd /Users/j/repos/puupees/felorx-apps/apps/handcraft
 flutter build apk --debug --target-platform android-arm64 --no-pub
 ```
 

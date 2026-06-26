@@ -5,7 +5,7 @@
 Builder 当前有两条构建入口：
 
 - 桌面 GUI：`apps/builder/lib/services/build_service.dart` 已按单个制品创建任务，但构建 workspace 仍按项目根目录复用。
-- CLI：`packages/tools/puupee_builder_cli` 的 `build` 和 `build-all` 已有并发参数，但任务粒度主要按应用划分；同一应用内多个平台或多个制品仍可能在同一进程内顺序构建，一个 target 失败会中断后续 target。
+- CLI：`packages/tools/felorx_builder_cli` 的 `build` 和 `build-all` 已有并发参数，但任务粒度主要按应用划分；同一应用内多个平台或多个制品仍可能在同一进程内顺序构建，一个 target 失败会中断后续 target。
 
 目标是让不同应用、不同平台、不同制品类型完全独立构建。每个构建都在自己的项目副本中运行，失败只影响当前构建单元，其他构建继续执行。
 
@@ -26,7 +26,7 @@ Builder 当前有两条构建入口：
 ## 非目标
 
 - 不重构 fastforge、Flutter、Docker 或 native build 的内部执行命令。
-- 不改变 `.puupee/builder.yaml` 的应用名规则，配置键继续使用服务端中横线应用名。
+- 不改变 `.felorx/builder.yaml` 的应用名规则，配置键继续使用服务端中横线应用名。
 - 不改变 GUI 构建记录创建流程；每个制品仍然单独创建一个 BuildRecord。
 - 不清理旧构建目录，也不实现 workspace 生命周期管理策略。
 
@@ -124,8 +124,8 @@ _buildWorkspaceDirFor(
 最终验证命令：
 
 ```bash
-cd packages/tools/puupee_builder_cli && dart test
-cd packages/tools/puupee_builder_cli && dart analyze
+cd packages/tools/felorx_builder_cli && dart test
+cd packages/tools/felorx_builder_cli && dart analyze
 cd apps/builder && dart analyze
 ```
 

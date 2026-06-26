@@ -1,10 +1,10 @@
-# Puupee Connect Implementation Plan
+# Felorx Connect Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** 将 `reevibe-server` 重构为 `packages/sync/puupee_connect` 通用 WebRTC 连接层，并在 `sync_node` 和 Ops 中落地远程终端。
+**Goal:** 将 `reevibe-server` 重构为 `packages/sync/felorx_connect` 通用 WebRTC 连接层，并在 `sync_node` 和 Ops 中落地远程终端。
 
-**Architecture:** `puupee_connect` 提供纯 Dart relay/signaling、host daemon、协议模型和终端连接抽象；`sync_node` 以可选子服务启动 relay；Ops 复用现有终端 UI，通过 relay 建立 WebRTC DataChannel 与远程 Linux host 直连。
+**Architecture:** `felorx_connect` 提供纯 Dart relay/signaling、host daemon、协议模型和终端连接抽象；`sync_node` 以可选子服务启动 relay；Ops 复用现有终端 UI，通过 relay 建立 WebRTC DataChannel 与远程 Linux host 直连。
 
 **Tech Stack:** Dart 3.8+ workspace、`dart:io` WebSocket/HTTP、`args`、`crypto`、`uuid`、`webrtc_dart` host 侧 WebRTC、Ops 侧 `flutter_webrtc`、`xterm`、`flutter_pty`、Riverpod、go_router、shadcn_flutter。
 
@@ -16,30 +16,30 @@
 
 ## File Structure
 
-### 新增 `packages/sync/puupee_connect`
+### 新增 `packages/sync/felorx_connect`
 
-- `packages/sync/puupee_connect/pubspec.yaml`：包依赖，包含 `args`、`crypto`、`uuid`、`webrtc_dart`、`test`。
-- `packages/sync/puupee_connect/analysis_options.yaml`：复用仓库 lint 风格。
-- `packages/sync/puupee_connect/lib/puupee_connect.dart`：公共导出，不导出 Flutter 依赖。
-- `packages/sync/puupee_connect/lib/src/protocol/connect_message.dart`：版本化 JSON 消息。
-- `packages/sync/puupee_connect/lib/src/protocol/connect_error.dart`：错误码。
-- `packages/sync/puupee_connect/lib/src/auth/connect_password.dart`：连接密码 hash/verify。
-- `packages/sync/puupee_connect/lib/src/relay/host_registry.dart`：在线 host 注册表。
-- `packages/sync/puupee_connect/lib/src/relay/session_registry.dart`：连接会话注册表。
-- `packages/sync/puupee_connect/lib/src/relay/connect_relay_server.dart`：HTTP + WebSocket relay。
-- `packages/sync/puupee_connect/lib/src/client/connect_relay_client.dart`：relay WebSocket 客户端。
-- `packages/sync/puupee_connect/lib/src/client/connect_terminal_client.dart`：终端客户端抽象和 DataChannel 桥。
-- `packages/sync/puupee_connect/lib/src/host/connect_host_daemon.dart`：host daemon 编排。
-- `packages/sync/puupee_connect/lib/src/host/connect_host_config.dart`：CLI/env 配置解析。
-- `packages/sync/puupee_connect/lib/src/host/terminal_host_session.dart`：远程终端会话。
-- `packages/sync/puupee_connect/lib/src/host/pty/terminal_pty.dart`：PTY 抽象。
-- `packages/sync/puupee_connect/lib/src/host/pty/linux_terminal_pty.dart`：Linux PTY 实现，封装在抽象后。
-- `packages/sync/puupee_connect/bin/puupee_connect_host.dart`：Linux host daemon CLI。
-- `packages/sync/puupee_connect/test/...`：协议、密码、注册表、relay、daemon 配置测试。
+- `packages/sync/felorx_connect/pubspec.yaml`：包依赖，包含 `args`、`crypto`、`uuid`、`webrtc_dart`、`test`。
+- `packages/sync/felorx_connect/analysis_options.yaml`：复用仓库 lint 风格。
+- `packages/sync/felorx_connect/lib/felorx_connect.dart`：公共导出，不导出 Flutter 依赖。
+- `packages/sync/felorx_connect/lib/src/protocol/connect_message.dart`：版本化 JSON 消息。
+- `packages/sync/felorx_connect/lib/src/protocol/connect_error.dart`：错误码。
+- `packages/sync/felorx_connect/lib/src/auth/connect_password.dart`：连接密码 hash/verify。
+- `packages/sync/felorx_connect/lib/src/relay/host_registry.dart`：在线 host 注册表。
+- `packages/sync/felorx_connect/lib/src/relay/session_registry.dart`：连接会话注册表。
+- `packages/sync/felorx_connect/lib/src/relay/connect_relay_server.dart`：HTTP + WebSocket relay。
+- `packages/sync/felorx_connect/lib/src/client/connect_relay_client.dart`：relay WebSocket 客户端。
+- `packages/sync/felorx_connect/lib/src/client/connect_terminal_client.dart`：终端客户端抽象和 DataChannel 桥。
+- `packages/sync/felorx_connect/lib/src/host/connect_host_daemon.dart`：host daemon 编排。
+- `packages/sync/felorx_connect/lib/src/host/connect_host_config.dart`：CLI/env 配置解析。
+- `packages/sync/felorx_connect/lib/src/host/terminal_host_session.dart`：远程终端会话。
+- `packages/sync/felorx_connect/lib/src/host/pty/terminal_pty.dart`：PTY 抽象。
+- `packages/sync/felorx_connect/lib/src/host/pty/linux_terminal_pty.dart`：Linux PTY 实现，封装在抽象后。
+- `packages/sync/felorx_connect/bin/felorx_connect_host.dart`：Linux host daemon CLI。
+- `packages/sync/felorx_connect/test/...`：协议、密码、注册表、relay、daemon 配置测试。
 
 ### 修改 `apps/sync_node`
 
-- `apps/sync_node/pubspec.yaml`：新增 `puupee_connect` 依赖。
+- `apps/sync_node/pubspec.yaml`：新增 `felorx_connect` 依赖。
 - `apps/sync_node/lib/sync_node_arg_parser.dart`：新增 connect relay 参数。
 - `apps/sync_node/lib/sync_node_connect_relay.dart`：connect relay 启动 helper，便于生命周期单测。
 - `apps/sync_node/lib/sync_node_runner.dart`：启动/停止 connect relay。
@@ -48,7 +48,7 @@
 
 ### 修改 `apps/ops`
 
-- `apps/ops/pubspec.yaml`：新增 `puupee_connect` 和 `flutter_webrtc` 依赖；`flutter_webrtc` 现仅在 reevibe 使用，Ops 需要显式依赖。
+- `apps/ops/pubspec.yaml`：新增 `felorx_connect` 和 `flutter_webrtc` 依赖；`flutter_webrtc` 现仅在 reevibe 使用，Ops 需要显式依赖。
 - `apps/ops/lib/pages/terminal/terminal_page.dart`：本地/远程模式入口。
 - `apps/ops/lib/pages/terminal/remote_terminal_page.dart`：远程终端页面。
 - `apps/ops/lib/pages/terminal/remote_terminal_connection_dialog.dart`：设备码连接表单。
@@ -62,31 +62,31 @@
 
 ### 移除旧项目
 
-- `pubspec.yaml`：workspace 移除 `apps/reevibe-server`，新增 `packages/sync/puupee_connect`。
+- `pubspec.yaml`：workspace 移除 `apps/reevibe-server`，新增 `packages/sync/felorx_connect`。
 - `apps/reevibe-server/`：删除。
 - `scripts/reevibe_server.dart`：删除旧启动脚本。
 
 ---
 
-## Task 1: Scaffold `puupee_connect` and Protocol Messages
+## Task 1: Scaffold `felorx_connect` and Protocol Messages
 
 **Files:**
-- Create: `packages/sync/puupee_connect/pubspec.yaml`
-- Create: `packages/sync/puupee_connect/analysis_options.yaml`
-- Create: `packages/sync/puupee_connect/lib/puupee_connect.dart`
-- Create: `packages/sync/puupee_connect/lib/src/protocol/connect_message.dart`
-- Create: `packages/sync/puupee_connect/lib/src/protocol/connect_error.dart`
-- Create: `packages/sync/puupee_connect/test/protocol/connect_message_test.dart`
+- Create: `packages/sync/felorx_connect/pubspec.yaml`
+- Create: `packages/sync/felorx_connect/analysis_options.yaml`
+- Create: `packages/sync/felorx_connect/lib/felorx_connect.dart`
+- Create: `packages/sync/felorx_connect/lib/src/protocol/connect_message.dart`
+- Create: `packages/sync/felorx_connect/lib/src/protocol/connect_error.dart`
+- Create: `packages/sync/felorx_connect/test/protocol/connect_message_test.dart`
 - Modify: `pubspec.yaml`
 
 - [ ] **Step 1: Add package skeleton**
 
-Create `packages/sync/puupee_connect/pubspec.yaml`:
+Create `packages/sync/felorx_connect/pubspec.yaml`:
 
 ```yaml
-name: puupee_connect
+name: felorx_connect
 resolution: workspace
-description: Puupee remote connection relay, host daemon, and terminal protocol.
+description: Felorx remote connection relay, host daemon, and terminal protocol.
 version: 0.1.0
 publish_to: none
 
@@ -104,7 +104,7 @@ dev_dependencies:
   test: ^1.26.2
 ```
 
-Create `packages/sync/puupee_connect/analysis_options.yaml`:
+Create `packages/sync/felorx_connect/analysis_options.yaml`:
 
 ```yaml
 include: package:lints/recommended.yaml
@@ -114,7 +114,7 @@ linter:
     prefer_single_quotes: true
 ```
 
-Create `packages/sync/puupee_connect/lib/puupee_connect.dart`:
+Create `packages/sync/felorx_connect/lib/felorx_connect.dart`:
 
 ```dart
 library;
@@ -126,19 +126,19 @@ export 'src/protocol/connect_message.dart';
 Modify root `pubspec.yaml` workspace section:
 
 ```yaml
-  - packages/sync/puupee_connect
+  - packages/sync/felorx_connect
 ```
 
 Keep `apps/reevibe-server` in the workspace until Task 15 removes the old app.
 
 - [ ] **Step 2: Write failing protocol tests**
 
-Create `packages/sync/puupee_connect/test/protocol/connect_message_test.dart`:
+Create `packages/sync/felorx_connect/test/protocol/connect_message_test.dart`:
 
 ```dart
 import 'dart:convert';
 
-import 'package:puupee_connect/puupee_connect.dart';
+import 'package:felorx_connect/felorx_connect.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -197,14 +197,14 @@ void main() {
 Run:
 
 ```bash
-cd packages/sync/puupee_connect && dart test test/protocol/connect_message_test.dart
+cd packages/sync/felorx_connect && dart test test/protocol/connect_message_test.dart
 ```
 
 Expected: FAIL because `ConnectMessage`, `ConnectMessageType`, and `ConnectProtocolException` are not defined.
 
 - [ ] **Step 4: Implement protocol errors**
 
-Create `packages/sync/puupee_connect/lib/src/protocol/connect_error.dart`:
+Create `packages/sync/felorx_connect/lib/src/protocol/connect_error.dart`:
 
 ```dart
 enum ConnectErrorCode {
@@ -231,7 +231,7 @@ class ConnectProtocolException implements Exception {
 
 - [ ] **Step 5: Implement protocol messages**
 
-Create `packages/sync/puupee_connect/lib/src/protocol/connect_message.dart`:
+Create `packages/sync/felorx_connect/lib/src/protocol/connect_message.dart`:
 
 ```dart
 import 'connect_error.dart';
@@ -354,7 +354,7 @@ class ConnectMessage {
 Run:
 
 ```bash
-cd packages/sync/puupee_connect && dart test test/protocol/connect_message_test.dart
+cd packages/sync/felorx_connect && dart test test/protocol/connect_message_test.dart
 ```
 
 Expected: PASS.
@@ -362,8 +362,8 @@ Expected: PASS.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add pubspec.yaml packages/sync/puupee_connect
-git commit -m "feat(puupee_connect): 添加连接协议包骨架"
+git add pubspec.yaml packages/sync/felorx_connect
+git commit -m "feat(felorx_connect): 添加连接协议包骨架"
 ```
 
 ---
@@ -371,15 +371,15 @@ git commit -m "feat(puupee_connect): 添加连接协议包骨架"
 ## Task 2: Password Hashing for Device-Code Connections
 
 **Files:**
-- Create: `packages/sync/puupee_connect/lib/src/auth/connect_password.dart`
-- Create: `packages/sync/puupee_connect/test/auth/connect_password_test.dart`
+- Create: `packages/sync/felorx_connect/lib/src/auth/connect_password.dart`
+- Create: `packages/sync/felorx_connect/test/auth/connect_password_test.dart`
 
 - [ ] **Step 1: Write failing password tests**
 
-Create `packages/sync/puupee_connect/test/auth/connect_password_test.dart`:
+Create `packages/sync/felorx_connect/test/auth/connect_password_test.dart`:
 
 ```dart
-import 'package:puupee_connect/puupee_connect.dart';
+import 'package:felorx_connect/felorx_connect.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -420,14 +420,14 @@ void main() {
 Run:
 
 ```bash
-cd packages/sync/puupee_connect && dart test test/auth/connect_password_test.dart
+cd packages/sync/felorx_connect && dart test test/auth/connect_password_test.dart
 ```
 
 Expected: FAIL because `ConnectPassword` is not defined.
 
 - [ ] **Step 3: Implement password hashing**
 
-Create `packages/sync/puupee_connect/lib/src/auth/connect_password.dart`:
+Create `packages/sync/felorx_connect/lib/src/auth/connect_password.dart`:
 
 ```dart
 import 'dart:convert';
@@ -507,7 +507,7 @@ class ConnectPassword {
 
 - [ ] **Step 4: Export password helper**
 
-Modify `packages/sync/puupee_connect/lib/puupee_connect.dart`:
+Modify `packages/sync/felorx_connect/lib/felorx_connect.dart`:
 
 ```dart
 library;
@@ -522,7 +522,7 @@ export 'src/protocol/connect_message.dart';
 Run:
 
 ```bash
-cd packages/sync/puupee_connect && dart test test/auth/connect_password_test.dart
+cd packages/sync/felorx_connect && dart test test/auth/connect_password_test.dart
 ```
 
 Expected: PASS.
@@ -530,8 +530,8 @@ Expected: PASS.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add packages/sync/puupee_connect/lib/src/auth packages/sync/puupee_connect/test/auth
-git commit -m "feat(puupee_connect): 添加设备码连接密码校验"
+git add packages/sync/felorx_connect/lib/src/auth packages/sync/felorx_connect/test/auth
+git commit -m "feat(felorx_connect): 添加设备码连接密码校验"
 ```
 
 ---
@@ -539,15 +539,15 @@ git commit -m "feat(puupee_connect): 添加设备码连接密码校验"
 ## Task 3: Host Registry
 
 **Files:**
-- Create: `packages/sync/puupee_connect/lib/src/relay/host_registry.dart`
-- Create: `packages/sync/puupee_connect/test/relay/host_registry_test.dart`
+- Create: `packages/sync/felorx_connect/lib/src/relay/host_registry.dart`
+- Create: `packages/sync/felorx_connect/test/relay/host_registry_test.dart`
 
 - [ ] **Step 1: Write failing host registry tests**
 
-Create `packages/sync/puupee_connect/test/relay/host_registry_test.dart`:
+Create `packages/sync/felorx_connect/test/relay/host_registry_test.dart`:
 
 ```dart
-import 'package:puupee_connect/puupee_connect.dart';
+import 'package:felorx_connect/felorx_connect.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -639,14 +639,14 @@ void main() {
 Run:
 
 ```bash
-cd packages/sync/puupee_connect && dart test test/relay/host_registry_test.dart
+cd packages/sync/felorx_connect && dart test test/relay/host_registry_test.dart
 ```
 
 Expected: FAIL because registry classes are not defined.
 
 - [ ] **Step 3: Implement host registry**
 
-Create `packages/sync/puupee_connect/lib/src/relay/host_registry.dart`:
+Create `packages/sync/felorx_connect/lib/src/relay/host_registry.dart`:
 
 ```dart
 class ConnectHostRegistration {
@@ -785,7 +785,7 @@ class ConnectHostRegistry {
 
 - [ ] **Step 4: Export host registry**
 
-Modify `packages/sync/puupee_connect/lib/puupee_connect.dart`:
+Modify `packages/sync/felorx_connect/lib/felorx_connect.dart`:
 
 ```dart
 library;
@@ -801,7 +801,7 @@ export 'src/relay/host_registry.dart';
 Run:
 
 ```bash
-cd packages/sync/puupee_connect && dart test test/relay/host_registry_test.dart
+cd packages/sync/felorx_connect && dart test test/relay/host_registry_test.dart
 ```
 
 Expected: PASS.
@@ -809,8 +809,8 @@ Expected: PASS.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add packages/sync/puupee_connect/lib/src/relay/host_registry.dart packages/sync/puupee_connect/test/relay/host_registry_test.dart
-git commit -m "feat(puupee_connect): 添加在线主机注册表"
+git add packages/sync/felorx_connect/lib/src/relay/host_registry.dart packages/sync/felorx_connect/test/relay/host_registry_test.dart
+git commit -m "feat(felorx_connect): 添加在线主机注册表"
 ```
 
 ---
@@ -818,15 +818,15 @@ git commit -m "feat(puupee_connect): 添加在线主机注册表"
 ## Task 4: Session Registry and Signaling Routing
 
 **Files:**
-- Create: `packages/sync/puupee_connect/lib/src/relay/session_registry.dart`
-- Create: `packages/sync/puupee_connect/test/relay/session_registry_test.dart`
+- Create: `packages/sync/felorx_connect/lib/src/relay/session_registry.dart`
+- Create: `packages/sync/felorx_connect/test/relay/session_registry_test.dart`
 
 - [ ] **Step 1: Write failing session registry tests**
 
-Create `packages/sync/puupee_connect/test/relay/session_registry_test.dart`:
+Create `packages/sync/felorx_connect/test/relay/session_registry_test.dart`:
 
 ```dart
-import 'package:puupee_connect/puupee_connect.dart';
+import 'package:felorx_connect/felorx_connect.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -894,14 +894,14 @@ void main() {
 Run:
 
 ```bash
-cd packages/sync/puupee_connect && dart test test/relay/session_registry_test.dart
+cd packages/sync/felorx_connect && dart test test/relay/session_registry_test.dart
 ```
 
 Expected: FAIL because `ConnectSessionRegistry` is not defined.
 
 - [ ] **Step 3: Implement session registry**
 
-Create `packages/sync/puupee_connect/lib/src/relay/session_registry.dart`:
+Create `packages/sync/felorx_connect/lib/src/relay/session_registry.dart`:
 
 ```dart
 import 'package:uuid/uuid.dart';
@@ -1004,7 +1004,7 @@ class ConnectSessionRegistry {
 
 - [ ] **Step 4: Export session registry**
 
-Modify `packages/sync/puupee_connect/lib/puupee_connect.dart`:
+Modify `packages/sync/felorx_connect/lib/felorx_connect.dart`:
 
 ```dart
 library;
@@ -1021,7 +1021,7 @@ export 'src/relay/session_registry.dart';
 Run:
 
 ```bash
-cd packages/sync/puupee_connect && dart test test/relay/session_registry_test.dart
+cd packages/sync/felorx_connect && dart test test/relay/session_registry_test.dart
 ```
 
 Expected: PASS.
@@ -1029,8 +1029,8 @@ Expected: PASS.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add packages/sync/puupee_connect/lib/src/relay/session_registry.dart packages/sync/puupee_connect/test/relay/session_registry_test.dart
-git commit -m "feat(puupee_connect): 添加连接会话注册表"
+git add packages/sync/felorx_connect/lib/src/relay/session_registry.dart packages/sync/felorx_connect/test/relay/session_registry_test.dart
+git commit -m "feat(felorx_connect): 添加连接会话注册表"
 ```
 
 ---
@@ -1038,18 +1038,18 @@ git commit -m "feat(puupee_connect): 添加连接会话注册表"
 ## Task 5: Relay Server Health, Info, and WebSocket Registration
 
 **Files:**
-- Create: `packages/sync/puupee_connect/lib/src/relay/connect_relay_server.dart`
-- Create: `packages/sync/puupee_connect/test/relay/connect_relay_server_test.dart`
+- Create: `packages/sync/felorx_connect/lib/src/relay/connect_relay_server.dart`
+- Create: `packages/sync/felorx_connect/test/relay/connect_relay_server_test.dart`
 
 - [ ] **Step 1: Write failing relay server tests**
 
-Create `packages/sync/puupee_connect/test/relay/connect_relay_server_test.dart`:
+Create `packages/sync/felorx_connect/test/relay/connect_relay_server_test.dart`:
 
 ```dart
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:puupee_connect/puupee_connect.dart';
+import 'package:felorx_connect/felorx_connect.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -1131,14 +1131,14 @@ void main() {
 Run:
 
 ```bash
-cd packages/sync/puupee_connect && dart test test/relay/connect_relay_server_test.dart
+cd packages/sync/felorx_connect && dart test test/relay/connect_relay_server_test.dart
 ```
 
 Expected: FAIL because `ConnectRelayServer` is not defined.
 
 - [ ] **Step 3: Implement relay server**
 
-Create `packages/sync/puupee_connect/lib/src/relay/connect_relay_server.dart` with:
+Create `packages/sync/felorx_connect/lib/src/relay/connect_relay_server.dart` with:
 
 ```dart
 import 'dart:async';
@@ -1446,7 +1446,7 @@ class ConnectRelayServer {
 
 - [ ] **Step 4: Export relay server**
 
-Modify `packages/sync/puupee_connect/lib/puupee_connect.dart`:
+Modify `packages/sync/felorx_connect/lib/felorx_connect.dart`:
 
 ```dart
 library;
@@ -1464,7 +1464,7 @@ export 'src/relay/session_registry.dart';
 Run:
 
 ```bash
-cd packages/sync/puupee_connect && dart test test/relay/connect_relay_server_test.dart
+cd packages/sync/felorx_connect && dart test test/relay/connect_relay_server_test.dart
 ```
 
 Expected: PASS.
@@ -1472,8 +1472,8 @@ Expected: PASS.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add packages/sync/puupee_connect/lib/src/relay/connect_relay_server.dart packages/sync/puupee_connect/test/relay/connect_relay_server_test.dart
-git commit -m "feat(puupee_connect): 添加通用连接中继服务"
+git add packages/sync/felorx_connect/lib/src/relay/connect_relay_server.dart packages/sync/felorx_connect/test/relay/connect_relay_server_test.dart
+git commit -m "feat(felorx_connect): 添加通用连接中继服务"
 ```
 
 ---
@@ -1481,18 +1481,18 @@ git commit -m "feat(puupee_connect): 添加通用连接中继服务"
 ## Task 6: Relay Client and Terminal Transport Abstractions
 
 **Files:**
-- Create: `packages/sync/puupee_connect/lib/src/client/connect_relay_client.dart`
-- Create: `packages/sync/puupee_connect/lib/src/client/connect_terminal_client.dart`
-- Create: `packages/sync/puupee_connect/test/client/connect_relay_client_test.dart`
+- Create: `packages/sync/felorx_connect/lib/src/client/connect_relay_client.dart`
+- Create: `packages/sync/felorx_connect/lib/src/client/connect_terminal_client.dart`
+- Create: `packages/sync/felorx_connect/test/client/connect_relay_client_test.dart`
 
 - [ ] **Step 1: Write failing relay client test**
 
-Create `packages/sync/puupee_connect/test/client/connect_relay_client_test.dart`:
+Create `packages/sync/felorx_connect/test/client/connect_relay_client_test.dart`:
 
 ```dart
 import 'dart:async';
 
-import 'package:puupee_connect/puupee_connect.dart';
+import 'package:felorx_connect/felorx_connect.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -1524,14 +1524,14 @@ void main() {
 Run:
 
 ```bash
-cd packages/sync/puupee_connect && dart test test/client/connect_relay_client_test.dart
+cd packages/sync/felorx_connect && dart test test/client/connect_relay_client_test.dart
 ```
 
 Expected: FAIL because `ConnectRelayClient` is not defined.
 
 - [ ] **Step 3: Implement relay client**
 
-Create `packages/sync/puupee_connect/lib/src/client/connect_relay_client.dart`:
+Create `packages/sync/felorx_connect/lib/src/client/connect_relay_client.dart`:
 
 ```dart
 import 'dart:async';
@@ -1599,7 +1599,7 @@ class ConnectRelayClient implements ConnectRelayConnection {
 
 - [ ] **Step 4: Export client abstractions**
 
-Modify `packages/sync/puupee_connect/lib/puupee_connect.dart`:
+Modify `packages/sync/felorx_connect/lib/felorx_connect.dart`:
 
 ```dart
 library;
@@ -1616,7 +1616,7 @@ export 'src/relay/session_registry.dart';
 
 - [ ] **Step 5: Implement terminal client abstractions**
 
-Create `packages/sync/puupee_connect/lib/src/client/connect_terminal_client.dart`:
+Create `packages/sync/felorx_connect/lib/src/client/connect_terminal_client.dart`:
 
 ```dart
 import 'dart:async';
@@ -1657,7 +1657,7 @@ abstract class ConnectTerminalChannel {
 Run:
 
 ```bash
-cd packages/sync/puupee_connect && dart test test/client/connect_relay_client_test.dart
+cd packages/sync/felorx_connect && dart test test/client/connect_relay_client_test.dart
 ```
 
 Expected: PASS.
@@ -1665,8 +1665,8 @@ Expected: PASS.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add packages/sync/puupee_connect/lib/src/client packages/sync/puupee_connect/test/client
-git commit -m "feat(puupee_connect): 添加中继客户端抽象"
+git add packages/sync/felorx_connect/lib/src/client packages/sync/felorx_connect/test/client
+git commit -m "feat(felorx_connect): 添加中继客户端抽象"
 ```
 
 ---
@@ -1674,17 +1674,17 @@ git commit -m "feat(puupee_connect): 添加中继客户端抽象"
 ## Task 7: Host Daemon Configuration and Registration
 
 **Files:**
-- Create: `packages/sync/puupee_connect/lib/src/host/connect_host_config.dart`
-- Create: `packages/sync/puupee_connect/lib/src/host/connect_host_daemon.dart`
-- Create: `packages/sync/puupee_connect/bin/puupee_connect_host.dart`
-- Create: `packages/sync/puupee_connect/test/host/connect_host_config_test.dart`
+- Create: `packages/sync/felorx_connect/lib/src/host/connect_host_config.dart`
+- Create: `packages/sync/felorx_connect/lib/src/host/connect_host_daemon.dart`
+- Create: `packages/sync/felorx_connect/bin/felorx_connect_host.dart`
+- Create: `packages/sync/felorx_connect/test/host/connect_host_config_test.dart`
 
 - [ ] **Step 1: Write failing config tests**
 
-Create `packages/sync/puupee_connect/test/host/connect_host_config_test.dart`:
+Create `packages/sync/felorx_connect/test/host/connect_host_config_test.dart`:
 
 ```dart
-import 'package:puupee_connect/puupee_connect.dart';
+import 'package:felorx_connect/felorx_connect.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -1736,14 +1736,14 @@ void main() {
 Run:
 
 ```bash
-cd packages/sync/puupee_connect && dart test test/host/connect_host_config_test.dart
+cd packages/sync/felorx_connect && dart test test/host/connect_host_config_test.dart
 ```
 
 Expected: FAIL because `ConnectHostConfig` is not defined.
 
 - [ ] **Step 3: Implement config parser**
 
-Create `packages/sync/puupee_connect/lib/src/host/connect_host_config.dart`:
+Create `packages/sync/felorx_connect/lib/src/host/connect_host_config.dart`:
 
 ```dart
 import 'dart:io';
@@ -1848,7 +1848,7 @@ class ConnectHostConfig {
 
 - [ ] **Step 4: Implement daemon skeleton**
 
-Create `packages/sync/puupee_connect/lib/src/host/connect_host_daemon.dart`:
+Create `packages/sync/felorx_connect/lib/src/host/connect_host_daemon.dart`:
 
 ```dart
 import '../client/connect_relay_client.dart';
@@ -1898,12 +1898,12 @@ class ConnectHostDaemon {
 }
 ```
 
-Create `packages/sync/puupee_connect/bin/puupee_connect_host.dart`:
+Create `packages/sync/felorx_connect/bin/felorx_connect_host.dart`:
 
 ```dart
 import 'dart:io';
 
-import 'package:puupee_connect/puupee_connect.dart';
+import 'package:felorx_connect/felorx_connect.dart';
 
 Future<void> main(List<String> args) async {
   final parser = ConnectHostConfig.buildArgParser();
@@ -1915,7 +1915,7 @@ Future<void> main(List<String> args) async {
   final daemon = ConnectHostDaemon(config: ConnectHostConfig.parse(args));
   try {
     await daemon.start();
-    stdout.writeln('Puupee Connect host daemon started');
+    stdout.writeln('Felorx Connect host daemon started');
     ProcessSignal.sigint.watch().listen((_) async {
       await daemon.stop();
       exit(0);
@@ -1925,7 +1925,7 @@ Future<void> main(List<String> args) async {
       exit(0);
     });
   } catch (error, stackTrace) {
-    stderr.writeln('Puupee Connect host daemon failed: $error');
+    stderr.writeln('Felorx Connect host daemon failed: $error');
     stderr.writeln(stackTrace);
     exitCode = 64;
   }
@@ -1934,7 +1934,7 @@ Future<void> main(List<String> args) async {
 
 - [ ] **Step 5: Export host config and daemon**
 
-Modify `packages/sync/puupee_connect/lib/puupee_connect.dart`:
+Modify `packages/sync/felorx_connect/lib/felorx_connect.dart`:
 
 ```dart
 library;
@@ -1956,7 +1956,7 @@ export 'src/relay/session_registry.dart';
 Run:
 
 ```bash
-cd packages/sync/puupee_connect && dart test test/host/connect_host_config_test.dart
+cd packages/sync/felorx_connect && dart test test/host/connect_host_config_test.dart
 ```
 
 Expected: PASS.
@@ -1964,8 +1964,8 @@ Expected: PASS.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add packages/sync/puupee_connect/lib/src/host packages/sync/puupee_connect/bin packages/sync/puupee_connect/test/host
-git commit -m "feat(puupee_connect): 添加 Linux 主机守护进程入口"
+git add packages/sync/felorx_connect/lib/src/host packages/sync/felorx_connect/bin packages/sync/felorx_connect/test/host
+git commit -m "feat(felorx_connect): 添加 Linux 主机守护进程入口"
 ```
 
 ---
@@ -1973,23 +1973,23 @@ git commit -m "feat(puupee_connect): 添加 Linux 主机守护进程入口"
 ## Task 8: PTY Abstraction and Linux Adapter
 
 **Files:**
-- Create: `packages/sync/puupee_connect/lib/src/host/pty/terminal_pty.dart`
-- Create: `packages/sync/puupee_connect/lib/src/host/pty/linux_terminal_pty.dart`
-- Create: `packages/sync/puupee_connect/lib/src/host/terminal_host_session.dart`
-- Create: `packages/sync/puupee_connect/test/host/terminal_host_session_test.dart`
+- Create: `packages/sync/felorx_connect/lib/src/host/pty/terminal_pty.dart`
+- Create: `packages/sync/felorx_connect/lib/src/host/pty/linux_terminal_pty.dart`
+- Create: `packages/sync/felorx_connect/lib/src/host/terminal_host_session.dart`
+- Create: `packages/sync/felorx_connect/test/host/terminal_host_session_test.dart`
 
 - [ ] **Step 1: Write failing terminal session test with fake PTY**
 
-Create `packages/sync/puupee_connect/test/host/terminal_host_session_test.dart`:
+Create `packages/sync/felorx_connect/test/host/terminal_host_session_test.dart`:
 
 ```dart
 import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:puupee_connect/src/host/pty/terminal_pty.dart';
-import 'package:puupee_connect/src/host/terminal_host_session.dart';
-import 'package:puupee_connect/puupee_connect.dart';
+import 'package:felorx_connect/src/host/pty/terminal_pty.dart';
+import 'package:felorx_connect/src/host/terminal_host_session.dart';
+import 'package:felorx_connect/felorx_connect.dart';
 import 'package:test/test.dart';
 
 class FakeTerminalPty implements TerminalPty {
@@ -2055,14 +2055,14 @@ void main() {
 Run:
 
 ```bash
-cd packages/sync/puupee_connect && dart test test/host/terminal_host_session_test.dart
+cd packages/sync/felorx_connect && dart test test/host/terminal_host_session_test.dart
 ```
 
 Expected: FAIL because `TerminalPty` and `TerminalHostSession` are not defined.
 
 - [ ] **Step 3: Implement PTY abstraction**
 
-Create `packages/sync/puupee_connect/lib/src/host/pty/terminal_pty.dart`:
+Create `packages/sync/felorx_connect/lib/src/host/pty/terminal_pty.dart`:
 
 ```dart
 import 'dart:typed_data';
@@ -2080,7 +2080,7 @@ abstract class TerminalPty {
 
 - [ ] **Step 4: Implement terminal host session**
 
-Create `packages/sync/puupee_connect/lib/src/host/terminal_host_session.dart`:
+Create `packages/sync/felorx_connect/lib/src/host/terminal_host_session.dart`:
 
 ```dart
 import 'dart:async';
@@ -2142,7 +2142,7 @@ class TerminalHostSession {
 
 - [ ] **Step 5: Implement Linux process adapter with PTY seam**
 
-Create `packages/sync/puupee_connect/lib/src/host/pty/linux_terminal_pty.dart`:
+Create `packages/sync/felorx_connect/lib/src/host/pty/linux_terminal_pty.dart`:
 
 ```dart
 import 'dart:async';
@@ -2214,7 +2214,7 @@ This adapter uses `Process.start` as the compile-safe first implementation behin
 Run:
 
 ```bash
-cd packages/sync/puupee_connect && dart test test/host/terminal_host_session_test.dart
+cd packages/sync/felorx_connect && dart test test/host/terminal_host_session_test.dart
 ```
 
 Expected: PASS.
@@ -2222,8 +2222,8 @@ Expected: PASS.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add packages/sync/puupee_connect/lib/src/host/pty packages/sync/puupee_connect/lib/src/host/terminal_host_session.dart packages/sync/puupee_connect/test/host/terminal_host_session_test.dart
-git commit -m "feat(puupee_connect): 添加远程终端 PTY 桥接"
+git add packages/sync/felorx_connect/lib/src/host/pty packages/sync/felorx_connect/lib/src/host/terminal_host_session.dart packages/sync/felorx_connect/test/host/terminal_host_session_test.dart
+git commit -m "feat(felorx_connect): 添加远程终端 PTY 桥接"
 ```
 
 ---
@@ -2231,18 +2231,18 @@ git commit -m "feat(puupee_connect): 添加远程终端 PTY 桥接"
 ## Task 9: Host WebRTC DataChannel Integration
 
 **Files:**
-- Create: `packages/sync/puupee_connect/lib/src/host/webrtc_dart_terminal_peer.dart`
-- Modify: `packages/sync/puupee_connect/lib/src/host/connect_host_daemon.dart`
-- Create: `packages/sync/puupee_connect/test/host/connect_host_daemon_test.dart`
+- Create: `packages/sync/felorx_connect/lib/src/host/webrtc_dart_terminal_peer.dart`
+- Modify: `packages/sync/felorx_connect/lib/src/host/connect_host_daemon.dart`
+- Create: `packages/sync/felorx_connect/test/host/connect_host_daemon_test.dart`
 
 - [ ] **Step 1: Write failing daemon request handling test**
 
-Create `packages/sync/puupee_connect/test/host/connect_host_daemon_test.dart`:
+Create `packages/sync/felorx_connect/test/host/connect_host_daemon_test.dart`:
 
 ```dart
 import 'dart:async';
 
-import 'package:puupee_connect/puupee_connect.dart';
+import 'package:felorx_connect/felorx_connect.dart';
 import 'package:test/test.dart';
 
 class RecordingRelayClient implements ConnectRelayConnection {
@@ -2307,14 +2307,14 @@ void main() {
 Run:
 
 ```bash
-cd packages/sync/puupee_connect && dart test test/host/connect_host_daemon_test.dart
+cd packages/sync/felorx_connect && dart test test/host/connect_host_daemon_test.dart
 ```
 
 Expected: FAIL because current daemon does not listen for `connectRequest`.
 
 - [ ] **Step 3: Implement host-side peer abstraction**
 
-Create `packages/sync/puupee_connect/lib/src/host/webrtc_dart_terminal_peer.dart`:
+Create `packages/sync/felorx_connect/lib/src/host/webrtc_dart_terminal_peer.dart`:
 
 ```dart
 import 'dart:async';
@@ -2387,7 +2387,7 @@ class WebRtcDartTerminalPeer {
 
 - [ ] **Step 4: Update daemon to accept connect requests**
 
-Modify `packages/sync/puupee_connect/lib/src/host/connect_host_daemon.dart` so `start()` listens to messages:
+Modify `packages/sync/felorx_connect/lib/src/host/connect_host_daemon.dart` so `start()` listens to messages:
 
 ```dart
 StreamSubscription<ConnectMessage>? _relaySub;
@@ -2445,7 +2445,7 @@ Future<void> stop() async {
 Run:
 
 ```bash
-cd packages/sync/puupee_connect && dart test test/host/connect_host_daemon_test.dart
+cd packages/sync/felorx_connect && dart test test/host/connect_host_daemon_test.dart
 ```
 
 Expected: PASS.
@@ -2453,8 +2453,8 @@ Expected: PASS.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add packages/sync/puupee_connect/lib/src/host packages/sync/puupee_connect/test/host/connect_host_daemon_test.dart
-git commit -m "feat(puupee_connect): 添加主机侧 WebRTC 会话入口"
+git add packages/sync/felorx_connect/lib/src/host packages/sync/felorx_connect/test/host/connect_host_daemon_test.dart
+git commit -m "feat(felorx_connect): 添加主机侧 WebRTC 会话入口"
 ```
 
 ---
@@ -2474,7 +2474,7 @@ git commit -m "feat(puupee_connect): 添加主机侧 WebRTC 会话入口"
 Create `apps/sync_node/test/sync_node_arg_parser_test.dart`:
 
 ```dart
-import 'package:puupee_sync_node/sync_node_arg_parser.dart';
+import 'package:felorx_sync_node/sync_node_arg_parser.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -2510,7 +2510,7 @@ Modify `apps/sync_node/pubspec.yaml`:
 
 ```yaml
 dependencies:
-  puupee_connect: ^0.1.0
+  felorx_connect: ^0.1.0
 ```
 
 Modify `apps/sync_node/lib/sync_node_arg_parser.dart` by adding before `help`:
@@ -2519,30 +2519,30 @@ Modify `apps/sync_node/lib/sync_node_arg_parser.dart` by adding before `help`:
     ..addFlag(
       'enable-connect-relay',
       defaultsTo: false,
-      help: '启用 Puupee Connect 中继服务，用于远程终端等远程操作连接',
+      help: '启用 Felorx Connect 中继服务，用于远程终端等远程操作连接',
     )
     ..addOption(
       'connect-port',
       defaultsTo: '18787',
-      help: 'Puupee Connect 中继服务端口',
+      help: 'Felorx Connect 中继服务端口',
     )
     ..addOption(
       'connect-path-prefix',
       defaultsTo: '/connect',
-      help: 'Puupee Connect HTTP/WebSocket 路径前缀',
+      help: 'Felorx Connect HTTP/WebSocket 路径前缀',
     )
     ..addOption(
       'connect-stun-url',
       defaultsTo: 'stun:stun.l.google.com:19302',
-      help: 'Puupee Connect WebRTC STUN 地址',
+      help: 'Felorx Connect WebRTC STUN 地址',
     )
-    ..addOption('connect-turn-url', help: 'Puupee Connect WebRTC TURN 地址')
-    ..addOption('connect-turn-username', help: 'Puupee Connect TURN 用户名')
-    ..addOption('connect-turn-credential', help: 'Puupee Connect TURN 凭据')
+    ..addOption('connect-turn-url', help: 'Felorx Connect WebRTC TURN 地址')
+    ..addOption('connect-turn-username', help: 'Felorx Connect TURN 用户名')
+    ..addOption('connect-turn-credential', help: 'Felorx Connect TURN 凭据')
     ..addOption(
       'connect-host-heartbeat-timeout',
       defaultsTo: '60',
-      help: 'Puupee Connect 主机心跳超时时间，单位秒',
+      help: 'Felorx Connect 主机心跳超时时间，单位秒',
     )
 ```
 
@@ -2564,7 +2564,7 @@ Create `apps/sync_node/test/connect_relay_lifecycle_test.dart`:
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:puupee_sync_node/sync_node_connect_relay.dart';
+import 'package:felorx_sync_node/sync_node_connect_relay.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -2607,7 +2607,7 @@ void main() {
 Create `apps/sync_node/lib/sync_node_connect_relay.dart`:
 
 ```dart
-import 'package:puupee_connect/puupee_connect.dart';
+import 'package:felorx_connect/felorx_connect.dart';
 
 Future<ConnectRelayServer?> startSyncNodeConnectRelay({
   required bool enabled,
@@ -2622,7 +2622,7 @@ Future<ConnectRelayServer?> startSyncNodeConnectRelay({
     hostHeartbeatTimeout: heartbeatTimeout,
   );
   await relay.start(port: port);
-  onLog?.call('Puupee Connect 中继服务已启动: ${relay.port}');
+  onLog?.call('Felorx Connect 中继服务已启动: ${relay.port}');
   return relay;
 }
 ```
@@ -2632,7 +2632,7 @@ Future<ConnectRelayServer?> startSyncNodeConnectRelay({
 Modify `apps/sync_node/lib/sync_node_runner.dart`:
 
 ```dart
-import 'package:puupee_connect/puupee_connect.dart';
+import 'package:felorx_connect/felorx_connect.dart';
 ```
 
 Also import:
@@ -2652,7 +2652,7 @@ class SyncNodeRunHandle {
   });
 
   final SyncNode node;
-  final PuupeeContentEventConsumer? contentEventConsumer;
+  final FelorxContentEventConsumer? contentEventConsumer;
   final ConnectRelayServer? connectRelayServer;
 
   Future<void> stop() async {
@@ -2703,7 +2703,7 @@ Run:
 ```bash
 cd apps/sync_node && dart test test/sync_node_arg_parser_test.dart
 dart test test/connect_relay_lifecycle_test.dart
-cd /Users/j/repos/puupees/puupee-apps && dart analyze apps/sync_node packages/sync/puupee_connect
+cd /Users/j/repos/puupees/felorx-apps && dart analyze apps/sync_node packages/sync/felorx_connect
 ```
 
 Expected: tests PASS and analysis reports no errors for touched packages.
@@ -2712,7 +2712,7 @@ Expected: tests PASS and analysis reports no errors for touched packages.
 
 ```bash
 git add apps/sync_node/pubspec.yaml apps/sync_node/lib apps/sync_node/test
-git commit -m "feat(sync_node): 集成 Puupee Connect 中继服务"
+git commit -m "feat(sync_node): 集成 Felorx Connect 中继服务"
 ```
 
 ---
@@ -2731,7 +2731,7 @@ git commit -m "feat(sync_node): 集成 Puupee Connect 中继服务"
 Create `apps/ops/test/services/connect_relay_service_test.dart`:
 
 ```dart
-import 'package:puupee_ops/models/connect_host.dart';
+import 'package:felorx_ops/models/connect_host.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -2768,7 +2768,7 @@ Modify `apps/ops/pubspec.yaml`:
 
 ```yaml
 dependencies:
-  puupee_connect: ^0.1.0
+  felorx_connect: ^0.1.0
   flutter_webrtc: ^0.12.0
 ```
 
@@ -2821,7 +2821,7 @@ Create `apps/ops/lib/services/connect_relay_service.dart`:
 ```dart
 import 'dart:async';
 
-import 'package:puupee_connect/puupee_connect.dart';
+import 'package:felorx_connect/felorx_connect.dart';
 
 import '../models/connect_host.dart';
 
@@ -2919,7 +2919,7 @@ Create `apps/ops/test/pages/terminal_remote_connection_form_test.dart`:
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
-import 'package:puupee_ops/pages/terminal/remote_terminal_connection_dialog.dart';
+import 'package:felorx_ops/pages/terminal/remote_terminal_connection_dialog.dart';
 
 void main() {
   testWidgets('device code form disables submit when empty', (tester) async {
@@ -3144,7 +3144,7 @@ class RemoteTerminalPage extends StatelessWidget {
 Modify `apps/ops/lib/router.dart` imports:
 
 ```dart
-import 'package:puupee_ops/pages/terminal/terminal_page.dart';
+import 'package:felorx_ops/pages/terminal/terminal_page.dart';
 ```
 
 Replace `return const LocalTerminalPage();` in `OpsLocalTerminalRoute.build`:
@@ -3186,8 +3186,8 @@ Create `apps/ops/test/services/flutter_webrtc_terminal_peer_test.dart`:
 ```dart
 import 'dart:convert';
 
-import 'package:puupee_connect/puupee_connect.dart';
-import 'package:puupee_ops/services/flutter_webrtc_terminal_peer.dart';
+import 'package:felorx_connect/felorx_connect.dart';
+import 'package:felorx_ops/services/flutter_webrtc_terminal_peer.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -3222,7 +3222,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter_webrtc/flutter_webrtc.dart';
-import 'package:puupee_connect/puupee_connect.dart';
+import 'package:felorx_connect/felorx_connect.dart';
 
 class FlutterWebRtcTerminalPeer {
   FlutterWebRtcTerminalPeer({
@@ -3344,7 +3344,7 @@ Run:
 dart pub get
 ```
 
-Expected: package graph resolves with `packages/sync/puupee_connect`, `sync_node`, and Ops dependencies.
+Expected: package graph resolves with `packages/sync/felorx_connect`, `sync_node`, and Ops dependencies.
 
 - [ ] **Step 2: Run Ops provider generation**
 
@@ -3361,10 +3361,10 @@ Expected: `lib/providers/connect_provider.g.dart` is generated and command exits
 Run:
 
 ```bash
-cd packages/sync/puupee_connect && dart test
+cd packages/sync/felorx_connect && dart test
 ```
 
-Expected: all `puupee_connect` tests PASS.
+Expected: all `felorx_connect` tests PASS.
 
 - [ ] **Step 4: Run sync_node tests**
 
@@ -3391,7 +3391,7 @@ Expected: focused Ops tests PASS.
 Run:
 
 ```bash
-dart analyze packages/sync/puupee_connect apps/sync_node apps/ops
+dart analyze packages/sync/felorx_connect apps/sync_node apps/ops
 ```
 
 Expected: no analyzer errors in touched packages.
@@ -3423,7 +3423,7 @@ If `pubspec.lock` does not change, stage only generated files.
 Run:
 
 ```bash
-rg -n "reevibe-server|reevibe_server|reevibe_server.dart" pubspec.yaml scripts apps packages .puupee --glob '!apps/reevibe-server/**'
+rg -n "reevibe-server|reevibe_server|reevibe_server.dart" pubspec.yaml scripts apps packages .felorx --glob '!apps/reevibe-server/**'
 ```
 
 Expected: remaining matches are documentation or builder tests that intentionally exercise app-name conversion. Inspect each match and update only runtime/workspace references.
@@ -3475,8 +3475,8 @@ git commit -m "refactor(connect): 移除 reevibe-server 独立项目"
 Run:
 
 ```bash
-cd packages/sync/puupee_connect
-dart run bin/puupee_connect_host.dart --help
+cd packages/sync/felorx_connect
+dart run bin/felorx_connect_host.dart --help
 ```
 
 Expected: CLI usage prints successfully and exits 0.
@@ -3486,18 +3486,18 @@ Expected: CLI usage prints successfully and exits 0.
 Run:
 
 ```bash
-cd packages/sync/puupee_connect
-dart compile exe bin/puupee_connect_host.dart -o build/puupee-connect-host
+cd packages/sync/felorx_connect
+dart compile exe bin/felorx_connect_host.dart -o build/felorx-connect-host
 ```
 
-Expected: executable is created at `packages/sync/puupee_connect/build/puupee-connect-host`.
+Expected: executable is created at `packages/sync/felorx_connect/build/felorx-connect-host`.
 
 - [ ] **Step 3: Run all focused tests again**
 
 Run:
 
 ```bash
-cd packages/sync/puupee_connect && dart test
+cd packages/sync/felorx_connect && dart test
 cd ../../apps/sync_node && dart test
 cd ../ops && flutter test test/services/connect_relay_service_test.dart test/pages/terminal_remote_connection_form_test.dart test/services/flutter_webrtc_terminal_peer_test.dart
 ```
@@ -3509,8 +3509,8 @@ Expected: all commands PASS.
 Run:
 
 ```bash
-cd /Users/j/repos/puupees/puupee-apps
-dart analyze packages/sync/puupee_connect apps/sync_node apps/ops
+cd /Users/j/repos/puupees/felorx-apps
+dart analyze packages/sync/felorx_connect apps/sync_node apps/ops
 ```
 
 Expected: no analyzer errors in touched packages.
@@ -3532,7 +3532,7 @@ If no files changed, skip this commit.
 
 Spec coverage:
 
-- `packages/sync/puupee_connect` package, protocol, relay, host daemon, client abstraction: Tasks 1-9.
+- `packages/sync/felorx_connect` package, protocol, relay, host daemon, client abstraction: Tasks 1-9.
 - sync_node optional relay service: Task 10.
 - Ops local/remote terminal distinction and device-code form: Tasks 11-13.
 - TURN/STUN and direct WebRTC path: Tasks 5, 9, 13.

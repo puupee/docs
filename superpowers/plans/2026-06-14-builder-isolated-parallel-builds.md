@@ -6,34 +6,34 @@
 
 **Architecture:** Add small CLI-side primitives for build units, scheduling, workspace paths, and workspace preparation, then wire GUI and CLI entrypoints through those primitives. GUI keeps its BuildRecord-per-target behavior, while CLI `build`, CLI `build-all`, and legacy wrapper scripts stop running multi-target work inside one shared source tree.
 
-**Tech Stack:** Dart 3.8, `package:test`, `package:args`, `package:path`, Flutter service code in `apps/builder`, existing `puupee_builder_cli` services.
+**Tech Stack:** Dart 3.8, `package:test`, `package:args`, `package:path`, Flutter service code in `apps/builder`, existing `felorx_builder_cli` services.
 
 ---
 
 ## File Structure
 
-- Create `packages/tools/puupee_builder_cli/lib/src/models/build_unit.dart`: immutable identity for one app/platform/artifact build.
-- Create `packages/tools/puupee_builder_cli/lib/src/models/build_unit_result.dart`: success/failure record for scheduler summaries.
-- Create `packages/tools/puupee_builder_cli/lib/src/utils/semaphore.dart`: shared concurrency primitive used by build and build-all commands.
-- Create `packages/tools/puupee_builder_cli/lib/src/services/build_unit_planner.dart`: expands apps and resolved targets into build units.
-- Create `packages/tools/puupee_builder_cli/lib/src/services/build_unit_scheduler.dart`: runs build units with a semaphore and never cancels siblings on failure.
-- Create `packages/tools/puupee_builder_cli/lib/src/services/build_workspace_path_resolver.dart`: sanitizes and joins `app/platform/artifactType`.
-- Create `packages/tools/puupee_builder_cli/lib/src/services/build_workspace_service.dart`: clones or syncs source project into the unit workspace.
-- Create `packages/tools/puupee_builder_cli/lib/src/services/build_unit_process_command_builder.dart`: builds child-process args for a single isolated unit.
-- Create `packages/tools/puupee_builder_cli/lib/src/services/build_target_failure_isolator.dart`: keeps `BuildCoordinator` compatible when called with several targets.
-- Modify `packages/tools/puupee_builder_cli/lib/puupee_builder_cli.dart`: export new model/services needed by GUI.
-- Modify `packages/tools/puupee_builder_cli/lib/src/build_command.dart`: add orchestrator mode and hidden isolated-unit mode.
-- Modify `packages/tools/puupee_builder_cli/lib/src/build_all_command.dart`: build unit list first, then schedule independent units.
-- Modify `packages/tools/puupee_builder_cli/lib/src/services/build_coordinator.dart`: isolate target failures inside direct multi-target calls.
+- Create `packages/tools/felorx_builder_cli/lib/src/models/build_unit.dart`: immutable identity for one app/platform/artifact build.
+- Create `packages/tools/felorx_builder_cli/lib/src/models/build_unit_result.dart`: success/failure record for scheduler summaries.
+- Create `packages/tools/felorx_builder_cli/lib/src/utils/semaphore.dart`: shared concurrency primitive used by build and build-all commands.
+- Create `packages/tools/felorx_builder_cli/lib/src/services/build_unit_planner.dart`: expands apps and resolved targets into build units.
+- Create `packages/tools/felorx_builder_cli/lib/src/services/build_unit_scheduler.dart`: runs build units with a semaphore and never cancels siblings on failure.
+- Create `packages/tools/felorx_builder_cli/lib/src/services/build_workspace_path_resolver.dart`: sanitizes and joins `app/platform/artifactType`.
+- Create `packages/tools/felorx_builder_cli/lib/src/services/build_workspace_service.dart`: clones or syncs source project into the unit workspace.
+- Create `packages/tools/felorx_builder_cli/lib/src/services/build_unit_process_command_builder.dart`: builds child-process args for a single isolated unit.
+- Create `packages/tools/felorx_builder_cli/lib/src/services/build_target_failure_isolator.dart`: keeps `BuildCoordinator` compatible when called with several targets.
+- Modify `packages/tools/felorx_builder_cli/lib/felorx_builder_cli.dart`: export new model/services needed by GUI.
+- Modify `packages/tools/felorx_builder_cli/lib/src/build_command.dart`: add orchestrator mode and hidden isolated-unit mode.
+- Modify `packages/tools/felorx_builder_cli/lib/src/build_all_command.dart`: build unit list first, then schedule independent units.
+- Modify `packages/tools/felorx_builder_cli/lib/src/services/build_coordinator.dart`: isolate target failures inside direct multi-target calls.
 - Modify `apps/builder/lib/services/build_service.dart`: use the shared workspace path resolver and include app/platform/artifactType in workspace paths.
 - Modify `scripts/build_all.dart`: delegate to CLI `build-all` so the legacy wrapper no longer serializes its own build graph.
-- Test `packages/tools/puupee_builder_cli/test/build_unit_planner_test.dart`.
-- Test `packages/tools/puupee_builder_cli/test/build_unit_scheduler_test.dart`.
-- Test `packages/tools/puupee_builder_cli/test/build_workspace_path_resolver_test.dart`.
-- Test `packages/tools/puupee_builder_cli/test/build_workspace_service_test.dart`.
-- Test `packages/tools/puupee_builder_cli/test/build_unit_process_command_builder_test.dart`.
-- Test `packages/tools/puupee_builder_cli/test/build_target_failure_isolator_test.dart`.
-- Test `packages/tools/puupee_builder_cli/test/build_all_units_test.dart`.
+- Test `packages/tools/felorx_builder_cli/test/build_unit_planner_test.dart`.
+- Test `packages/tools/felorx_builder_cli/test/build_unit_scheduler_test.dart`.
+- Test `packages/tools/felorx_builder_cli/test/build_workspace_path_resolver_test.dart`.
+- Test `packages/tools/felorx_builder_cli/test/build_workspace_service_test.dart`.
+- Test `packages/tools/felorx_builder_cli/test/build_unit_process_command_builder_test.dart`.
+- Test `packages/tools/felorx_builder_cli/test/build_target_failure_isolator_test.dart`.
+- Test `packages/tools/felorx_builder_cli/test/build_all_units_test.dart`.
 - Test `apps/builder/test/services/build_service_workspace_test.dart`.
 
 ---
@@ -41,48 +41,48 @@
 ### Task 1: Build Unit Model, Planner, and Scheduler
 
 **Files:**
-- Create: `packages/tools/puupee_builder_cli/lib/src/models/build_unit.dart`
-- Create: `packages/tools/puupee_builder_cli/lib/src/models/build_unit_result.dart`
-- Create: `packages/tools/puupee_builder_cli/lib/src/utils/semaphore.dart`
-- Create: `packages/tools/puupee_builder_cli/lib/src/services/build_unit_planner.dart`
-- Create: `packages/tools/puupee_builder_cli/lib/src/services/build_unit_scheduler.dart`
-- Modify: `packages/tools/puupee_builder_cli/lib/puupee_builder_cli.dart`
-- Test: `packages/tools/puupee_builder_cli/test/build_unit_planner_test.dart`
-- Test: `packages/tools/puupee_builder_cli/test/build_unit_scheduler_test.dart`
+- Create: `packages/tools/felorx_builder_cli/lib/src/models/build_unit.dart`
+- Create: `packages/tools/felorx_builder_cli/lib/src/models/build_unit_result.dart`
+- Create: `packages/tools/felorx_builder_cli/lib/src/utils/semaphore.dart`
+- Create: `packages/tools/felorx_builder_cli/lib/src/services/build_unit_planner.dart`
+- Create: `packages/tools/felorx_builder_cli/lib/src/services/build_unit_scheduler.dart`
+- Modify: `packages/tools/felorx_builder_cli/lib/felorx_builder_cli.dart`
+- Test: `packages/tools/felorx_builder_cli/test/build_unit_planner_test.dart`
+- Test: `packages/tools/felorx_builder_cli/test/build_unit_scheduler_test.dart`
 
 - [ ] **Step 1: Write the failing planner test**
 
 ```dart
-import 'package:puupee_builder_cli/src/config_parser.dart';
-import 'package:puupee_builder_cli/src/services/build_target_resolver.dart';
-import 'package:puupee_builder_cli/src/services/build_unit_planner.dart';
+import 'package:felorx_builder_cli/src/config_parser.dart';
+import 'package:felorx_builder_cli/src/services/build_target_resolver.dart';
+import 'package:felorx_builder_cli/src/services/build_unit_planner.dart';
 import 'package:test/test.dart';
 
 void main() {
   test('为多个应用和多个制品生成独立构建单元', () {
     final config = BuilderConfig(
       apps: {
-        'todos': AppConfig(
-          name: 'todos',
-          localName: 'todos',
+        'todo': AppConfig(
+          name: 'todo',
+          localName: 'todo',
           platforms: {
             'android': PlatformConfig(
               platform: 'android',
               targets: {
-                'apk': ['puupee'],
-                'aab': ['puupee'],
+                'apk': ['felorx'],
+                'aab': ['felorx'],
               },
             ),
           },
         ),
-        'notes': AppConfig(
-          name: 'notes',
-          localName: 'notes',
+        'note': AppConfig(
+          name: 'note',
+          localName: 'note',
           platforms: {
             'macos': PlatformConfig(
               platform: 'macos',
               targets: {
-                'dmg': ['puupee'],
+                'dmg': ['felorx'],
               },
             ),
           },
@@ -93,7 +93,7 @@ void main() {
     final units = BuildUnitPlanner(
       targetResolver: BuildTargetResolver(),
     ).plan(
-      apps: ['todos', 'notes'],
+      apps: ['todo', 'note'],
       config: config,
       platformFromArgs: null,
       targetsStr: null,
@@ -102,9 +102,9 @@ void main() {
     expect(
       units.map((unit) => unit.toString()).toList(),
       [
-        'todos:android:aab',
-        'todos:android:apk',
-        'notes:macos:dmg',
+        'todo:android:aab',
+        'todo:android:apk',
+        'note:macos:dmg',
       ],
     );
   });
@@ -113,7 +113,7 @@ void main() {
     final units = BuildUnitPlanner(
       targetResolver: BuildTargetResolver(),
     ).plan(
-      apps: ['todos'],
+      apps: ['todo'],
       config: null,
       platformFromArgs: 'android',
       targetsStr: 'apk,aab',
@@ -121,7 +121,7 @@ void main() {
 
     expect(
       units.map((unit) => unit.toString()).toList(),
-      ['todos:android:apk', 'todos:android:aab'],
+      ['todo:android:apk', 'todo:android:aab'],
     );
   });
 }
@@ -132,7 +132,7 @@ void main() {
 Run:
 
 ```bash
-cd packages/tools/puupee_builder_cli && dart test test/build_unit_planner_test.dart
+cd packages/tools/felorx_builder_cli && dart test test/build_unit_planner_test.dart
 ```
 
 Expected: FAIL because `BuildUnitPlanner` does not exist.
@@ -142,9 +142,9 @@ Expected: FAIL because `BuildUnitPlanner` does not exist.
 ```dart
 import 'dart:async';
 
-import 'package:puupee_builder_cli/src/models/build_target.dart';
-import 'package:puupee_builder_cli/src/models/build_unit.dart';
-import 'package:puupee_builder_cli/src/services/build_unit_scheduler.dart';
+import 'package:felorx_builder_cli/src/models/build_target.dart';
+import 'package:felorx_builder_cli/src/models/build_unit.dart';
+import 'package:felorx_builder_cli/src/services/build_unit_scheduler.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -209,7 +209,7 @@ void main() {
 Run:
 
 ```bash
-cd packages/tools/puupee_builder_cli && dart test test/build_unit_scheduler_test.dart
+cd packages/tools/felorx_builder_cli && dart test test/build_unit_scheduler_test.dart
 ```
 
 Expected: FAIL because `BuildUnitScheduler` does not exist.
@@ -381,7 +381,7 @@ class BuildUnitScheduler {
 }
 ```
 
-Add exports to `puupee_builder_cli.dart`:
+Add exports to `felorx_builder_cli.dart`:
 
 ```dart
 export 'src/models/build_unit.dart';
@@ -395,7 +395,7 @@ export 'src/services/build_unit_scheduler.dart';
 Run:
 
 ```bash
-cd packages/tools/puupee_builder_cli && dart test test/build_unit_planner_test.dart test/build_unit_scheduler_test.dart
+cd packages/tools/felorx_builder_cli && dart test test/build_unit_planner_test.dart test/build_unit_scheduler_test.dart
 ```
 
 Expected: PASS.
@@ -403,14 +403,14 @@ Expected: PASS.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add packages/tools/puupee_builder_cli/lib/src/models/build_unit.dart \
-  packages/tools/puupee_builder_cli/lib/src/models/build_unit_result.dart \
-  packages/tools/puupee_builder_cli/lib/src/utils/semaphore.dart \
-  packages/tools/puupee_builder_cli/lib/src/services/build_unit_planner.dart \
-  packages/tools/puupee_builder_cli/lib/src/services/build_unit_scheduler.dart \
-  packages/tools/puupee_builder_cli/lib/puupee_builder_cli.dart \
-  packages/tools/puupee_builder_cli/test/build_unit_planner_test.dart \
-  packages/tools/puupee_builder_cli/test/build_unit_scheduler_test.dart
+git add packages/tools/felorx_builder_cli/lib/src/models/build_unit.dart \
+  packages/tools/felorx_builder_cli/lib/src/models/build_unit_result.dart \
+  packages/tools/felorx_builder_cli/lib/src/utils/semaphore.dart \
+  packages/tools/felorx_builder_cli/lib/src/services/build_unit_planner.dart \
+  packages/tools/felorx_builder_cli/lib/src/services/build_unit_scheduler.dart \
+  packages/tools/felorx_builder_cli/lib/felorx_builder_cli.dart \
+  packages/tools/felorx_builder_cli/test/build_unit_planner_test.dart \
+  packages/tools/felorx_builder_cli/test/build_unit_scheduler_test.dart
 git commit -m "feat(builder): 增加独立构建单元调度"
 ```
 
@@ -419,11 +419,11 @@ git commit -m "feat(builder): 增加独立构建单元调度"
 ### Task 2: Workspace Path Resolver and Clone Service
 
 **Files:**
-- Create: `packages/tools/puupee_builder_cli/lib/src/services/build_workspace_path_resolver.dart`
-- Create: `packages/tools/puupee_builder_cli/lib/src/services/build_workspace_service.dart`
-- Modify: `packages/tools/puupee_builder_cli/lib/puupee_builder_cli.dart`
-- Test: `packages/tools/puupee_builder_cli/test/build_workspace_path_resolver_test.dart`
-- Test: `packages/tools/puupee_builder_cli/test/build_workspace_service_test.dart`
+- Create: `packages/tools/felorx_builder_cli/lib/src/services/build_workspace_path_resolver.dart`
+- Create: `packages/tools/felorx_builder_cli/lib/src/services/build_workspace_service.dart`
+- Modify: `packages/tools/felorx_builder_cli/lib/felorx_builder_cli.dart`
+- Test: `packages/tools/felorx_builder_cli/test/build_workspace_path_resolver_test.dart`
+- Test: `packages/tools/felorx_builder_cli/test/build_workspace_service_test.dart`
 
 - [ ] **Step 1: Write the failing path resolver test**
 
@@ -431,13 +431,13 @@ git commit -m "feat(builder): 增加独立构建单元调度"
 import 'dart:io';
 
 import 'package:path/path.dart' as path;
-import 'package:puupee_builder_cli/src/services/build_workspace_path_resolver.dart';
+import 'package:felorx_builder_cli/src/services/build_workspace_path_resolver.dart';
 import 'package:test/test.dart';
 
 void main() {
   test('生成 app/platform/artifactType 三层构建目录', () {
     final resolver = BuildWorkspacePathResolver();
-    final root = path.join(Directory.systemTemp.path, 'puupee-test-workspaces');
+    final root = path.join(Directory.systemTemp.path, 'felorx-test-workspaces');
 
     final workspace = resolver.resolve(
       root: root,
@@ -469,7 +469,7 @@ void main() {
 Run:
 
 ```bash
-cd packages/tools/puupee_builder_cli && dart test test/build_workspace_path_resolver_test.dart
+cd packages/tools/felorx_builder_cli && dart test test/build_workspace_path_resolver_test.dart
 ```
 
 Expected: FAIL because `BuildWorkspacePathResolver` does not exist.
@@ -480,14 +480,14 @@ Expected: FAIL because `BuildWorkspacePathResolver` does not exist.
 import 'dart:io';
 
 import 'package:path/path.dart' as path;
-import 'package:puupee_builder_cli/src/models/build_target.dart';
-import 'package:puupee_builder_cli/src/models/build_unit.dart';
-import 'package:puupee_builder_cli/src/services/build_workspace_service.dart';
+import 'package:felorx_builder_cli/src/models/build_target.dart';
+import 'package:felorx_builder_cli/src/models/build_unit.dart';
+import 'package:felorx_builder_cli/src/services/build_workspace_service.dart';
 import 'package:test/test.dart';
 
 void main() {
   test('为构建单元 clone 源项目到独立 workspace', () async {
-    final tempDir = await Directory.systemTemp.createTemp('puupee-workspace-service-');
+    final tempDir = await Directory.systemTemp.createTemp('felorx-workspace-service-');
     addTearDown(() async {
       if (await tempDir.exists()) {
         await tempDir.delete(recursive: true);
@@ -506,7 +506,7 @@ void main() {
 
     final workspaceRoot = path.join(tempDir.path, 'workspaces');
     final unit = BuildUnit(
-      app: 'todos',
+      app: 'todo',
       target: BuildTarget(platform: 'android', artifactType: 'apk'),
     );
 
@@ -516,7 +516,7 @@ void main() {
       unit: unit,
     );
 
-    expect(workspace, path.join(workspaceRoot, 'todos', 'android', 'apk'));
+    expect(workspace, path.join(workspaceRoot, 'todo', 'android', 'apk'));
     expect(await File(path.join(workspace, 'pubspec.yaml')).readAsString(), 'name: source\n');
     expect(await Directory(path.join(workspace, '.git')).exists(), isTrue);
   });
@@ -528,7 +528,7 @@ void main() {
 Run:
 
 ```bash
-cd packages/tools/puupee_builder_cli && dart test test/build_workspace_service_test.dart
+cd packages/tools/felorx_builder_cli && dart test test/build_workspace_service_test.dart
 ```
 
 Expected: FAIL because `BuildWorkspaceService` does not exist.
@@ -703,7 +703,7 @@ export 'src/services/build_workspace_service.dart';
 Run:
 
 ```bash
-cd packages/tools/puupee_builder_cli && dart test test/build_workspace_path_resolver_test.dart test/build_workspace_service_test.dart
+cd packages/tools/felorx_builder_cli && dart test test/build_workspace_path_resolver_test.dart test/build_workspace_service_test.dart
 ```
 
 Expected: PASS.
@@ -711,11 +711,11 @@ Expected: PASS.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add packages/tools/puupee_builder_cli/lib/src/services/build_workspace_path_resolver.dart \
-  packages/tools/puupee_builder_cli/lib/src/services/build_workspace_service.dart \
-  packages/tools/puupee_builder_cli/lib/puupee_builder_cli.dart \
-  packages/tools/puupee_builder_cli/test/build_workspace_path_resolver_test.dart \
-  packages/tools/puupee_builder_cli/test/build_workspace_service_test.dart
+git add packages/tools/felorx_builder_cli/lib/src/services/build_workspace_path_resolver.dart \
+  packages/tools/felorx_builder_cli/lib/src/services/build_workspace_service.dart \
+  packages/tools/felorx_builder_cli/lib/felorx_builder_cli.dart \
+  packages/tools/felorx_builder_cli/test/build_workspace_path_resolver_test.dart \
+  packages/tools/felorx_builder_cli/test/build_workspace_service_test.dart
 git commit -m "feat(builder): 增加独立构建目录服务"
 ```
 
@@ -732,30 +732,30 @@ git commit -m "feat(builder): 增加独立构建目录服务"
 ```dart
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as path;
-import 'package:puupee_builder/services/build_service.dart';
+import 'package:felorx_builder/services/build_service.dart';
 
 void main() {
   test('BuildService 为不同制品生成不同构建目录', () {
     final service = BuildService(
       maxConcurrentBuilds: 1,
-      puupeeBuilderPath: 'puupee-builder',
+      puupeeBuilderPath: 'felorx-builder',
     );
 
     final apkWorkspace = service.resolveBuildWorkspaceDir(
-      projectRootDir: '/repo/puupee-apps',
-      appName: 'todos',
+      projectRootDir: '/repo/felorx-apps',
+      appName: 'todo',
       platform: 'android',
       artifactType: 'apk',
     );
     final aabWorkspace = service.resolveBuildWorkspaceDir(
-      projectRootDir: '/repo/puupee-apps',
-      appName: 'todos',
+      projectRootDir: '/repo/felorx-apps',
+      appName: 'todo',
       platform: 'android',
       artifactType: 'aab',
     );
 
-    expect(apkWorkspace, endsWith(path.join('todos', 'android', 'apk')));
-    expect(aabWorkspace, endsWith(path.join('todos', 'android', 'aab')));
+    expect(apkWorkspace, endsWith(path.join('todo', 'android', 'apk')));
+    expect(aabWorkspace, endsWith(path.join('todo', 'android', 'aab')));
     expect(apkWorkspace, isNot(aabWorkspace));
   });
 }
@@ -776,7 +776,7 @@ Expected: FAIL because `resolveBuildWorkspaceDir` does not exist.
 In `apps/builder/lib/services/build_service.dart`, import the shared resolver:
 
 ```dart
-import 'package:puupee_builder_cli/puupee_builder_cli.dart'
+import 'package:felorx_builder_cli/felorx_builder_cli.dart'
     show ArtifactArchiveService, ArtifactPathResolver, BuildWorkspacePathResolver, PlatformMapper;
 ```
 
@@ -846,15 +846,15 @@ git commit -m "feat(builder): 按制品隔离 GUI 构建目录"
 ### Task 4: BuildCoordinator Target Failure Isolation
 
 **Files:**
-- Create: `packages/tools/puupee_builder_cli/lib/src/services/build_target_failure_isolator.dart`
-- Modify: `packages/tools/puupee_builder_cli/lib/src/services/build_coordinator.dart`
-- Test: `packages/tools/puupee_builder_cli/test/build_target_failure_isolator_test.dart`
+- Create: `packages/tools/felorx_builder_cli/lib/src/services/build_target_failure_isolator.dart`
+- Modify: `packages/tools/felorx_builder_cli/lib/src/services/build_coordinator.dart`
+- Test: `packages/tools/felorx_builder_cli/test/build_target_failure_isolator_test.dart`
 
 - [ ] **Step 1: Write the failing failure-isolator test**
 
 ```dart
-import 'package:puupee_builder_cli/src/models/build_target.dart';
-import 'package:puupee_builder_cli/src/services/build_target_failure_isolator.dart';
+import 'package:felorx_builder_cli/src/models/build_target.dart';
+import 'package:felorx_builder_cli/src/services/build_target_failure_isolator.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -894,7 +894,7 @@ void main() {
 Run:
 
 ```bash
-cd packages/tools/puupee_builder_cli && dart test test/build_target_failure_isolator_test.dart
+cd packages/tools/felorx_builder_cli && dart test test/build_target_failure_isolator_test.dart
 ```
 
 Expected: FAIL because `BuildTargetFailureIsolator` does not exist.
@@ -979,7 +979,7 @@ Extract the previous per-target body into `_executeSingleTarget`. Preserve exist
 Run:
 
 ```bash
-cd packages/tools/puupee_builder_cli && dart test test/build_target_failure_isolator_test.dart
+cd packages/tools/felorx_builder_cli && dart test test/build_target_failure_isolator_test.dart
 ```
 
 Expected: PASS.
@@ -987,9 +987,9 @@ Expected: PASS.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add packages/tools/puupee_builder_cli/lib/src/services/build_target_failure_isolator.dart \
-  packages/tools/puupee_builder_cli/lib/src/services/build_coordinator.dart \
-  packages/tools/puupee_builder_cli/test/build_target_failure_isolator_test.dart
+git add packages/tools/felorx_builder_cli/lib/src/services/build_target_failure_isolator.dart \
+  packages/tools/felorx_builder_cli/lib/src/services/build_coordinator.dart \
+  packages/tools/felorx_builder_cli/test/build_target_failure_isolator_test.dart
 git commit -m "refactor(builder): 隔离多制品构建失败"
 ```
 
@@ -998,29 +998,29 @@ git commit -m "refactor(builder): 隔离多制品构建失败"
 ### Task 5: CLI Build Command Orchestrator Mode
 
 **Files:**
-- Create: `packages/tools/puupee_builder_cli/lib/src/services/build_unit_process_command_builder.dart`
-- Modify: `packages/tools/puupee_builder_cli/lib/src/build_command.dart`
-- Test: `packages/tools/puupee_builder_cli/test/build_unit_process_command_builder_test.dart`
+- Create: `packages/tools/felorx_builder_cli/lib/src/services/build_unit_process_command_builder.dart`
+- Modify: `packages/tools/felorx_builder_cli/lib/src/build_command.dart`
+- Test: `packages/tools/felorx_builder_cli/test/build_unit_process_command_builder_test.dart`
 
 - [ ] **Step 1: Write the failing child command builder test**
 
 ```dart
-import 'package:puupee_builder_cli/src/models/build_target.dart';
-import 'package:puupee_builder_cli/src/models/build_unit.dart';
-import 'package:puupee_builder_cli/src/services/build_unit_process_command_builder.dart';
+import 'package:felorx_builder_cli/src/models/build_target.dart';
+import 'package:felorx_builder_cli/src/models/build_unit.dart';
+import 'package:felorx_builder_cli/src/services/build_unit_process_command_builder.dart';
 import 'package:test/test.dart';
 
 void main() {
   test('子进程命令只包含一个平台和一个制品并启用 isolated-unit', () {
     final args = BuildUnitProcessCommandBuilder().buildArguments(
       unit: BuildUnit(
-        app: 'todos',
+        app: 'todo',
         target: BuildTarget(platform: 'android', artifactType: 'apk'),
       ),
       configPath: 'builder.yaml',
       trigger: 'Manual',
       environment: 'prod',
-      workingDir: '/tmp/workspaces/todos/android/apk',
+      workingDir: '/tmp/workspaces/todo/android/apk',
       archiveRootDir: '/repo/source',
       fastforgePath: 'fastforge',
       flutterPath: 'flutter',
@@ -1028,10 +1028,10 @@ void main() {
     );
 
     expect(args, contains('--isolated-unit'));
-    expect(args, containsAllInOrder(['--app', 'todos']));
+    expect(args, containsAllInOrder(['--app', 'todo']));
     expect(args, containsAllInOrder(['--platform', 'android']));
     expect(args, containsAllInOrder(['--targets', 'apk']));
-    expect(args, containsAllInOrder(['--working-dir', '/tmp/workspaces/todos/android/apk']));
+    expect(args, containsAllInOrder(['--working-dir', '/tmp/workspaces/todo/android/apk']));
     expect(args, containsAllInOrder(['--archive-root', '/repo/source']));
     expect(args, isNot(contains('apk,aab')));
   });
@@ -1043,7 +1043,7 @@ void main() {
 Run:
 
 ```bash
-cd packages/tools/puupee_builder_cli && dart test test/build_unit_process_command_builder_test.dart
+cd packages/tools/felorx_builder_cli && dart test test/build_unit_process_command_builder_test.dart
 ```
 
 Expected: FAIL because `BuildUnitProcessCommandBuilder` does not exist.
@@ -1084,7 +1084,7 @@ class BuildUnitProcessCommandBuilder {
   }) {
     final args = <String>[
       'run',
-      'packages/tools/puupee_builder_cli/bin/puupee_builder_cli.dart',
+      'packages/tools/felorx_builder_cli/bin/felorx_builder_cli.dart',
       'build',
       '--isolated-unit',
       '--app',
@@ -1177,7 +1177,7 @@ Use this exact summary condition:
 Run:
 
 ```bash
-cd packages/tools/puupee_builder_cli && dart test test/build_unit_process_command_builder_test.dart
+cd packages/tools/felorx_builder_cli && dart test test/build_unit_process_command_builder_test.dart
 ```
 
 Expected: PASS.
@@ -1185,9 +1185,9 @@ Expected: PASS.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add packages/tools/puupee_builder_cli/lib/src/services/build_unit_process_command_builder.dart \
-  packages/tools/puupee_builder_cli/lib/src/build_command.dart \
-  packages/tools/puupee_builder_cli/test/build_unit_process_command_builder_test.dart
+git add packages/tools/felorx_builder_cli/lib/src/services/build_unit_process_command_builder.dart \
+  packages/tools/felorx_builder_cli/lib/src/build_command.dart \
+  packages/tools/felorx_builder_cli/test/build_unit_process_command_builder_test.dart
 git commit -m "feat(builder): 让 build 命令按构建单元隔离执行"
 ```
 
@@ -1196,42 +1196,42 @@ git commit -m "feat(builder): 让 build 命令按构建单元隔离执行"
 ### Task 6: CLI Build-All Independent Unit Scheduling
 
 **Files:**
-- Modify: `packages/tools/puupee_builder_cli/lib/src/build_all_command.dart`
-- Test: `packages/tools/puupee_builder_cli/test/build_all_units_test.dart`
+- Modify: `packages/tools/felorx_builder_cli/lib/src/build_all_command.dart`
+- Test: `packages/tools/felorx_builder_cli/test/build_all_units_test.dart`
 
 - [ ] **Step 1: Write the failing build-all unit test**
 
 ```dart
-import 'package:puupee_builder_cli/src/build_all_command.dart';
+import 'package:felorx_builder_cli/src/build_all_command.dart';
 import 'package:test/test.dart';
 
 void main() {
   test('macOS build-all 为每个应用生成 android apk 和 macos dmg 平级构建单元', () {
     final units = buildAllUnitsForOperatingSystem(
-      apps: ['todos', 'notes'],
+      apps: ['todo', 'note'],
       operatingSystem: 'macos',
     );
 
     expect(
       units.map((unit) => unit.toString()).toList(),
       [
-        'todos:android:apk',
-        'todos:macos:dmg',
-        'notes:android:apk',
-        'notes:macos:dmg',
+        'todo:android:apk',
+        'todo:macos:dmg',
+        'note:android:apk',
+        'note:macos:dmg',
       ],
     );
   });
 
   test('Windows build-all 为每个应用生成 windows exe 构建单元', () {
     final units = buildAllUnitsForOperatingSystem(
-      apps: ['todos', 'notes'],
+      apps: ['todo', 'note'],
       operatingSystem: 'windows',
     );
 
     expect(
       units.map((unit) => unit.toString()).toList(),
-      ['todos:windows:exe', 'notes:windows:exe'],
+      ['todo:windows:exe', 'note:windows:exe'],
     );
   });
 }
@@ -1242,7 +1242,7 @@ void main() {
 Run:
 
 ```bash
-cd packages/tools/puupee_builder_cli && dart test test/build_all_units_test.dart
+cd packages/tools/felorx_builder_cli && dart test test/build_all_units_test.dart
 ```
 
 Expected: FAIL because `buildAllUnitsForOperatingSystem` does not exist.
@@ -1358,7 +1358,7 @@ Use the same `_stableHash` and workspace parent rules as GUI `BuildService`.
 Run:
 
 ```bash
-cd packages/tools/puupee_builder_cli && dart test test/build_all_units_test.dart
+cd packages/tools/felorx_builder_cli && dart test test/build_all_units_test.dart
 ```
 
 Expected: PASS.
@@ -1366,8 +1366,8 @@ Expected: PASS.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add packages/tools/puupee_builder_cli/lib/src/build_all_command.dart \
-  packages/tools/puupee_builder_cli/test/build_all_units_test.dart
+git add packages/tools/felorx_builder_cli/lib/src/build_all_command.dart \
+  packages/tools/felorx_builder_cli/test/build_all_units_test.dart
 git commit -m "feat(builder): 让 build-all 按构建单元并行执行"
 ```
 
@@ -1415,7 +1415,7 @@ Future<int> runCommandWithRealtimeOutput(
 void main(List<String> args) async {
   final forwarded = <String>[
     'run',
-    'packages/tools/puupee_builder_cli/bin/puupee_builder_cli.dart',
+    'packages/tools/felorx_builder_cli/bin/felorx_builder_cli.dart',
     'build-all',
   ];
 
@@ -1423,7 +1423,7 @@ void main(List<String> args) async {
     final arg = args[i];
     switch (arg) {
       case '--release':
-        forwarded.addAll(['--release', 'puupee']);
+        forwarded.addAll(['--release', 'felorx']);
         break;
       case '--environment':
       case '--trigger':
@@ -1488,7 +1488,7 @@ git commit -m "refactor(builder): 让旧 build-all 脚本委托 CLI"
 Run:
 
 ```bash
-cd packages/tools/puupee_builder_cli && dart test
+cd packages/tools/felorx_builder_cli && dart test
 ```
 
 Expected: PASS with all builder CLI tests passing.
@@ -1498,7 +1498,7 @@ Expected: PASS with all builder CLI tests passing.
 Run:
 
 ```bash
-cd packages/tools/puupee_builder_cli && dart analyze
+cd packages/tools/felorx_builder_cli && dart analyze
 ```
 
 Expected: PASS with no errors.
@@ -1539,26 +1539,26 @@ If verification required code fixes, stage only files changed by this implementa
 
 ```bash
 git status --short
-git add packages/tools/puupee_builder_cli/lib/puupee_builder_cli.dart \
-  packages/tools/puupee_builder_cli/lib/src/build_all_command.dart \
-  packages/tools/puupee_builder_cli/lib/src/build_command.dart \
-  packages/tools/puupee_builder_cli/lib/src/models/build_unit.dart \
-  packages/tools/puupee_builder_cli/lib/src/models/build_unit_result.dart \
-  packages/tools/puupee_builder_cli/lib/src/services/build_coordinator.dart \
-  packages/tools/puupee_builder_cli/lib/src/services/build_target_failure_isolator.dart \
-  packages/tools/puupee_builder_cli/lib/src/services/build_unit_planner.dart \
-  packages/tools/puupee_builder_cli/lib/src/services/build_unit_process_command_builder.dart \
-  packages/tools/puupee_builder_cli/lib/src/services/build_unit_scheduler.dart \
-  packages/tools/puupee_builder_cli/lib/src/services/build_workspace_path_resolver.dart \
-  packages/tools/puupee_builder_cli/lib/src/services/build_workspace_service.dart \
-  packages/tools/puupee_builder_cli/lib/src/utils/semaphore.dart \
-  packages/tools/puupee_builder_cli/test/build_all_units_test.dart \
-  packages/tools/puupee_builder_cli/test/build_target_failure_isolator_test.dart \
-  packages/tools/puupee_builder_cli/test/build_unit_planner_test.dart \
-  packages/tools/puupee_builder_cli/test/build_unit_process_command_builder_test.dart \
-  packages/tools/puupee_builder_cli/test/build_unit_scheduler_test.dart \
-  packages/tools/puupee_builder_cli/test/build_workspace_path_resolver_test.dart \
-  packages/tools/puupee_builder_cli/test/build_workspace_service_test.dart \
+git add packages/tools/felorx_builder_cli/lib/felorx_builder_cli.dart \
+  packages/tools/felorx_builder_cli/lib/src/build_all_command.dart \
+  packages/tools/felorx_builder_cli/lib/src/build_command.dart \
+  packages/tools/felorx_builder_cli/lib/src/models/build_unit.dart \
+  packages/tools/felorx_builder_cli/lib/src/models/build_unit_result.dart \
+  packages/tools/felorx_builder_cli/lib/src/services/build_coordinator.dart \
+  packages/tools/felorx_builder_cli/lib/src/services/build_target_failure_isolator.dart \
+  packages/tools/felorx_builder_cli/lib/src/services/build_unit_planner.dart \
+  packages/tools/felorx_builder_cli/lib/src/services/build_unit_process_command_builder.dart \
+  packages/tools/felorx_builder_cli/lib/src/services/build_unit_scheduler.dart \
+  packages/tools/felorx_builder_cli/lib/src/services/build_workspace_path_resolver.dart \
+  packages/tools/felorx_builder_cli/lib/src/services/build_workspace_service.dart \
+  packages/tools/felorx_builder_cli/lib/src/utils/semaphore.dart \
+  packages/tools/felorx_builder_cli/test/build_all_units_test.dart \
+  packages/tools/felorx_builder_cli/test/build_target_failure_isolator_test.dart \
+  packages/tools/felorx_builder_cli/test/build_unit_planner_test.dart \
+  packages/tools/felorx_builder_cli/test/build_unit_process_command_builder_test.dart \
+  packages/tools/felorx_builder_cli/test/build_unit_scheduler_test.dart \
+  packages/tools/felorx_builder_cli/test/build_workspace_path_resolver_test.dart \
+  packages/tools/felorx_builder_cli/test/build_workspace_service_test.dart \
   apps/builder/lib/services/build_service.dart \
   apps/builder/test/services/build_service_workspace_test.dart \
   scripts/build_all.dart

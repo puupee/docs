@@ -4,7 +4,7 @@
 
 **Goal:** 在 API 中提供可被任意子应用复用的 AI 服务商管理、图片分析和结构化抽取能力，并让 developer 管理服务商，让小汪记物用真实通用接口替换 mock 识别。
 
-**Architecture:** 先扩展 `Puupees.Ai` 通用网关：服务商与模型配置落库，Provider Router 按能力路由，`AiVisionAppService` 负责 OCR/标签/商品/图片摘要，`AiExtractionAppService` 负责 JSON 结构化抽取。Flutter 侧通过生成的 `felorx_api_client` 调用通用接口，developer 管理 provider，小汪记物只新增一个客户端适配服务，不新增后端专属 inventory recognition 接口。
+**Architecture:** 先扩展 `Felorx.Ai` 通用网关：服务商与模型配置落库，Provider Router 按能力路由，`AiVisionAppService` 负责 OCR/标签/商品/图片摘要，`AiExtractionAppService` 负责 JSON 结构化抽取。Flutter 侧通过生成的 `felorx_api_client` 调用通用接口，developer 管理 provider，小汪记物只新增一个客户端适配服务，不新增后端专属 inventory recognition 接口。
 
 **Tech Stack:** .NET 8、ABP Framework 8.1、Entity Framework Core、ASP.NET Core MVC、System.Text.Json、HttpClientFactory、xUnit、Shouldly、NSubstitute、Dart 3.8、Flutter、Riverpod、go_router、shadcn_flutter、OpenAPI Generator。
 
@@ -24,43 +24,43 @@
 
 ## File Structure
 
-- Create: `api/src/Puupees.Domain.Shared/Ai/AiProviderType.cs`
-- Create: `api/src/Puupees.Domain.Shared/Ai/AiCapability.cs`
-- Create: `api/src/Puupees.Domain/Ai/AiProvider.cs`
-- Create: `api/src/Puupees.Domain/Ai/AiModel.cs`
-- Modify: `api/src/Puupees.EntityFrameworkCore/EntityFrameworkCore/PuupeesDbContext.cs`
-- Generated: `api/src/Puupees.EntityFrameworkCore/Migrations/*_AddAiProvidersAndModels.cs`
-- Generated: `api/src/Puupees.EntityFrameworkCore/Migrations/*_AddAiProvidersAndModels.Designer.cs`
-- Modify: `api/src/Puupees.EntityFrameworkCore/Migrations/PuupeesDbContextModelSnapshot.cs`
-- Create: `api/src/Puupees.Application.Contracts/Ai/Dtos/AiProviderDtos.cs`
-- Create: `api/src/Puupees.Application.Contracts/Ai/Dtos/AiVisionDtos.cs`
-- Create: `api/src/Puupees.Application.Contracts/Ai/Dtos/AiExtractionDtos.cs`
-- Create: `api/src/Puupees.Application.Contracts/Ai/IAiProviderAppService.cs`
-- Create: `api/src/Puupees.Application.Contracts/Ai/IAiVisionAppService.cs`
-- Create: `api/src/Puupees.Application.Contracts/Ai/IAiExtractionAppService.cs`
-- Modify: `api/src/Puupees.Application.Contracts/Ai/Dtos/AiEnums.cs`
-- Modify: `api/src/Puupees.Application/PuupeesApplicationAutoMapperProfile.cs`
-- Modify: `api/src/Puupees.Application/PuupeesApplicationModule.cs`
-- Create: `api/src/Puupees.Application/Ai/AiProviderAppService.cs`
-- Create: `api/src/Puupees.Application/Ai/AiVisionAppService.cs`
-- Create: `api/src/Puupees.Application/Ai/AiExtractionAppService.cs`
-- Create: `api/src/Puupees.Application/Ai/Providers/IAiVisionProvider.cs`
-- Create: `api/src/Puupees.Application/Ai/Providers/IAiStructuredExtractionProvider.cs`
-- Modify: `api/src/Puupees.Application/Ai/Providers/IAiProviderRouter.cs`
-- Modify: `api/src/Puupees.Application/Ai/Providers/DefaultAiProviderRouter.cs`
-- Modify: `api/src/Puupees.Application/Ai/Providers/MockAiProvider.cs`
-- Create: `api/src/Puupees.Application/Ai/Providers/AiProviderRegistry.cs`
-- Create: `api/src/Puupees.Application/Ai/Providers/OpenAiCompatibleChatProvider.cs`
-- Create: `api/src/Puupees.Application/Ai/Providers/TencentCloudVisionProvider.cs`
-- Create: `api/src/Puupees.Application/Ai/Providers/TencentCloudRequestSigner.cs`
-- Create: `api/src/Puupees.HttpApi/Controllers/Ai/AiProvidersController.cs`
-- Create: `api/src/Puupees.HttpApi/Controllers/Ai/AiVisionController.cs`
-- Create: `api/src/Puupees.HttpApi/Controllers/Ai/AiExtractionController.cs`
-- Modify: `api/test/Puupees.Application.Tests/Ai/AiGatewayAppServiceTests.cs`
-- Modify: `api/test/Puupees.Application.Tests/Ai/AiControllerRouteAndSecurityTests.cs`
-- Create: `api/test/Puupees.Application.Tests/Ai/AiProviderRouterTests.cs`
-- Create: `api/test/Puupees.Application.Tests/Ai/AiVisionAndExtractionTests.cs`
-- Create: `api/test/Puupees.Application.Tests/Ai/TencentCloudProviderTests.cs`
+- Create: `api/src/Felorx.Domain.Shared/Ai/AiProviderType.cs`
+- Create: `api/src/Felorx.Domain.Shared/Ai/AiCapability.cs`
+- Create: `api/src/Felorx.Domain/Ai/AiProvider.cs`
+- Create: `api/src/Felorx.Domain/Ai/AiModel.cs`
+- Modify: `api/src/Felorx.EntityFrameworkCore/EntityFrameworkCore/FelorxDbContext.cs`
+- Generated: `api/src/Felorx.EntityFrameworkCore/Migrations/*_AddAiProvidersAndModels.cs`
+- Generated: `api/src/Felorx.EntityFrameworkCore/Migrations/*_AddAiProvidersAndModels.Designer.cs`
+- Modify: `api/src/Felorx.EntityFrameworkCore/Migrations/FelorxDbContextModelSnapshot.cs`
+- Create: `api/src/Felorx.Application.Contracts/Ai/Dtos/AiProviderDtos.cs`
+- Create: `api/src/Felorx.Application.Contracts/Ai/Dtos/AiVisionDtos.cs`
+- Create: `api/src/Felorx.Application.Contracts/Ai/Dtos/AiExtractionDtos.cs`
+- Create: `api/src/Felorx.Application.Contracts/Ai/IAiProviderAppService.cs`
+- Create: `api/src/Felorx.Application.Contracts/Ai/IAiVisionAppService.cs`
+- Create: `api/src/Felorx.Application.Contracts/Ai/IAiExtractionAppService.cs`
+- Modify: `api/src/Felorx.Application.Contracts/Ai/Dtos/AiEnums.cs`
+- Modify: `api/src/Felorx.Application/FelorxApplicationAutoMapperProfile.cs`
+- Modify: `api/src/Felorx.Application/FelorxApplicationModule.cs`
+- Create: `api/src/Felorx.Application/Ai/AiProviderAppService.cs`
+- Create: `api/src/Felorx.Application/Ai/AiVisionAppService.cs`
+- Create: `api/src/Felorx.Application/Ai/AiExtractionAppService.cs`
+- Create: `api/src/Felorx.Application/Ai/Providers/IAiVisionProvider.cs`
+- Create: `api/src/Felorx.Application/Ai/Providers/IAiStructuredExtractionProvider.cs`
+- Modify: `api/src/Felorx.Application/Ai/Providers/IAiProviderRouter.cs`
+- Modify: `api/src/Felorx.Application/Ai/Providers/DefaultAiProviderRouter.cs`
+- Modify: `api/src/Felorx.Application/Ai/Providers/MockAiProvider.cs`
+- Create: `api/src/Felorx.Application/Ai/Providers/AiProviderRegistry.cs`
+- Create: `api/src/Felorx.Application/Ai/Providers/OpenAiCompatibleChatProvider.cs`
+- Create: `api/src/Felorx.Application/Ai/Providers/TencentCloudVisionProvider.cs`
+- Create: `api/src/Felorx.Application/Ai/Providers/TencentCloudRequestSigner.cs`
+- Create: `api/src/Felorx.HttpApi/Controllers/Ai/AiProvidersController.cs`
+- Create: `api/src/Felorx.HttpApi/Controllers/Ai/AiVisionController.cs`
+- Create: `api/src/Felorx.HttpApi/Controllers/Ai/AiExtractionController.cs`
+- Modify: `api/test/Felorx.Application.Tests/Ai/AiGatewayAppServiceTests.cs`
+- Modify: `api/test/Felorx.Application.Tests/Ai/AiControllerRouteAndSecurityTests.cs`
+- Create: `api/test/Felorx.Application.Tests/Ai/AiProviderRouterTests.cs`
+- Create: `api/test/Felorx.Application.Tests/Ai/AiVisionAndExtractionTests.cs`
+- Create: `api/test/Felorx.Application.Tests/Ai/TencentCloudProviderTests.cs`
 - Generated/Modify: `packages/api/felorx_api_client/lib/**`
 - Generated/Modify: `packages/api/felorx_api_client/doc/**`
 - Generated/Modify: `packages/api/felorx_api_client/test/**`
@@ -84,47 +84,47 @@
 ### Task 1: API Domain Model and EF Mapping
 
 **Files:**
-- Create: `api/src/Puupees.Domain.Shared/Ai/AiProviderType.cs`
-- Create: `api/src/Puupees.Domain.Shared/Ai/AiCapability.cs`
-- Create: `api/src/Puupees.Domain/Ai/AiProvider.cs`
-- Create: `api/src/Puupees.Domain/Ai/AiModel.cs`
-- Modify: `api/src/Puupees.EntityFrameworkCore/EntityFrameworkCore/PuupeesDbContext.cs`
-- Generated: `api/src/Puupees.EntityFrameworkCore/Migrations/*_AddAiProvidersAndModels.cs`
-- Generated: `api/src/Puupees.EntityFrameworkCore/Migrations/*_AddAiProvidersAndModels.Designer.cs`
-- Modify: `api/src/Puupees.EntityFrameworkCore/Migrations/PuupeesDbContextModelSnapshot.cs`
+- Create: `api/src/Felorx.Domain.Shared/Ai/AiProviderType.cs`
+- Create: `api/src/Felorx.Domain.Shared/Ai/AiCapability.cs`
+- Create: `api/src/Felorx.Domain/Ai/AiProvider.cs`
+- Create: `api/src/Felorx.Domain/Ai/AiModel.cs`
+- Modify: `api/src/Felorx.EntityFrameworkCore/EntityFrameworkCore/FelorxDbContext.cs`
+- Generated: `api/src/Felorx.EntityFrameworkCore/Migrations/*_AddAiProvidersAndModels.cs`
+- Generated: `api/src/Felorx.EntityFrameworkCore/Migrations/*_AddAiProvidersAndModels.Designer.cs`
+- Modify: `api/src/Felorx.EntityFrameworkCore/Migrations/FelorxDbContextModelSnapshot.cs`
 
 - [ ] **Step 1: Write the failing DbContext model test**
 
-Create `api/test/Puupees.Application.Tests/Ai/AiProviderModelTests.cs`:
+Create `api/test/Felorx.Application.Tests/Ai/AiProviderModelTests.cs`:
 
 ```csharp
 using System;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using Puupees.Ai;
-using Puupees.EntityFrameworkCore;
+using Felorx.Ai;
+using Felorx.EntityFrameworkCore;
 using Shouldly;
 using Xunit;
 
-namespace Puupees.Tests.Ai;
+namespace Felorx.Tests.Ai;
 
 public class AiProviderModelTests
 {
     [Fact]
     public void DbContext_Should_Expose_AiProviders_And_AiModels()
     {
-        var options = new DbContextOptionsBuilder<PuupeesDbContext>()
+        var options = new DbContextOptionsBuilder<FelorxDbContext>()
             .UseInMemoryDatabase($"ai-provider-model-{Guid.NewGuid():N}")
             .Options;
 
-        using var db = new PuupeesDbContext(options);
+        using var db = new FelorxDbContext(options);
         var providerType = db.Model.FindEntityType(typeof(AiProvider));
         var modelType = db.Model.FindEntityType(typeof(AiModel));
 
         providerType.ShouldNotBeNull();
         modelType.ShouldNotBeNull();
-        providerType!.GetTableName().ShouldBe("PuupeesAiProviders");
-        modelType!.GetTableName().ShouldBe("PuupeesAiModels");
+        providerType!.GetTableName().ShouldBe("FelorxAiProviders");
+        modelType!.GetTableName().ShouldBe("FelorxAiModels");
         modelType.GetForeignKeys().Any(fk => fk.PrincipalEntityType.ClrType == typeof(AiProvider)).ShouldBeTrue();
     }
 }
@@ -136,19 +136,19 @@ Run:
 
 ```bash
 cd api
-dotnet test test/Puupees.Application.Tests/Puupees.Application.Tests.csproj --filter AiProviderModelTests
+dotnet test test/Felorx.Application.Tests/Felorx.Application.Tests.csproj --filter AiProviderModelTests
 ```
 
 Expected: FAIL because `AiProvider` and `AiModel` do not exist.
 
 - [ ] **Step 3: Add shared enums**
 
-Create `api/src/Puupees.Domain.Shared/Ai/AiProviderType.cs`:
+Create `api/src/Felorx.Domain.Shared/Ai/AiProviderType.cs`:
 
 ```csharp
 using System.Text.Json.Serialization;
 
-namespace Puupees.Ai;
+namespace Felorx.Ai;
 
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum AiProviderType
@@ -159,12 +159,12 @@ public enum AiProviderType
 }
 ```
 
-Create `api/src/Puupees.Domain.Shared/Ai/AiCapability.cs`:
+Create `api/src/Felorx.Domain.Shared/Ai/AiCapability.cs`:
 
 ```csharp
 using System.Text.Json.Serialization;
 
-namespace Puupees.Ai;
+namespace Felorx.Ai;
 
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum AiCapability
@@ -181,14 +181,14 @@ public enum AiCapability
 
 - [ ] **Step 4: Add domain entities**
 
-Create `api/src/Puupees.Domain/Ai/AiProvider.cs`:
+Create `api/src/Felorx.Domain/Ai/AiProvider.cs`:
 
 ```csharp
 using System;
 using System.Collections.Generic;
 using Volo.Abp.Domain.Entities.Auditing;
 
-namespace Puupees.Ai;
+namespace Felorx.Ai;
 
 public class AiProvider : FullAuditedAggregateRoot<Guid>
 {
@@ -205,14 +205,14 @@ public class AiProvider : FullAuditedAggregateRoot<Guid>
 }
 ```
 
-Create `api/src/Puupees.Domain/Ai/AiModel.cs`:
+Create `api/src/Felorx.Domain/Ai/AiModel.cs`:
 
 ```csharp
 using System;
 using System.Collections.Generic;
 using Volo.Abp.Domain.Entities.Auditing;
 
-namespace Puupees.Ai;
+namespace Felorx.Ai;
 
 public class AiModel : FullAuditedEntity<Guid>
 {
@@ -229,7 +229,7 @@ public class AiModel : FullAuditedEntity<Guid>
 
 - [ ] **Step 5: Register DbSets and model conversions**
 
-Modify `api/src/Puupees.EntityFrameworkCore/EntityFrameworkCore/PuupeesDbContext.cs`:
+Modify `api/src/Felorx.EntityFrameworkCore/EntityFrameworkCore/FelorxDbContext.cs`:
 
 ```csharp
 public DbSet<AiProvider> AiProviders { get; set; }
@@ -248,7 +248,7 @@ Add model configuration near the existing app/message entity blocks:
 ```csharp
 builder.Entity<AiProvider>(b =>
 {
-    b.ToTable(PuupeesConsts.DbTablePrefix + "AiProviders", PuupeesConsts.DbSchema);
+    b.ToTable(FelorxConsts.DbTablePrefix + "AiProviders", FelorxConsts.DbSchema);
     b.ConfigureByConvention();
     b.HasIndex(it => it.Name).IsUnique();
 
@@ -278,7 +278,7 @@ builder.Entity<AiProvider>(b =>
 
 builder.Entity<AiModel>(b =>
 {
-    b.ToTable(PuupeesConsts.DbTablePrefix + "AiModels", PuupeesConsts.DbSchema);
+    b.ToTable(FelorxConsts.DbTablePrefix + "AiModels", FelorxConsts.DbSchema);
     b.ConfigureByConvention();
     b.HasIndex(it => new { it.ProviderId, it.Name }).IsUnique();
     b.HasIndex(it => new { it.ProviderId, it.IsDefault });
@@ -305,7 +305,7 @@ builder.Entity<AiModel>(b =>
 
 - [ ] **Step 6: Add EF package for in-memory tests**
 
-Modify `api/test/Puupees.Application.Tests/Puupees.Application.Tests.csproj`:
+Modify `api/test/Felorx.Application.Tests/Felorx.Application.Tests.csproj`:
 
 ```xml
 <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.0" />
@@ -317,7 +317,7 @@ Run:
 
 ```bash
 cd api
-dotnet test test/Puupees.Application.Tests/Puupees.Application.Tests.csproj --filter AiProviderModelTests
+dotnet test test/Felorx.Application.Tests/Felorx.Application.Tests.csproj --filter AiProviderModelTests
 ```
 
 Expected: PASS.
@@ -331,12 +331,12 @@ cd api
 task db-add-migration -- AddAiProvidersAndModels
 ```
 
-Expected: creates migration files under `api/src/Puupees.EntityFrameworkCore/Migrations/` and updates `PuupeesDbContextModelSnapshot.cs`.
+Expected: creates migration files under `api/src/Felorx.EntityFrameworkCore/Migrations/` and updates `FelorxDbContextModelSnapshot.cs`.
 
 - [ ] **Step 9: Commit**
 
 ```bash
-git add api/src/Puupees.Domain.Shared/Ai api/src/Puupees.Domain/Ai api/src/Puupees.EntityFrameworkCore api/test/Puupees.Application.Tests
+git add api/src/Felorx.Domain.Shared/Ai api/src/Felorx.Domain/Ai api/src/Felorx.EntityFrameworkCore api/test/Felorx.Application.Tests
 git commit -m "feat(api): 添加 AI 服务商模型"
 ```
 
@@ -345,16 +345,16 @@ git commit -m "feat(api): 添加 AI 服务商模型"
 ### Task 2: Provider Management Contracts and AppService
 
 **Files:**
-- Create: `api/src/Puupees.Application.Contracts/Ai/Dtos/AiProviderDtos.cs`
-- Create: `api/src/Puupees.Application.Contracts/Ai/IAiProviderAppService.cs`
-- Modify: `api/src/Puupees.Application/PuupeesApplicationAutoMapperProfile.cs`
-- Create: `api/src/Puupees.Application/Ai/AiProviderAppService.cs`
-- Create: `api/src/Puupees.HttpApi/Controllers/Ai/AiProvidersController.cs`
-- Modify: `api/test/Puupees.Application.Tests/Ai/AiControllerRouteAndSecurityTests.cs`
+- Create: `api/src/Felorx.Application.Contracts/Ai/Dtos/AiProviderDtos.cs`
+- Create: `api/src/Felorx.Application.Contracts/Ai/IAiProviderAppService.cs`
+- Modify: `api/src/Felorx.Application/FelorxApplicationAutoMapperProfile.cs`
+- Create: `api/src/Felorx.Application/Ai/AiProviderAppService.cs`
+- Create: `api/src/Felorx.HttpApi/Controllers/Ai/AiProvidersController.cs`
+- Modify: `api/test/Felorx.Application.Tests/Ai/AiControllerRouteAndSecurityTests.cs`
 
 - [ ] **Step 1: Write failing controller security test**
 
-Modify `api/test/Puupees.Application.Tests/Ai/AiControllerRouteAndSecurityTests.cs` and add inline data:
+Modify `api/test/Felorx.Application.Tests/Ai/AiControllerRouteAndSecurityTests.cs` and add inline data:
 
 ```csharp
 [InlineData(typeof(AiProvidersController), "api/ai/providers")]
@@ -364,14 +364,14 @@ Run:
 
 ```bash
 cd api
-dotnet test test/Puupees.Application.Tests/Puupees.Application.Tests.csproj --filter AiControllerRouteAndSecurityTests
+dotnet test test/Felorx.Application.Tests/Felorx.Application.Tests.csproj --filter AiControllerRouteAndSecurityTests
 ```
 
 Expected: FAIL because `AiProvidersController` does not exist.
 
 - [ ] **Step 2: Add provider DTOs**
 
-Create `api/src/Puupees.Application.Contracts/Ai/Dtos/AiProviderDtos.cs`:
+Create `api/src/Felorx.Application.Contracts/Ai/Dtos/AiProviderDtos.cs`:
 
 ```csharp
 using System;
@@ -379,7 +379,7 @@ using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Volo.Abp.Application.Dtos;
 
-namespace Puupees.Ai.Dtos;
+namespace Felorx.Ai.Dtos;
 
 [Serializable]
 public class AiModelDto : FullAuditedEntityDto<Guid>
@@ -500,16 +500,16 @@ public class TestAiProviderDto
 
 - [ ] **Step 3: Add provider AppService contract**
 
-Create `api/src/Puupees.Application.Contracts/Ai/IAiProviderAppService.cs`:
+Create `api/src/Felorx.Application.Contracts/Ai/IAiProviderAppService.cs`:
 
 ```csharp
 using System;
 using System.Threading.Tasks;
-using Puupees.Ai.Dtos;
+using Felorx.Ai.Dtos;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 
-namespace Puupees.Ai;
+namespace Felorx.Ai;
 
 public interface IAiProviderAppService : IApplicationService
 {
@@ -526,7 +526,7 @@ public interface IAiProviderAppService : IApplicationService
 
 - [ ] **Step 4: Add AutoMapper mappings**
 
-Modify `api/src/Puupees.Application/PuupeesApplicationAutoMapperProfile.cs`:
+Modify `api/src/Felorx.Application/FelorxApplicationAutoMapperProfile.cs`:
 
 ```csharp
 CreateMap<AiProvider, AiProviderDto>()
@@ -542,7 +542,7 @@ CreateMap<CreateOrUpdateAiModelDto, AiModel>(MemberList.Source);
 
 - [ ] **Step 5: Implement AppService**
 
-Create `api/src/Puupees.Application/Ai/AiProviderAppService.cs`:
+Create `api/src/Felorx.Application/Ai/AiProviderAppService.cs`:
 
 ```csharp
 using System;
@@ -551,16 +551,16 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
-using Puupees.Ai.Dtos;
+using Felorx.Ai.Dtos;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Linq;
 
-namespace Puupees.Ai;
+namespace Felorx.Ai;
 
 [Authorize]
-public class AiProviderAppService : PuupeesAppServiceBase, IAiProviderAppService
+public class AiProviderAppService : FelorxAppServiceBase, IAiProviderAppService
 {
     private readonly IRepository<AiProvider, Guid> _providerRepo;
     private readonly IRepository<AiModel, Guid> _modelRepo;
@@ -658,7 +658,7 @@ public class AiProviderAppService : PuupeesAppServiceBase, IAiProviderAppService
         var model = await _modelRepo.GetAsync(input.ModelId);
         if (!model.Capabilities.Contains(input.Capability))
         {
-            throw new BusinessException("Puupees.Ai:ModelCapabilityMismatch");
+            throw new BusinessException("Felorx.Ai:ModelCapabilityMismatch");
         }
 
         var query = await _modelRepo.GetQueryableAsync();
@@ -683,14 +683,14 @@ public class AiProviderAppService : PuupeesAppServiceBase, IAiProviderAppService
         var normalized = name.Trim();
         if (normalized.Length == 0)
         {
-            throw new BusinessException("Puupees.Ai:ProviderNameRequired");
+            throw new BusinessException("Felorx.Ai:ProviderNameRequired");
         }
 
         var query = await _providerRepo.GetQueryableAsync();
         var exists = await query.AnyAsync(p => p.Name == normalized && (!currentId.HasValue || p.Id != currentId.Value));
         if (exists)
         {
-            throw new BusinessException("Puupees.Ai:ProviderNameExists");
+            throw new BusinessException("Felorx.Ai:ProviderNameExists");
         }
     }
 
@@ -718,23 +718,23 @@ public class AiProviderAppService : PuupeesAppServiceBase, IAiProviderAppService
 
 - [ ] **Step 6: Add controller**
 
-Create `api/src/Puupees.HttpApi/Controllers/Ai/AiProvidersController.cs`:
+Create `api/src/Felorx.HttpApi/Controllers/Ai/AiProvidersController.cs`:
 
 ```csharp
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Puupees.Ai;
-using Puupees.Ai.Dtos;
+using Felorx.Ai;
+using Felorx.Ai.Dtos;
 using Volo.Abp.Application.Dtos;
 
-namespace Puupees.Controllers.Ai;
+namespace Felorx.Controllers.Ai;
 
 [Authorize]
 [ApiController]
 [Route("api/ai/providers")]
-public class AiProvidersController : PuupeesController
+public class AiProvidersController : FelorxController
 {
     private readonly IAiProviderAppService _providerAppService;
 
@@ -799,7 +799,7 @@ Run:
 
 ```bash
 cd api
-dotnet test test/Puupees.Application.Tests/Puupees.Application.Tests.csproj --filter AiControllerRouteAndSecurityTests
+dotnet test test/Felorx.Application.Tests/Felorx.Application.Tests.csproj --filter AiControllerRouteAndSecurityTests
 ```
 
 Expected: PASS.
@@ -807,7 +807,7 @@ Expected: PASS.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add api/src/Puupees.Application.Contracts/Ai api/src/Puupees.Application/Ai api/src/Puupees.Application/PuupeesApplicationAutoMapperProfile.cs api/src/Puupees.HttpApi/Controllers/Ai api/test/Puupees.Application.Tests/Ai
+git add api/src/Felorx.Application.Contracts/Ai api/src/Felorx.Application/Ai api/src/Felorx.Application/FelorxApplicationAutoMapperProfile.cs api/src/Felorx.HttpApi/Controllers/Ai api/test/Felorx.Application.Tests/Ai
 git commit -m "feat(api): 添加 AI 服务商管理接口"
 ```
 
@@ -816,38 +816,38 @@ git commit -m "feat(api): 添加 AI 服务商管理接口"
 ### Task 3: Vision and Structured Extraction Contracts with Mock Provider
 
 **Files:**
-- Modify: `api/src/Puupees.Application.Contracts/Ai/Dtos/AiEnums.cs`
-- Create: `api/src/Puupees.Application.Contracts/Ai/Dtos/AiVisionDtos.cs`
-- Create: `api/src/Puupees.Application.Contracts/Ai/Dtos/AiExtractionDtos.cs`
-- Create: `api/src/Puupees.Application.Contracts/Ai/IAiVisionAppService.cs`
-- Create: `api/src/Puupees.Application.Contracts/Ai/IAiExtractionAppService.cs`
-- Create: `api/src/Puupees.Application/Ai/AiVisionAppService.cs`
-- Create: `api/src/Puupees.Application/Ai/AiExtractionAppService.cs`
-- Create: `api/src/Puupees.Application/Ai/Providers/IAiVisionProvider.cs`
-- Create: `api/src/Puupees.Application/Ai/Providers/IAiStructuredExtractionProvider.cs`
-- Modify: `api/src/Puupees.Application/Ai/Providers/MockAiProvider.cs`
-- Modify: `api/src/Puupees.Application/Ai/Providers/IAiProviderRouter.cs`
-- Modify: `api/src/Puupees.Application/Ai/Providers/DefaultAiProviderRouter.cs`
-- Create: `api/src/Puupees.HttpApi/Controllers/Ai/AiVisionController.cs`
-- Create: `api/src/Puupees.HttpApi/Controllers/Ai/AiExtractionController.cs`
-- Create: `api/test/Puupees.Application.Tests/Ai/AiVisionAndExtractionTests.cs`
-- Modify: `api/test/Puupees.Application.Tests/Ai/AiControllerRouteAndSecurityTests.cs`
+- Modify: `api/src/Felorx.Application.Contracts/Ai/Dtos/AiEnums.cs`
+- Create: `api/src/Felorx.Application.Contracts/Ai/Dtos/AiVisionDtos.cs`
+- Create: `api/src/Felorx.Application.Contracts/Ai/Dtos/AiExtractionDtos.cs`
+- Create: `api/src/Felorx.Application.Contracts/Ai/IAiVisionAppService.cs`
+- Create: `api/src/Felorx.Application.Contracts/Ai/IAiExtractionAppService.cs`
+- Create: `api/src/Felorx.Application/Ai/AiVisionAppService.cs`
+- Create: `api/src/Felorx.Application/Ai/AiExtractionAppService.cs`
+- Create: `api/src/Felorx.Application/Ai/Providers/IAiVisionProvider.cs`
+- Create: `api/src/Felorx.Application/Ai/Providers/IAiStructuredExtractionProvider.cs`
+- Modify: `api/src/Felorx.Application/Ai/Providers/MockAiProvider.cs`
+- Modify: `api/src/Felorx.Application/Ai/Providers/IAiProviderRouter.cs`
+- Modify: `api/src/Felorx.Application/Ai/Providers/DefaultAiProviderRouter.cs`
+- Create: `api/src/Felorx.HttpApi/Controllers/Ai/AiVisionController.cs`
+- Create: `api/src/Felorx.HttpApi/Controllers/Ai/AiExtractionController.cs`
+- Create: `api/test/Felorx.Application.Tests/Ai/AiVisionAndExtractionTests.cs`
+- Modify: `api/test/Felorx.Application.Tests/Ai/AiControllerRouteAndSecurityTests.cs`
 
 - [ ] **Step 1: Write failing service tests**
 
-Create `api/test/Puupees.Application.Tests/Ai/AiVisionAndExtractionTests.cs`:
+Create `api/test/Felorx.Application.Tests/Ai/AiVisionAndExtractionTests.cs`:
 
 ```csharp
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Puupees.Ai;
-using Puupees.Ai.Dtos;
-using Puupees.Ai.Providers;
+using Felorx.Ai;
+using Felorx.Ai.Dtos;
+using Felorx.Ai.Providers;
 using Shouldly;
 using Xunit;
 
-namespace Puupees.Tests.Ai;
+namespace Felorx.Tests.Ai;
 
 public class AiVisionAndExtractionTests
 {
@@ -867,7 +867,7 @@ public class AiVisionAndExtractionTests
     {
         var result = await _visionAppService.AnalyzeImageAsync(new CreateAiImageAnalysisDto
         {
-            Image = new AiMediaReferenceDto { Url = "https://cdn.puupee.com/test/desk.jpg", MimeType = "image/jpeg" },
+            Image = new AiMediaReferenceDto { Url = "https://cdn.felorx.com/test/desk.jpg", MimeType = "image/jpeg" },
             Tasks = { AiImageAnalysisTask.Ocr, AiImageAnalysisTask.Labels, AiImageAnalysisTask.Products, AiImageAnalysisTask.Caption },
             Locale = "zh-CN"
         });
@@ -904,14 +904,14 @@ Run:
 
 ```bash
 cd api
-dotnet test test/Puupees.Application.Tests/Puupees.Application.Tests.csproj --filter AiVisionAndExtractionTests
+dotnet test test/Felorx.Application.Tests/Felorx.Application.Tests.csproj --filter AiVisionAndExtractionTests
 ```
 
 Expected: FAIL because DTOs and services do not exist.
 
 - [ ] **Step 3: Add image analysis enum**
 
-Modify `api/src/Puupees.Application.Contracts/Ai/Dtos/AiEnums.cs`:
+Modify `api/src/Felorx.Application.Contracts/Ai/Dtos/AiEnums.cs`:
 
 ```csharp
 [JsonConverter(typeof(JsonStringEnumConverter))]
@@ -926,14 +926,14 @@ public enum AiImageAnalysisTask
 
 - [ ] **Step 4: Add vision DTOs**
 
-Create `api/src/Puupees.Application.Contracts/Ai/Dtos/AiVisionDtos.cs`:
+Create `api/src/Felorx.Application.Contracts/Ai/Dtos/AiVisionDtos.cs`:
 
 ```csharp
 using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace Puupees.Ai.Dtos;
+namespace Felorx.Ai.Dtos;
 
 [Serializable]
 public class CreateAiImageAnalysisDto
@@ -1007,14 +1007,14 @@ public class AiImageAnalysisDto
 
 - [ ] **Step 5: Add extraction DTOs**
 
-Create `api/src/Puupees.Application.Contracts/Ai/Dtos/AiExtractionDtos.cs`:
+Create `api/src/Felorx.Application.Contracts/Ai/Dtos/AiExtractionDtos.cs`:
 
 ```csharp
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-namespace Puupees.Ai.Dtos;
+namespace Felorx.Ai.Dtos;
 
 [Serializable]
 public class CreateAiStructuredExtractionDto
@@ -1044,14 +1044,14 @@ public class AiStructuredExtractionDto
 
 - [ ] **Step 6: Add service contracts and provider interfaces**
 
-Create `api/src/Puupees.Application.Contracts/Ai/IAiVisionAppService.cs`:
+Create `api/src/Felorx.Application.Contracts/Ai/IAiVisionAppService.cs`:
 
 ```csharp
 using System.Threading.Tasks;
-using Puupees.Ai.Dtos;
+using Felorx.Ai.Dtos;
 using Volo.Abp.Application.Services;
 
-namespace Puupees.Ai;
+namespace Felorx.Ai;
 
 public interface IAiVisionAppService : IApplicationService
 {
@@ -1059,14 +1059,14 @@ public interface IAiVisionAppService : IApplicationService
 }
 ```
 
-Create `api/src/Puupees.Application.Contracts/Ai/IAiExtractionAppService.cs`:
+Create `api/src/Felorx.Application.Contracts/Ai/IAiExtractionAppService.cs`:
 
 ```csharp
 using System.Threading.Tasks;
-using Puupees.Ai.Dtos;
+using Felorx.Ai.Dtos;
 using Volo.Abp.Application.Services;
 
-namespace Puupees.Ai;
+namespace Felorx.Ai;
 
 public interface IAiExtractionAppService : IApplicationService
 {
@@ -1074,13 +1074,13 @@ public interface IAiExtractionAppService : IApplicationService
 }
 ```
 
-Create `api/src/Puupees.Application/Ai/Providers/IAiVisionProvider.cs`:
+Create `api/src/Felorx.Application/Ai/Providers/IAiVisionProvider.cs`:
 
 ```csharp
 using System.Threading.Tasks;
-using Puupees.Ai.Dtos;
+using Felorx.Ai.Dtos;
 
-namespace Puupees.Ai.Providers;
+namespace Felorx.Ai.Providers;
 
 public interface IAiVisionProvider
 {
@@ -1089,13 +1089,13 @@ public interface IAiVisionProvider
 }
 ```
 
-Create `api/src/Puupees.Application/Ai/Providers/IAiStructuredExtractionProvider.cs`:
+Create `api/src/Felorx.Application/Ai/Providers/IAiStructuredExtractionProvider.cs`:
 
 ```csharp
 using System.Threading.Tasks;
-using Puupees.Ai.Dtos;
+using Felorx.Ai.Dtos;
 
-namespace Puupees.Ai.Providers;
+namespace Felorx.Ai.Providers;
 
 public interface IAiStructuredExtractionProvider
 {
@@ -1106,18 +1106,18 @@ public interface IAiStructuredExtractionProvider
 
 - [ ] **Step 7: Extend router interface and implementation**
 
-Modify `api/src/Puupees.Application/Ai/Providers/IAiProviderRouter.cs`:
+Modify `api/src/Felorx.Application/Ai/Providers/IAiProviderRouter.cs`:
 
 ```csharp
 Task<IAiVisionProvider> GetVisionProviderAsync(string? model = null, string? provider = null);
 Task<IAiStructuredExtractionProvider> GetStructuredExtractionProviderAsync(string? model = null, string? provider = null);
 ```
 
-Modify `api/src/Puupees.Application/Ai/Providers/DefaultAiProviderRouter.cs` to return `_mockAiProvider` for the new methods.
+Modify `api/src/Felorx.Application/Ai/Providers/DefaultAiProviderRouter.cs` to return `_mockAiProvider` for the new methods.
 
 - [ ] **Step 8: Extend mock provider**
 
-Modify `api/src/Puupees.Application/Ai/Providers/MockAiProvider.cs` class declaration:
+Modify `api/src/Felorx.Application/Ai/Providers/MockAiProvider.cs` class declaration:
 
 ```csharp
 public class MockAiProvider :
@@ -1199,19 +1199,19 @@ public Task<AiStructuredExtractionDto> CreateStructuredExtractionAsync(CreateAiS
 
 - [ ] **Step 9: Add AppServices**
 
-Create `api/src/Puupees.Application/Ai/AiVisionAppService.cs`:
+Create `api/src/Felorx.Application/Ai/AiVisionAppService.cs`:
 
 ```csharp
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Puupees.Ai.Dtos;
-using Puupees.Ai.Providers;
+using Felorx.Ai.Dtos;
+using Felorx.Ai.Providers;
 using Volo.Abp;
 
-namespace Puupees.Ai;
+namespace Felorx.Ai;
 
 [Authorize]
-public class AiVisionAppService : PuupeesAppServiceBase, IAiVisionAppService
+public class AiVisionAppService : FelorxAppServiceBase, IAiVisionAppService
 {
     private readonly IAiProviderRouter _providerRouter;
 
@@ -1225,11 +1225,11 @@ public class AiVisionAppService : PuupeesAppServiceBase, IAiVisionAppService
         if (string.IsNullOrWhiteSpace(input.Image.Url) &&
             (string.IsNullOrWhiteSpace(input.Image.Bucket) || string.IsNullOrWhiteSpace(input.Image.Key)))
         {
-            throw new BusinessException("Puupees.Ai:ImageReferenceRequired");
+            throw new BusinessException("Felorx.Ai:ImageReferenceRequired");
         }
         if (input.Tasks.Count == 0)
         {
-            throw new BusinessException("Puupees.Ai:ImageAnalysisTaskRequired");
+            throw new BusinessException("Felorx.Ai:ImageAnalysisTaskRequired");
         }
 
         var provider = await _providerRouter.GetVisionProviderAsync(input.Model, input.Provider);
@@ -1238,20 +1238,20 @@ public class AiVisionAppService : PuupeesAppServiceBase, IAiVisionAppService
 }
 ```
 
-Create `api/src/Puupees.Application/Ai/AiExtractionAppService.cs`:
+Create `api/src/Felorx.Application/Ai/AiExtractionAppService.cs`:
 
 ```csharp
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Puupees.Ai.Dtos;
-using Puupees.Ai.Providers;
+using Felorx.Ai.Dtos;
+using Felorx.Ai.Providers;
 using Volo.Abp;
 
-namespace Puupees.Ai;
+namespace Felorx.Ai;
 
 [Authorize]
-public class AiExtractionAppService : PuupeesAppServiceBase, IAiExtractionAppService
+public class AiExtractionAppService : FelorxAppServiceBase, IAiExtractionAppService
 {
     private readonly IAiProviderRouter _providerRouter;
 
@@ -1264,11 +1264,11 @@ public class AiExtractionAppService : PuupeesAppServiceBase, IAiExtractionAppSer
     {
         if (string.IsNullOrWhiteSpace(input.SchemaName))
         {
-            throw new BusinessException("Puupees.Ai:SchemaNameRequired");
+            throw new BusinessException("Felorx.Ai:SchemaNameRequired");
         }
         if (string.IsNullOrWhiteSpace(input.JsonSchema))
         {
-            throw new BusinessException("Puupees.Ai:JsonSchemaRequired");
+            throw new BusinessException("Felorx.Ai:JsonSchemaRequired");
         }
 
         var provider = await _providerRouter.GetStructuredExtractionProviderAsync(input.Model, input.Provider);
@@ -1279,7 +1279,7 @@ public class AiExtractionAppService : PuupeesAppServiceBase, IAiExtractionAppSer
         }
         catch (JsonException ex)
         {
-            throw new BusinessException("Puupees.Ai:InvalidStructuredJson", innerException: ex);
+            throw new BusinessException("Felorx.Ai:InvalidStructuredJson", innerException: ex);
         }
         return result;
     }
@@ -1288,28 +1288,28 @@ public class AiExtractionAppService : PuupeesAppServiceBase, IAiExtractionAppSer
 
 - [ ] **Step 10: Add controllers and route tests**
 
-Modify `api/test/Puupees.Application.Tests/Ai/AiControllerRouteAndSecurityTests.cs`:
+Modify `api/test/Felorx.Application.Tests/Ai/AiControllerRouteAndSecurityTests.cs`:
 
 ```csharp
 [InlineData(typeof(AiVisionController), "api/ai/vision")]
 [InlineData(typeof(AiExtractionController), "api/ai/extraction")]
 ```
 
-Create `api/src/Puupees.HttpApi/Controllers/Ai/AiVisionController.cs`:
+Create `api/src/Felorx.HttpApi/Controllers/Ai/AiVisionController.cs`:
 
 ```csharp
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Puupees.Ai;
-using Puupees.Ai.Dtos;
+using Felorx.Ai;
+using Felorx.Ai.Dtos;
 
-namespace Puupees.Controllers.Ai;
+namespace Felorx.Controllers.Ai;
 
 [Authorize]
 [ApiController]
 [Route("api/ai/vision")]
-public class AiVisionController : PuupeesController
+public class AiVisionController : FelorxController
 {
     private readonly IAiVisionAppService _visionAppService;
 
@@ -1326,21 +1326,21 @@ public class AiVisionController : PuupeesController
 }
 ```
 
-Create `api/src/Puupees.HttpApi/Controllers/Ai/AiExtractionController.cs`:
+Create `api/src/Felorx.HttpApi/Controllers/Ai/AiExtractionController.cs`:
 
 ```csharp
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Puupees.Ai;
-using Puupees.Ai.Dtos;
+using Felorx.Ai;
+using Felorx.Ai.Dtos;
 
-namespace Puupees.Controllers.Ai;
+namespace Felorx.Controllers.Ai;
 
 [Authorize]
 [ApiController]
 [Route("api/ai/extraction")]
-public class AiExtractionController : PuupeesController
+public class AiExtractionController : FelorxController
 {
     private readonly IAiExtractionAppService _extractionAppService;
 
@@ -1364,7 +1364,7 @@ Run:
 
 ```bash
 cd api
-dotnet test test/Puupees.Application.Tests/Puupees.Application.Tests.csproj --filter "AiVisionAndExtractionTests|AiControllerRouteAndSecurityTests"
+dotnet test test/Felorx.Application.Tests/Felorx.Application.Tests.csproj --filter "AiVisionAndExtractionTests|AiControllerRouteAndSecurityTests"
 ```
 
 Expected: PASS.
@@ -1372,7 +1372,7 @@ Expected: PASS.
 - [ ] **Step 12: Commit**
 
 ```bash
-git add api/src/Puupees.Application.Contracts/Ai api/src/Puupees.Application/Ai api/src/Puupees.HttpApi/Controllers/Ai api/test/Puupees.Application.Tests/Ai
+git add api/src/Felorx.Application.Contracts/Ai api/src/Felorx.Application/Ai api/src/Felorx.HttpApi/Controllers/Ai api/test/Felorx.Application.Tests/Ai
 git commit -m "feat(api): 添加通用视觉与结构化抽取接口"
 ```
 
@@ -1381,28 +1381,28 @@ git commit -m "feat(api): 添加通用视觉与结构化抽取接口"
 ### Task 4: Capability Router and Real Provider Adapters
 
 **Files:**
-- Create: `api/src/Puupees.Application/Ai/Providers/AiProviderRegistry.cs`
-- Modify: `api/src/Puupees.Application/Ai/Providers/DefaultAiProviderRouter.cs`
-- Create: `api/src/Puupees.Application/Ai/Providers/OpenAiCompatibleChatProvider.cs`
-- Create: `api/src/Puupees.Application/Ai/Providers/TencentCloudRequestSigner.cs`
-- Create: `api/src/Puupees.Application/Ai/Providers/TencentCloudVisionProvider.cs`
-- Modify: `api/src/Puupees.Application/PuupeesApplicationModule.cs`
-- Create: `api/test/Puupees.Application.Tests/Ai/AiProviderRouterTests.cs`
-- Create: `api/test/Puupees.Application.Tests/Ai/TencentCloudProviderTests.cs`
+- Create: `api/src/Felorx.Application/Ai/Providers/AiProviderRegistry.cs`
+- Modify: `api/src/Felorx.Application/Ai/Providers/DefaultAiProviderRouter.cs`
+- Create: `api/src/Felorx.Application/Ai/Providers/OpenAiCompatibleChatProvider.cs`
+- Create: `api/src/Felorx.Application/Ai/Providers/TencentCloudRequestSigner.cs`
+- Create: `api/src/Felorx.Application/Ai/Providers/TencentCloudVisionProvider.cs`
+- Modify: `api/src/Felorx.Application/FelorxApplicationModule.cs`
+- Create: `api/test/Felorx.Application.Tests/Ai/AiProviderRouterTests.cs`
+- Create: `api/test/Felorx.Application.Tests/Ai/TencentCloudProviderTests.cs`
 
 - [ ] **Step 1: Write failing router tests**
 
-Create `api/test/Puupees.Application.Tests/Ai/AiProviderRouterTests.cs`:
+Create `api/test/Felorx.Application.Tests/Ai/AiProviderRouterTests.cs`:
 
 ```csharp
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Puupees.Ai;
-using Puupees.Ai.Providers;
+using Felorx.Ai;
+using Felorx.Ai.Providers;
 using Shouldly;
 using Xunit;
 
-namespace Puupees.Tests.Ai;
+namespace Felorx.Tests.Ai;
 
 public class AiProviderRouterTests
 {
@@ -1438,21 +1438,21 @@ Run:
 
 ```bash
 cd api
-dotnet test test/Puupees.Application.Tests/Puupees.Application.Tests.csproj --filter AiProviderRouterTests
+dotnet test test/Felorx.Application.Tests/Felorx.Application.Tests.csproj --filter AiProviderRouterTests
 ```
 
 Expected: FAIL because `AiProviderRegistry` and router constructor overload do not exist.
 
 - [ ] **Step 3: Implement registry**
 
-Create `api/src/Puupees.Application/Ai/Providers/AiProviderRegistry.cs`:
+Create `api/src/Felorx.Application/Ai/Providers/AiProviderRegistry.cs`:
 
 ```csharp
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Puupees.Ai.Providers;
+namespace Felorx.Ai.Providers;
 
 public class AiProviderRegistry
 {
@@ -1498,7 +1498,7 @@ public class AiProviderRegistry
 
 - [ ] **Step 4: Update router**
 
-Modify `api/src/Puupees.Application/Ai/Providers/DefaultAiProviderRouter.cs`:
+Modify `api/src/Felorx.Application/Ai/Providers/DefaultAiProviderRouter.cs`:
 
 ```csharp
 private readonly AiProviderRegistry _registry;
@@ -1531,17 +1531,17 @@ public Task<IAiStructuredExtractionProvider> GetStructuredExtractionProviderAsyn
 
 - [ ] **Step 5: Add OpenAI-compatible provider skeleton**
 
-Create `api/src/Puupees.Application/Ai/Providers/OpenAiCompatibleChatProvider.cs`:
+Create `api/src/Felorx.Application/Ai/Providers/OpenAiCompatibleChatProvider.cs`:
 
 ```csharp
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Puupees.Ai.Dtos;
+using Felorx.Ai.Dtos;
 using Volo.Abp;
 
-namespace Puupees.Ai.Providers;
+namespace Felorx.Ai.Providers;
 
 public class OpenAiCompatibleChatProvider : IAiChatProvider, IAiStructuredExtractionProvider
 {
@@ -1558,7 +1558,7 @@ public class OpenAiCompatibleChatProvider : IAiChatProvider, IAiStructuredExtrac
         var response = await _httpClient.PostAsJsonAsync("chat/completions", input);
         response.EnsureSuccessStatusCode();
         return await response.Content.ReadFromJsonAsync<AiChatCompletionDto>()
-               ?? throw new BusinessException("Puupees.Ai:EmptyChatCompletionResponse");
+               ?? throw new BusinessException("Felorx.Ai:EmptyChatCompletionResponse");
     }
 
     public async Task<AiStructuredExtractionDto> CreateStructuredExtractionAsync(CreateAiStructuredExtractionDto input)
@@ -1596,14 +1596,14 @@ public class OpenAiCompatibleChatProvider : IAiChatProvider, IAiStructuredExtrac
 
 - [ ] **Step 6: Add Tencent signer and provider skeleton**
 
-Create `api/src/Puupees.Application/Ai/Providers/TencentCloudRequestSigner.cs`:
+Create `api/src/Felorx.Application/Ai/Providers/TencentCloudRequestSigner.cs`:
 
 ```csharp
 using System;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Puupees.Ai.Providers;
+namespace Felorx.Ai.Providers;
 
 public static class TencentCloudRequestSigner
 {
@@ -1615,13 +1615,13 @@ public static class TencentCloudRequestSigner
 }
 ```
 
-Create `api/src/Puupees.Application/Ai/Providers/TencentCloudVisionProvider.cs`:
+Create `api/src/Felorx.Application/Ai/Providers/TencentCloudVisionProvider.cs`:
 
 ```csharp
 using System.Threading.Tasks;
-using Puupees.Ai.Dtos;
+using Felorx.Ai.Dtos;
 
-namespace Puupees.Ai.Providers;
+namespace Felorx.Ai.Providers;
 
 public class TencentCloudVisionProvider : IAiVisionProvider
 {
@@ -1645,14 +1645,14 @@ public class TencentCloudVisionProvider : IAiVisionProvider
 
 - [ ] **Step 7: Add Tencent provider unit test**
 
-Create `api/test/Puupees.Application.Tests/Ai/TencentCloudProviderTests.cs`:
+Create `api/test/Felorx.Application.Tests/Ai/TencentCloudProviderTests.cs`:
 
 ```csharp
-using Puupees.Ai.Providers;
+using Felorx.Ai.Providers;
 using Shouldly;
 using Xunit;
 
-namespace Puupees.Tests.Ai;
+namespace Felorx.Tests.Ai;
 
 public class TencentCloudProviderTests
 {
@@ -1667,12 +1667,12 @@ public class TencentCloudProviderTests
 
 - [ ] **Step 8: Register providers**
 
-Modify `api/src/Puupees.Application/PuupeesApplicationModule.cs`:
+Modify `api/src/Felorx.Application/FelorxApplicationModule.cs`:
 
 ```csharp
-context.Services.AddSingleton<Puupees.Ai.Providers.AiProviderRegistry>();
-context.Services.AddHttpClient<Puupees.Ai.Providers.OpenAiCompatibleChatProvider>();
-context.Services.AddSingleton<Puupees.Ai.Providers.TencentCloudVisionProvider>();
+context.Services.AddSingleton<Felorx.Ai.Providers.AiProviderRegistry>();
+context.Services.AddHttpClient<Felorx.Ai.Providers.OpenAiCompatibleChatProvider>();
+context.Services.AddSingleton<Felorx.Ai.Providers.TencentCloudVisionProvider>();
 ```
 
 Keep existing mock registration.
@@ -1683,7 +1683,7 @@ Run:
 
 ```bash
 cd api
-dotnet test test/Puupees.Application.Tests/Puupees.Application.Tests.csproj --filter "AiProviderRouterTests|TencentCloudProviderTests"
+dotnet test test/Felorx.Application.Tests/Felorx.Application.Tests.csproj --filter "AiProviderRouterTests|TencentCloudProviderTests"
 ```
 
 Expected: PASS.
@@ -1691,7 +1691,7 @@ Expected: PASS.
 - [ ] **Step 10: Commit**
 
 ```bash
-git add api/src/Puupees.Application/Ai/Providers api/src/Puupees.Application/PuupeesApplicationModule.cs api/test/Puupees.Application.Tests/Ai
+git add api/src/Felorx.Application/Ai/Providers api/src/Felorx.Application/FelorxApplicationModule.cs api/test/Felorx.Application.Tests/Ai
 git commit -m "feat(api): 添加 AI 能力路由和服务商适配器"
 ```
 
@@ -1700,9 +1700,9 @@ git commit -m "feat(api): 添加 AI 能力路由和服务商适配器"
 ### Task 5: API Verification and OpenAPI Surface
 
 **Files:**
-- Modify: `api/test/Puupees.Application.Tests/Ai/AiGatewayAppServiceTests.cs`
-- Modify: `api/test/Puupees.Application.Tests/Ai/AiControllerRouteAndSecurityTests.cs`
-- Modify: `api/src/Puupees.HttpApi/Controllers/Ai/*.cs`
+- Modify: `api/test/Felorx.Application.Tests/Ai/AiGatewayAppServiceTests.cs`
+- Modify: `api/test/Felorx.Application.Tests/Ai/AiControllerRouteAndSecurityTests.cs`
+- Modify: `api/src/Felorx.HttpApi/Controllers/Ai/*.cs`
 
 - [ ] **Step 1: Run full API AI tests**
 
@@ -1710,7 +1710,7 @@ Run:
 
 ```bash
 cd api
-dotnet test test/Puupees.Application.Tests/Puupees.Application.Tests.csproj --filter "FullyQualifiedName~Ai"
+dotnet test test/Felorx.Application.Tests/Felorx.Application.Tests.csproj --filter "FullyQualifiedName~Ai"
 ```
 
 Expected: PASS.
@@ -1721,7 +1721,7 @@ Run:
 
 ```bash
 cd api
-dotnet build Puupees.sln
+dotnet build Felorx.sln
 ```
 
 Expected: build succeeds with no compile errors.
@@ -1753,7 +1753,7 @@ Run:
 
 ```bash
 cd api
-dotnet run --project src/Puupees.HttpApi.Host
+dotnet run --project src/Felorx.HttpApi.Host
 ```
 
 Expected: host starts and exposes Swagger JSON. Keep the terminal running for the next step.
@@ -1763,8 +1763,8 @@ Expected: host starts and exposes Swagger JSON. Keep the terminal running for th
 In a second terminal:
 
 ```bash
-cd packages/api/puupee_sdk_generator
-dart run bin/puupee_sdk_generator.dart dart --swagger-url http://localhost:5000/swagger/v1/swagger.json
+cd packages/api/felorx_sdk_generator
+dart run bin/felorx_sdk_generator.dart dart --swagger-url http://localhost:5000/swagger/v1/swagger.json
 ```
 
 Expected: `packages/api/felorx_api_client` gains APIs/models for `AiProvidersApi`, `AiVisionApi`, and `AiExtractionApi`.
@@ -1817,7 +1817,7 @@ Create `apps/developer/test/ai_provider_provider_test.dart`:
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
-import 'package:puupee_developer/ai-providers/provider.dart';
+import 'package:felorx_developer/ai-providers/provider.dart';
 
 void main() {
   test('AI provider page size stays aligned with existing list pages', () {
@@ -1842,7 +1842,7 @@ Create `apps/developer/lib/ai-providers/provider.dart`:
 ```dart
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:felorx_api_client/felorx_api_client.dart';
-import 'package:puupee_shared/providers/base/api_client.dart';
+import 'package:felorx_shared/providers/base/api_client.dart';
 
 const aiProviderPageSize = 10;
 
@@ -1920,9 +1920,9 @@ Create `apps/developer/lib/ai-providers/list_view.dart`:
 ```dart
 import 'package:flutter/cupertino.dart' show CupertinoPageRoute;
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:puupee_developer/ai-providers/edit_page.dart';
-import 'package:puupee_developer/ai-providers/list_view_item.dart';
-import 'package:puupee_developer/ai-providers/provider.dart';
+import 'package:felorx_developer/ai-providers/edit_page.dart';
+import 'package:felorx_developer/ai-providers/list_view_item.dart';
+import 'package:felorx_developer/ai-providers/provider.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 
 class AiProviderListView extends ConsumerWidget {
@@ -1972,10 +1972,10 @@ import 'package:flutter/material.dart' as material;
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:felorx_api_client/felorx_api_client.dart';
-import 'package:puupee_developer/ai-providers/provider.dart';
-import 'package:puupee_shared/providers/base/api_client.dart';
-import 'package:puupee_shared/utils/toast.dart';
-import 'package:puupee_ui/components/adaptive_scaffold.dart';
+import 'package:felorx_developer/ai-providers/provider.dart';
+import 'package:felorx_shared/providers/base/api_client.dart';
+import 'package:felorx_shared/utils/toast.dart';
+import 'package:felorx_ui/components/adaptive_scaffold.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 
@@ -2086,10 +2086,10 @@ Create `apps/developer/lib/ai-providers/home_page.dart`:
 ```dart
 import 'package:flutter/cupertino.dart' show CupertinoPageRoute;
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:puupee_developer/ai-providers/edit_page.dart';
-import 'package:puupee_developer/ai-providers/list_view.dart';
-import 'package:puupee_ui/components/adaptive_scaffold.dart';
-import 'package:puupee_ui/components/responsive_builder.dart';
+import 'package:felorx_developer/ai-providers/edit_page.dart';
+import 'package:felorx_developer/ai-providers/list_view.dart';
+import 'package:felorx_ui/components/adaptive_scaffold.dart';
+import 'package:felorx_ui/components/responsive_builder.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 
 class AiProvidersPage extends ConsumerWidget {
@@ -2232,8 +2232,8 @@ Create `apps/inventory/test/api_inventory_recognition_service_test.dart`:
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
-import 'package:puupee/puupee.dart';
-import 'package:puupee_inventory/services/api_inventory_recognition_service.dart';
+import 'package:felorx/felorx.dart';
+import 'package:felorx_inventory/services/api_inventory_recognition_service.dart';
 
 void main() {
   test('maps structured extraction item to inventory draft', () {
@@ -2286,7 +2286,7 @@ Create `apps/inventory/lib/services/api_inventory_recognition_service.dart`:
 import 'dart:io';
 
 import 'package:decimal/decimal.dart';
-import 'package:puupee/puupee.dart';
+import 'package:felorx/felorx.dart';
 import 'package:felorx_api_client/felorx_api_client.dart';
 
 import '../models/inventory_asset_draft.dart';
@@ -2454,7 +2454,7 @@ import 'dart:io';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart' as path;
 import 'package:felorx_api_client/felorx_api_client.dart';
-import 'package:puupee_shared/components/file_upload/upload_provider.dart';
+import 'package:felorx_shared/components/file_upload/upload_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'inventory_image_upload_service.g.dart';
@@ -2470,7 +2470,7 @@ class InventoryImageUploadService {
       const FileUploadConfig(
         usage: 'Files',
         keyPrefix: 'inventory/recognition/',
-        addToPuupee: true,
+        addToFelorx: true,
       ),
     );
     return AiMediaReferenceDto(
@@ -2493,9 +2493,9 @@ InventoryImageUploadService inventoryImageUploadService(Ref ref) {
 Modify `apps/inventory/lib/providers/inventory_providers.dart`:
 
 ```dart
-import 'package:puupee_inventory/services/api_inventory_recognition_service.dart';
-import 'package:puupee_inventory/services/inventory_image_upload_service.dart';
-import 'package:puupee_shared/providers/base/api_client.dart';
+import 'package:felorx_inventory/services/api_inventory_recognition_service.dart';
+import 'package:felorx_inventory/services/inventory_image_upload_service.dart';
+import 'package:felorx_shared/providers/base/api_client.dart';
 ```
 
 Replace provider body:
@@ -2575,7 +2575,7 @@ Run:
 
 ```bash
 cd api
-dotnet test test/Puupees.Application.Tests/Puupees.Application.Tests.csproj --filter "FullyQualifiedName~Ai"
+dotnet test test/Felorx.Application.Tests/Felorx.Application.Tests.csproj --filter "FullyQualifiedName~Ai"
 ```
 
 Expected: PASS.
@@ -2600,7 +2600,7 @@ Expected: PASS.
 Run when time allows:
 
 ```bash
-cd /Users/j/repos/puupees/puupee-apps
+cd /Users/j/repos/puupees/felorx-apps
 melos run analyze
 ```
 

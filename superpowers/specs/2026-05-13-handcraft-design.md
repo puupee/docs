@@ -4,7 +4,7 @@
 
 ## 背景
 
-小汪手工是一个 Puupee Flutter 子应用。用户上传一张包或衣服的款式照片，再上传一张布料或面料照片，应用生成使用该布料制作该物品的成品效果图、尺寸裁剪图，并生成展示“布料、裁剪、缝纫、成品”过程的视频。
+小汪手工是一个 Felorx Flutter 子应用。用户上传一张包或衣服的款式照片，再上传一张布料或面料照片，应用生成使用该布料制作该物品的成品效果图、尺寸裁剪图，并生成展示“布料、裁剪、缝纫、成品”过程的视频。
 
 第一版目标是做成可运行原型。生成能力使用本地模拟服务和占位结果，不接入真实 AI、对象存储或视频生成 API，但代码边界、数据字段和页面流程要按后续真实生成与媒体同步来设计。
 
@@ -13,10 +13,10 @@
 第一版包含：
 
 - 新建子应用 `apps/handcraft`。
-- package 名称为 `puupee_handcraft`。
+- package 名称为 `felorx_handcraft`。
 - 应用中文名为 `小汪手工`。
 - 路由前缀为 `/handcraft`。
-- Android applicationId 和 namespace 为 `com.puupee.handcraft`。
+- Android applicationId 和 namespace 为 `com.felorx.handcraft`。
 - 创建作品历史、创作工作台、素材库和设置入口。
 - 支持上传款式图和布料图的本地路径记录。
 - 支持选择物品类型，填写目标尺寸；未填写时生成模拟尺寸。
@@ -65,17 +65,17 @@
 - 创作：新建或编辑当前作品。移动端是向导，桌面端是工作台。
 - 作品：同步型作品历史列表，可查看草稿、生成中、已完成、失败的作品。
 - 素材：轻量媒体库视图，展示作品引用的款式图、布料图、生成结果图、裁剪图和视频引用。
-- 我的：复用 Puupee 现有设置页体系，包括账号、存储、同步、反馈、关于等页面。
+- 我的：复用 Felorx 现有设置页体系，包括账号、存储、同步、反馈、关于等页面。
 
 ## 架构
 
-新应用沿用现有 Puupee 子应用结构：
+新应用沿用现有 Felorx 子应用结构：
 
 - `main.dart` 通过 `runMyApp` 启动。
 - `env.dart` 提供 `HandcraftEnvConfig`，包含必需的左右布局默认值。
 - `router.dart` 使用 typed `go_router`，生成 `router.g.dart`。
 - Shell 使用 `AdaptiveLayout` 实现桌面侧边栏，移动端使用底部导航。
-- UI 使用 `shadcn_flutter`、`puupee_ui` 和 `puupee_shared` 组件，不直接使用 `flutter/material.dart` 组件模式。
+- UI 使用 `shadcn_flutter`、`felorx_ui` 和 `felorx_shared` 组件，不直接使用 `flutter/material.dart` 组件模式。
 - 状态使用 Riverpod annotation provider。
 - 页面不直接访问底层存储，统一通过 repo 和 provider。
 
@@ -112,7 +112,7 @@
 - `HandcraftUploadStatus`：`localOnly`、`queued`、`uploading`、`uploaded`、`failed`。
 - `HandcraftDimensionMode`：`manual`、`estimated`。
 
-第一版 repo 使用本地内存或轻量本地数据源保证应用可运行。接口设计按未来替换到 Puupee/Sync 的形状保留：新增作品、更新作品、按状态查询、启动生成、重试生成。
+第一版 repo 使用本地内存或轻量本地数据源保证应用可运行。接口设计按未来替换到 Felorx/Sync 的形状保留：新增作品、更新作品、按状态查询、启动生成、重试生成。
 
 ## 尺寸和裁剪图
 
@@ -172,10 +172,10 @@
 
 ## Android 和环境配置
 
-Android 平台从现有轻量 Puupee 子应用复制并调整：
+Android 平台从现有轻量 Felorx 子应用复制并调整：
 
-- `namespace = "com.puupee.handcraft"`。
-- `applicationId = "com.puupee.handcraft"`。
+- `namespace = "com.felorx.handcraft"`。
+- `applicationId = "com.felorx.handcraft"`。
 - Kotlin 和 Java 目标版本为 17。
 - 保留 core library desugaring。
 - 保留 XG manifest placeholders。
@@ -233,7 +233,7 @@ flutter build apk --debug --target-platform android-arm64 --no-pub
 
 后续真实版本可在不重写 UI 的前提下替换这些边界：
 
-- 将 repo 替换为 Puupee/Sync 数据源。
+- 将 repo 替换为 Felorx/Sync 数据源。
 - 将本地媒体引用替换为对象存储上传结果。
 - 将模拟生成服务替换为真实图片生成、裁剪图生成和视频生成服务。
 - 将裁剪图从说明图升级为更专业的服装打版或包款制版算法。

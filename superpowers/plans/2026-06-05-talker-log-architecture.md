@@ -4,60 +4,60 @@
 
 **Goal:** Build a Talker-based custom logging layer so `sync_server.dart` writes logs under a filterable `sync-server` key with searchable scene labels.
 
-**Architecture:** Add a focused logging model and logger facade to `puupee_utilities`, then migrate only `packages/sync/puupee_sync/lib/src/sync_server.dart` to use it. The global `talker` remains the single logging backend, and the existing developer `TalkerScreen(talker: talker)` remains the UI.
+**Architecture:** Add a focused logging model and logger facade to `felorx_utilities`, then migrate only `packages/sync/felorx_sync/lib/src/sync_server.dart` to use it. The global `talker` remains the single logging backend, and the existing developer `TalkerScreen(talker: talker)` remains the UI.
 
-**Tech Stack:** Dart 3.8, `talker` 5.1.17, Dart `test`, `puupee_utilities`, `puupee_sync`.
+**Tech Stack:** Dart 3.8, `talker` 5.1.17, Dart `test`, `felorx_utilities`, `felorx_sync`.
 
 ---
 
 ## File Structure
 
-- Create `packages/core/puupee_utilities/test/talker_test.dart`
-  - Unit tests for `PuupeeTalkerLog`, `PuupeeLogger`, key registration, and `createTalker(settings:)`.
-- Modify `packages/core/puupee_utilities/lib/talker.dart`
+- Create `packages/core/felorx_utilities/test/talker_test.dart`
+  - Unit tests for `FelorxTalkerLog`, `FelorxLogger`, key registration, and `createTalker(settings:)`.
+- Modify `packages/core/felorx_utilities/lib/talker.dart`
   - Define module/scene constants, custom log model, logger facade, key registration, and fix `createTalker`.
-- Modify `packages/core/puupee_utilities/lib/puupee_utilities.dart`
+- Modify `packages/core/felorx_utilities/lib/felorx_utilities.dart`
   - Already exports `talker.dart`; verify no extra export is needed.
-- Modify `packages/sync/puupee_sync/lib/src/sync_server.dart`
-  - Replace direct `Talker` usage with `PuupeeLogger.syncServer()`.
+- Modify `packages/sync/felorx_sync/lib/src/sync_server.dart`
+  - Replace direct `Talker` usage with `FelorxLogger.syncServer()`.
   - Migrate existing `_logger.info/warning/error` calls to named parameters and scene labels.
-- Create `packages/sync/puupee_sync/test/sync_server_logging_test.dart`
+- Create `packages/sync/felorx_sync/test/sync_server_logging_test.dart`
   - Lightweight tests proving sync-server logs use key `sync-server` and scene-prefixed messages.
 
 ---
 
-### Task 1: Add Puupee Talker Infrastructure Tests
+### Task 1: Add Felorx Talker Infrastructure Tests
 
 **Files:**
-- Create: `packages/core/puupee_utilities/test/talker_test.dart`
-- Modify: `packages/core/puupee_utilities/lib/talker.dart`
+- Create: `packages/core/felorx_utilities/test/talker_test.dart`
+- Modify: `packages/core/felorx_utilities/lib/talker.dart`
 
 - [ ] **Step 1: Write the failing infrastructure tests**
 
-Create `packages/core/puupee_utilities/test/talker_test.dart`:
+Create `packages/core/felorx_utilities/test/talker_test.dart`:
 
 ```dart
-import 'package:puupee_utilities/talker.dart';
+import 'package:felorx_utilities/talker.dart';
 import 'package:talker/talker.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('PuupeeTalkerLog', () {
+  group('FelorxTalkerLog', () {
     test('应该写入模块 key、等级和场景前缀', () {
       final stackTrace = StackTrace.current;
       final exception = StateError('boom');
 
-      final log = PuupeeTalkerLog(
+      final log = FelorxTalkerLog(
         '处理配对请求失败',
-        module: PuupeeLogModule.syncServer,
-        scene: PuupeeLogScene.pairing,
+        module: FelorxLogModule.syncServer,
+        scene: FelorxLogScene.pairing,
         logLevel: LogLevel.error,
         exception: exception,
         stackTrace: stackTrace,
       );
 
-      expect(log.key, equals(PuupeeLogModule.syncServer));
-      expect(log.title, equals(PuupeeLogModule.syncServer));
+      expect(log.key, equals(FelorxLogModule.syncServer));
+      expect(log.title, equals(FelorxLogModule.syncServer));
       expect(log.logLevel, equals(LogLevel.error));
       expect(log.message, equals('[pairing] 处理配对请求失败'));
       expect(log.exception, same(exception));
@@ -65,9 +65,9 @@ void main() {
     });
 
     test('没有场景时不添加空前缀', () {
-      final log = PuupeeTalkerLog(
+      final log = FelorxTalkerLog(
         '同步服务器已停止',
-        module: PuupeeLogModule.syncServer,
+        module: FelorxLogModule.syncServer,
         logLevel: LogLevel.info,
       );
 
@@ -75,23 +75,23 @@ void main() {
     });
   });
 
-  group('PuupeeLogger', () {
+  group('FelorxLogger', () {
     test('应该通过 logCustom 写入 Talker history', () {
       final loggerBackend = createTalker(
         settings: TalkerSettings(useConsoleLogs: false),
       );
-      final logger = PuupeeLogger.syncServer(backend: loggerBackend);
+      final logger = FelorxLogger.syncServer(backend: loggerBackend);
 
       logger.warning(
         'API Key 验证失败',
-        scene: PuupeeLogScene.auth,
+        scene: FelorxLogScene.auth,
         exception: const FormatException('bad api key'),
         stackTrace: StackTrace.empty,
       );
 
       expect(loggerBackend.history, hasLength(1));
-      final log = loggerBackend.history.single as PuupeeTalkerLog;
-      expect(log.key, equals(PuupeeLogModule.syncServer));
+      final log = loggerBackend.history.single as FelorxTalkerLog;
+      expect(log.key, equals(FelorxLogModule.syncServer));
       expect(log.logLevel, equals(LogLevel.warning));
       expect(log.message, equals('[auth] API Key 验证失败'));
       expect(log.exception, isA<FormatException>());
@@ -102,18 +102,18 @@ void main() {
       final loggerBackend = createTalker(
         settings: TalkerSettings(
           useConsoleLogs: false,
-          titles: const {PuupeeLogModule.syncServer: 'Sync Server'},
+          titles: const {FelorxLogModule.syncServer: 'Sync Server'},
         ),
       );
 
       expect(loggerBackend.settings.useConsoleLogs, isFalse);
       expect(
-        loggerBackend.settings.getTitleByKey(PuupeeLogModule.syncServer),
+        loggerBackend.settings.getTitleByKey(FelorxLogModule.syncServer),
         equals('Sync Server'),
       );
     });
 
-    test('registerPuupeeTalkerKeys 应该注册 sync-server key', () {
+    test('registerFelorxTalkerKeys 应该注册 sync-server key', () {
       final loggerBackend = Talker(
         settings: TalkerSettings(
           useConsoleLogs: false,
@@ -121,15 +121,15 @@ void main() {
         ),
       );
 
-      registerPuupeeTalkerKeys(loggerBackend);
+      registerFelorxTalkerKeys(loggerBackend);
 
       expect(
         loggerBackend.settings.registeredKeys,
-        contains(PuupeeLogModule.syncServer),
+        contains(FelorxLogModule.syncServer),
       );
       expect(
-        loggerBackend.settings.getTitleByKey(PuupeeLogModule.syncServer),
-        equals(PuupeeLogModule.syncServer),
+        loggerBackend.settings.getTitleByKey(FelorxLogModule.syncServer),
+        equals(FelorxLogModule.syncServer),
       );
     });
   });
@@ -141,20 +141,20 @@ void main() {
 Run:
 
 ```bash
-cd packages/core/puupee_utilities
+cd packages/core/felorx_utilities
 dart test test/talker_test.dart
 ```
 
-Expected: FAIL with missing symbols such as `PuupeeTalkerLog`, `PuupeeLogModule`, `PuupeeLogScene`, `PuupeeLogger`, or `registerPuupeeTalkerKeys`.
+Expected: FAIL with missing symbols such as `FelorxTalkerLog`, `FelorxLogModule`, `FelorxLogScene`, `FelorxLogger`, or `registerFelorxTalkerKeys`.
 
 - [ ] **Step 3: Implement the minimal logging infrastructure**
 
-Replace `packages/core/puupee_utilities/lib/talker.dart` with:
+Replace `packages/core/felorx_utilities/lib/talker.dart` with:
 
 ```dart
 import 'package:talker/talker.dart';
 
-abstract final class PuupeeLogModule {
+abstract final class FelorxLogModule {
   static const syncServer = 'sync-server';
   static const syncClient = 'sync-client';
   static const syncStorage = 'sync-storage';
@@ -162,7 +162,7 @@ abstract final class PuupeeLogModule {
   static const syncMcp = 'sync-mcp';
 }
 
-abstract final class PuupeeLogScene {
+abstract final class FelorxLogScene {
   static const lifecycle = 'lifecycle';
   static const db = 'db';
   static const mq = 'mq';
@@ -178,8 +178,8 @@ abstract final class PuupeeLogScene {
   static const appInfo = 'app-info';
 }
 
-class PuupeeTalkerLog extends TalkerLog {
-  PuupeeTalkerLog(
+class FelorxTalkerLog extends TalkerLog {
+  FelorxTalkerLog(
     String message, {
     required String module,
     String? scene,
@@ -204,16 +204,16 @@ class PuupeeTalkerLog extends TalkerLog {
   }
 }
 
-class PuupeeLogger {
-  const PuupeeLogger({
+class FelorxLogger {
+  const FelorxLogger({
     required this.talker,
     required this.module,
   });
 
-  factory PuupeeLogger.syncServer({Talker? backend}) {
-    return PuupeeLogger(
+  factory FelorxLogger.syncServer({Talker? backend}) {
+    return FelorxLogger(
       talker: backend ?? talker,
-      module: PuupeeLogModule.syncServer,
+      module: FelorxLogModule.syncServer,
     );
   }
 
@@ -318,7 +318,7 @@ class PuupeeLogger {
     StackTrace? stackTrace,
   }) {
     talker.logCustom(
-      PuupeeTalkerLog(
+      FelorxTalkerLog(
         message?.toString() ?? '',
         module: module,
         scene: scene,
@@ -332,14 +332,14 @@ class PuupeeLogger {
 
 Talker createTalker({TalkerSettings? settings}) {
   final instance = Talker(settings: settings);
-  registerPuupeeTalkerKeys(instance);
+  registerFelorxTalkerKeys(instance);
   return instance;
 }
 
-void registerPuupeeTalkerKeys(Talker talker) {
-  talker.settings.registerKeys(const [PuupeeLogModule.syncServer]);
-  talker.settings.titles[PuupeeLogModule.syncServer] =
-      PuupeeLogModule.syncServer;
+void registerFelorxTalkerKeys(Talker talker) {
+  talker.settings.registerKeys(const [FelorxLogModule.syncServer]);
+  talker.settings.titles[FelorxLogModule.syncServer] =
+      FelorxLogModule.syncServer;
 }
 
 Talker talker = createTalker();
@@ -350,7 +350,7 @@ Talker talker = createTalker();
 Run:
 
 ```bash
-cd packages/core/puupee_utilities
+cd packages/core/felorx_utilities
 dart test test/talker_test.dart
 ```
 
@@ -371,8 +371,8 @@ Expected: formatter exits with code 0.
 Run:
 
 ```bash
-git add packages/core/puupee_utilities/lib/talker.dart packages/core/puupee_utilities/test/talker_test.dart
-git commit -m "feat(puupee_utilities): 添加 Talker 自定义日志基础设施"
+git add packages/core/felorx_utilities/lib/talker.dart packages/core/felorx_utilities/test/talker_test.dart
+git commit -m "feat(felorx_utilities): 添加 Talker 自定义日志基础设施"
 ```
 
 Expected: commit succeeds.
@@ -382,15 +382,15 @@ Expected: commit succeeds.
 ### Task 2: Add Sync Server Logging Test
 
 **Files:**
-- Create: `packages/sync/puupee_sync/test/sync_server_logging_test.dart`
-- Modify: `packages/sync/puupee_sync/lib/src/sync_server.dart`
+- Create: `packages/sync/felorx_sync/test/sync_server_logging_test.dart`
+- Modify: `packages/sync/felorx_sync/lib/src/sync_server.dart`
 
 - [ ] **Step 1: Write a sync-server logger behavior test**
 
-Create `packages/sync/puupee_sync/test/sync_server_logging_test.dart`:
+Create `packages/sync/felorx_sync/test/sync_server_logging_test.dart`:
 
 ```dart
-import 'package:puupee_utilities/puupee_utilities.dart';
+import 'package:felorx_utilities/felorx_utilities.dart';
 import 'package:talker/talker.dart';
 import 'package:test/test.dart';
 
@@ -400,16 +400,16 @@ void main() {
       final loggerBackend = createTalker(
         settings: TalkerSettings(useConsoleLogs: false),
       );
-      final logger = PuupeeLogger.syncServer(backend: loggerBackend);
+      final logger = FelorxLogger.syncServer(backend: loggerBackend);
 
       logger.info(
         'Serving at http://0.0.0.0:8080',
-        scene: PuupeeLogScene.lifecycle,
+        scene: FelorxLogScene.lifecycle,
       );
 
       expect(loggerBackend.history, hasLength(1));
       final log = loggerBackend.history.single;
-      expect(log.key, equals(PuupeeLogModule.syncServer));
+      expect(log.key, equals(FelorxLogModule.syncServer));
       expect(log.logLevel, equals(LogLevel.info));
       expect(log.message, equals('[lifecycle] Serving at http://0.0.0.0:8080'));
     });
@@ -418,18 +418,18 @@ void main() {
       final loggerBackend = createTalker(
         settings: TalkerSettings(useConsoleLogs: false),
       );
-      final logger = PuupeeLogger.syncServer(backend: loggerBackend);
+      final logger = FelorxLogger.syncServer(backend: loggerBackend);
       final exception = Exception('storage failed');
 
       logger.error(
         '本地上传失败',
-        scene: PuupeeLogScene.storage,
+        scene: FelorxLogScene.storage,
         exception: exception,
         stackTrace: StackTrace.empty,
       );
 
       final log = loggerBackend.history.single;
-      expect(log.key, equals(PuupeeLogModule.syncServer));
+      expect(log.key, equals(FelorxLogModule.syncServer));
       expect(log.logLevel, equals(LogLevel.error));
       expect(log.message, equals('[storage] 本地上传失败'));
       expect(log.exception, same(exception));
@@ -444,11 +444,11 @@ void main() {
 Run:
 
 ```bash
-cd packages/sync/puupee_sync
+cd packages/sync/felorx_sync
 dart test test/sync_server_logging_test.dart
 ```
 
-Expected: PASS if Task 1 is complete. If it fails because `puupee_sync` does not see the local workspace version of `puupee_utilities`, run `melos bootstrap` from the repository root and rerun the test.
+Expected: PASS if Task 1 is complete. If it fails because `felorx_sync` does not see the local workspace version of `felorx_utilities`, run `melos bootstrap` from the repository root and rerun the test.
 
 - [ ] **Step 3: Format the new test**
 
@@ -465,8 +465,8 @@ Expected: formatter exits with code 0.
 Run:
 
 ```bash
-git add packages/sync/puupee_sync/test/sync_server_logging_test.dart
-git commit -m "test(puupee_sync): 覆盖 sync-server 自定义日志"
+git add packages/sync/felorx_sync/test/sync_server_logging_test.dart
+git commit -m "test(felorx_sync): 覆盖 sync-server 自定义日志"
 ```
 
 Expected: commit succeeds.
@@ -476,11 +476,11 @@ Expected: commit succeeds.
 ### Task 3: Migrate sync_server.dart Logger Field and Imports
 
 **Files:**
-- Modify: `packages/sync/puupee_sync/lib/src/sync_server.dart`
+- Modify: `packages/sync/felorx_sync/lib/src/sync_server.dart`
 
 - [ ] **Step 1: Remove direct Talker import**
 
-In `packages/sync/puupee_sync/lib/src/sync_server.dart`, remove:
+In `packages/sync/felorx_sync/lib/src/sync_server.dart`, remove:
 
 ```dart
 import 'package:talker/talker.dart';
@@ -489,7 +489,7 @@ import 'package:talker/talker.dart';
 Keep:
 
 ```dart
-import 'package:puupee_utilities/puupee_utilities.dart';
+import 'package:felorx_utilities/felorx_utilities.dart';
 ```
 
 - [ ] **Step 2: Replace the logger field**
@@ -503,7 +503,7 @@ final Talker _logger = talker;
 To:
 
 ```dart
-final PuupeeLogger _logger = PuupeeLogger.syncServer();
+final FelorxLogger _logger = FelorxLogger.syncServer();
 ```
 
 - [ ] **Step 3: Run analyzer to see call-site errors**
@@ -511,7 +511,7 @@ final PuupeeLogger _logger = PuupeeLogger.syncServer();
 Run:
 
 ```bash
-cd packages/sync/puupee_sync
+cd packages/sync/felorx_sync
 dart analyze lib/src/sync_server.dart
 ```
 
@@ -526,7 +526,7 @@ Do not commit this task alone if `sync_server.dart` does not compile. The commit
 ### Task 4: Migrate sync_server.dart Log Calls by Scene
 
 **Files:**
-- Modify: `packages/sync/puupee_sync/lib/src/sync_server.dart`
+- Modify: `packages/sync/felorx_sync/lib/src/sync_server.dart`
 
 - [ ] **Step 1: Convert app-info logs**
 
@@ -541,7 +541,7 @@ To:
 ```dart
 _logger.warning(
   '解析 App 信息失败: $appName',
-  scene: PuupeeLogScene.appInfo,
+  scene: FelorxLogScene.appInfo,
   exception: e,
   stackTrace: stackTrace,
 );
@@ -549,7 +549,7 @@ _logger.warning(
 
 - [ ] **Step 2: Convert lifecycle logs**
 
-Use `scene: PuupeeLogScene.lifecycle` for these messages:
+Use `scene: FelorxLogScene.lifecycle` for these messages:
 
 ```dart
 _logger.info('Sync server already started');
@@ -565,27 +565,27 @@ Converted examples:
 ```dart
 _logger.info(
   'Sync server already started',
-  scene: PuupeeLogScene.lifecycle,
+  scene: FelorxLogScene.lifecycle,
 );
 ```
 
 ```dart
 _logger.warning(
   '关闭客户端连接失败: $e',
-  scene: PuupeeLogScene.lifecycle,
+  scene: FelorxLogScene.lifecycle,
 );
 ```
 
 - [ ] **Step 3: Convert database and CRDT logs**
 
-Use `scene: PuupeeLogScene.db` for:
+Use `scene: FelorxLogScene.db` for:
 
 ```dart
 _logger.info('Fields: $fields');
 _logger.error('Failed to open Postgres database.', e, stackTrace);
 ```
 
-Use `scene: PuupeeLogScene.crdt` for:
+Use `scene: FelorxLogScene.crdt` for:
 
 ```dart
 _logger.info('[validateRecord] Record creator is local user');
@@ -596,7 +596,7 @@ Converted error:
 ```dart
 _logger.error(
   'Failed to open Postgres database.',
-  scene: PuupeeLogScene.db,
+  scene: FelorxLogScene.db,
   exception: e,
   stackTrace: stackTrace,
 );
@@ -604,16 +604,16 @@ _logger.error(
 
 - [ ] **Step 4: Convert MQ and content event logs**
 
-Use `scene: PuupeeLogScene.mq` for:
+Use `scene: FelorxLogScene.mq` for:
 
 ```dart
 _logger.warning('Failed to initialize AMQP exchange', e, stackTrace);
 ```
 
-Use `scene: PuupeeLogScene.contentEvent` for:
+Use `scene: FelorxLogScene.contentEvent` for:
 
 ```dart
-_logger.error('发布 Puupee content event 失败', e, stackTrace);
+_logger.error('发布 Felorx content event 失败', e, stackTrace);
 ```
 
 Converted examples:
@@ -621,7 +621,7 @@ Converted examples:
 ```dart
 _logger.warning(
   'Failed to initialize AMQP exchange',
-  scene: PuupeeLogScene.mq,
+  scene: FelorxLogScene.mq,
   exception: e,
   stackTrace: stackTrace,
 );
@@ -629,8 +629,8 @@ _logger.warning(
 
 ```dart
 _logger.error(
-  '发布 Puupee content event 失败',
-  scene: PuupeeLogScene.contentEvent,
+  '发布 Felorx content event 失败',
+  scene: FelorxLogScene.contentEvent,
   exception: e,
   stackTrace: stackTrace,
 );
@@ -638,7 +638,7 @@ _logger.error(
 
 - [ ] **Step 5: Convert MCP logs**
 
-Use `scene: PuupeeLogScene.mcp` for:
+Use `scene: FelorxLogScene.mcp` for:
 
 ```dart
 _logger.info('MCP 服务器端点已注册: GET/POST /mcp (需要认证)');
@@ -650,13 +650,13 @@ Converted example:
 ```dart
 _logger.info(
   'MCP 服务器端点已注册: GET/POST /mcp (需要认证)',
-  scene: PuupeeLogScene.mcp,
+  scene: FelorxLogScene.mcp,
 );
 ```
 
 - [ ] **Step 6: Convert HTTP request/response logs**
 
-Use `scene: PuupeeLogScene.http` inside `_logNonSuccessRequests` and health/request handling for:
+Use `scene: FelorxLogScene.http` inside `_logNonSuccessRequests` and health/request handling for:
 
 ```dart
 _logger.error('健康检查失败: $e');
@@ -670,7 +670,7 @@ Converted examples:
 ```dart
 _logger.error(
   '健康检查失败: $e',
-  scene: PuupeeLogScene.http,
+  scene: FelorxLogScene.http,
 );
 ```
 
@@ -681,7 +681,7 @@ _logger.error(
     requestBody: bufferedRequest.body,
     elapsed: DateTime.now().difference(startedAt),
   ),
-  scene: PuupeeLogScene.http,
+  scene: FelorxLogScene.http,
   exception: e,
   stackTrace: stackTrace,
 );
@@ -689,7 +689,7 @@ _logger.error(
 
 - [ ] **Step 7: Convert storage logs**
 
-Use `scene: PuupeeLogScene.storage` for file upload/download/storage credential logs, including:
+Use `scene: FelorxLogScene.storage` for file upload/download/storage credential logs, including:
 
 ```dart
 _logger.warning('rapidCode hash 计算异常', e, stackTrace);
@@ -712,33 +712,33 @@ Converted example:
 ```dart
 _logger.error(
   '获取文件凭证失败: ${e.message}',
-  scene: PuupeeLogScene.storage,
+  scene: FelorxLogScene.storage,
   exception: e,
   stackTrace: e.stackTrace,
 );
 ```
 
-- [ ] **Step 8: Convert auth and Puupee API logs**
+- [ ] **Step 8: Convert auth and Felorx API logs**
 
-Use `scene: PuupeeLogScene.auth` for:
+Use `scene: FelorxLogScene.auth` for:
 
 ```dart
-_logger.info('配对码认证，跳过权限检查: puupeeId=$puupeeId');
-_logger.error('检查 Puupee 访问权限失败: $e', e, stackTrace);
+_logger.info('配对码认证，跳过权限检查: felorxId=$felorxId');
+_logger.error('检查 Felorx 访问权限失败: $e', e, stackTrace);
 _logger.warning('请求 User-Agent 版本校验失败: $userAgent', e);
 ```
 
-Use `scene: PuupeeLogScene.http` for Puupee CRUD endpoint failures:
+Use `scene: FelorxLogScene.http` for Felorx CRUD endpoint failures:
 
 ```dart
-_logger.error('获取 Puupee 失败: $e', e, stackTrace);
-_logger.error('查询 Puupees 集合失败: $e', e, stackTrace);
-_logger.error('更新 Puupee 失败: $e', e, stackTrace);
-_logger.error('删除 Puupee 失败: $e', e, stackTrace);
-_logger.error('统计 Puupees 失败: $e', e, stackTrace);
-_logger.error('批量创建 Puupees 失败: $e', e, stackTrace);
-_logger.error('批量更新 Puupees 失败: $e', e, stackTrace);
-_logger.error('批量删除 Puupees 失败: $e', e, stackTrace);
+_logger.error('获取 Felorx 失败: $e', e, stackTrace);
+_logger.error('查询 Felorx 集合失败: $e', e, stackTrace);
+_logger.error('更新 Felorx 失败: $e', e, stackTrace);
+_logger.error('删除 Felorx 失败: $e', e, stackTrace);
+_logger.error('统计 Felorx 失败: $e', e, stackTrace);
+_logger.error('批量创建 Felorx 失败: $e', e, stackTrace);
+_logger.error('批量更新 Felorx 失败: $e', e, stackTrace);
+_logger.error('批量删除 Felorx 失败: $e', e, stackTrace);
 ```
 
 Converted auth warning:
@@ -746,14 +746,14 @@ Converted auth warning:
 ```dart
 _logger.warning(
   '请求 User-Agent 版本校验失败: $userAgent',
-  scene: PuupeeLogScene.auth,
+  scene: FelorxLogScene.auth,
   exception: e,
 );
 ```
 
 - [ ] **Step 9: Convert pairing logs**
 
-Use `scene: PuupeeLogScene.pairing` for:
+Use `scene: FelorxLogScene.pairing` for:
 
 ```dart
 _logger.error('处理配对请求失败: $e', e, stackTrace);
@@ -770,7 +770,7 @@ Converted example:
 ```dart
 _logger.error(
   '处理配对确认失败: $e',
-  scene: PuupeeLogScene.pairing,
+  scene: FelorxLogScene.pairing,
   exception: e,
   stackTrace: stackTrace,
 );
@@ -778,7 +778,7 @@ _logger.error(
 
 - [ ] **Step 10: Convert cache logs**
 
-Use `scene: PuupeeLogScene.cache` for:
+Use `scene: FelorxLogScene.cache` for:
 
 ```dart
 _logger.info('清理了 ${keysToRemove.length} 个过期缓存项');
@@ -789,7 +789,7 @@ Converted:
 ```dart
 _logger.info(
   '清理了 ${keysToRemove.length} 个过期缓存项',
-  scene: PuupeeLogScene.cache,
+  scene: FelorxLogScene.cache,
 );
 ```
 
@@ -798,7 +798,7 @@ _logger.info(
 Run:
 
 ```bash
-rg -n "_logger\\.(info|warning|error|debug|verbose|critical)\\([^\\n]*, [^\\n]*, [^\\n]*\\)" packages/sync/puupee_sync/lib/src/sync_server.dart
+rg -n "_logger\\.(info|warning|error|debug|verbose|critical)\\([^\\n]*, [^\\n]*, [^\\n]*\\)" packages/sync/felorx_sync/lib/src/sync_server.dart
 ```
 
 Expected: no output.
@@ -806,7 +806,7 @@ Expected: no output.
 Run:
 
 ```bash
-rg -n "_logger\\." packages/sync/puupee_sync/lib/src/sync_server.dart
+rg -n "_logger\\." packages/sync/felorx_sync/lib/src/sync_server.dart
 ```
 
 Expected: every result has `scene:` in the call block.
@@ -816,7 +816,7 @@ Expected: every result has `scene:` in the call block.
 Run:
 
 ```bash
-cd packages/sync/puupee_sync
+cd packages/sync/felorx_sync
 dart format lib/src/sync_server.dart
 dart analyze lib/src/sync_server.dart
 ```
@@ -828,8 +828,8 @@ Expected: formatter exits with code 0 and analyzer exits with code 0.
 Run:
 
 ```bash
-git add packages/sync/puupee_sync/lib/src/sync_server.dart
-git commit -m "refactor(puupee_sync): 使用 sync-server 自定义日志"
+git add packages/sync/felorx_sync/lib/src/sync_server.dart
+git commit -m "refactor(felorx_sync): 使用 sync-server 自定义日志"
 ```
 
 Expected: commit succeeds.
@@ -841,24 +841,24 @@ Expected: commit succeeds.
 **Files:**
 - No source files expected.
 
-- [ ] **Step 1: Run puupee_utilities tests**
+- [ ] **Step 1: Run felorx_utilities tests**
 
 Run:
 
 ```bash
-cd packages/core/puupee_utilities
+cd packages/core/felorx_utilities
 dart test test/talker_test.dart
 dart analyze lib/talker.dart test/talker_test.dart
 ```
 
 Expected: both commands exit with code 0.
 
-- [ ] **Step 2: Run puupee_sync focused tests**
+- [ ] **Step 2: Run felorx_sync focused tests**
 
 Run:
 
 ```bash
-cd packages/sync/puupee_sync
+cd packages/sync/felorx_sync
 dart test test/sync_server_logging_test.dart
 dart test test/sync_server_test.dart
 dart analyze lib/src/sync_server.dart test/sync_server_logging_test.dart
@@ -871,7 +871,7 @@ Expected: all commands exit with code 0.
 Run:
 
 ```bash
-rg -n "final Talker _logger = talker" packages/sync/puupee_sync/lib/src/sync_server.dart
+rg -n "final Talker _logger = talker" packages/sync/felorx_sync/lib/src/sync_server.dart
 ```
 
 Expected: no output.
@@ -879,7 +879,7 @@ Expected: no output.
 Run:
 
 ```bash
-rg -n "import 'package:talker/talker.dart';" packages/sync/puupee_sync/lib/src/sync_server.dart
+rg -n "import 'package:talker/talker.dart';" packages/sync/felorx_sync/lib/src/sync_server.dart
 ```
 
 Expected: no output.
@@ -887,7 +887,7 @@ Expected: no output.
 Run:
 
 ```bash
-rg -n "PuupeeLogger.syncServer" packages/sync/puupee_sync/lib/src/sync_server.dart
+rg -n "FelorxLogger.syncServer" packages/sync/felorx_sync/lib/src/sync_server.dart
 ```
 
 Expected: one output line for the `_logger` field.
@@ -898,8 +898,8 @@ If no files changed during verification, do not commit. If formatter changed fil
 
 ```bash
 git status --short
-git add packages/core/puupee_utilities packages/sync/puupee_sync
-git commit -m "chore(puupee_sync): 格式化 sync-server 日志迁移"
+git add packages/core/felorx_utilities packages/sync/felorx_sync
+git commit -m "chore(felorx_sync): 格式化 sync-server 日志迁移"
 ```
 
 Expected: commit succeeds only when there are formatter changes.
@@ -923,9 +923,9 @@ git log --oneline -n 5
 Expected: working tree is clean, and recent commits include:
 
 ```text
-feat(puupee_utilities): 添加 Talker 自定义日志基础设施
-test(puupee_sync): 覆盖 sync-server 自定义日志
-refactor(puupee_sync): 使用 sync-server 自定义日志
+feat(felorx_utilities): 添加 Talker 自定义日志基础设施
+test(felorx_sync): 覆盖 sync-server 自定义日志
+refactor(felorx_sync): 使用 sync-server 自定义日志
 ```
 
 - [ ] **Step 2: Confirm spec coverage**
@@ -944,15 +944,15 @@ Use this summary shape:
 
 ```text
 已完成 Talker 自定义日志第一阶段：
-- 在 puupee_utilities 增加 PuupeeTalkerLog / PuupeeLogger / sync-server key 注册。
+- 在 felorx_utilities 增加 FelorxTalkerLog / FelorxLogger / sync-server key 注册。
 - 修正 createTalker(settings:) 传参。
 - 将 sync_server.dart 迁移到 sync-server 模块日志，并按 scene 标注核心日志。
-- 增加 puupee_utilities 与 puupee_sync 的聚焦测试。
+- 增加 felorx_utilities 与 felorx_sync 的聚焦测试。
 
 验证：
-- cd packages/core/puupee_utilities && dart test test/talker_test.dart
-- cd packages/core/puupee_utilities && dart analyze lib/talker.dart test/talker_test.dart
-- cd packages/sync/puupee_sync && dart test test/sync_server_logging_test.dart
-- cd packages/sync/puupee_sync && dart test test/sync_server_test.dart
-- cd packages/sync/puupee_sync && dart analyze lib/src/sync_server.dart test/sync_server_logging_test.dart
+- cd packages/core/felorx_utilities && dart test test/talker_test.dart
+- cd packages/core/felorx_utilities && dart analyze lib/talker.dart test/talker_test.dart
+- cd packages/sync/felorx_sync && dart test test/sync_server_logging_test.dart
+- cd packages/sync/felorx_sync && dart test test/sync_server_test.dart
+- cd packages/sync/felorx_sync && dart analyze lib/src/sync_server.dart test/sync_server_logging_test.dart
 ```

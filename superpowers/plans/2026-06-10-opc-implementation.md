@@ -4,9 +4,9 @@
 
 **Goal:** 创建 opc（One Person Company）智能体工作台 Flutter 子应用，实现智能体管理、动态布局、任务分配和办公室视图功能。
 
-**Architecture:** 基于 Riverpod 的响应式架构，复用现有 PuupeeSync 同步架构，使用 shadcn_flutter UI 组件库，支持桌面端优先的响应式设计。
+**Architecture:** 基于 Riverpod 的响应式架构，复用现有 FelorxSync 同步架构，使用 shadcn_flutter UI 组件库，支持桌面端优先的响应式设计。
 
-**Tech Stack:** Flutter, Riverpod, Go Router, shadcn_flutter, PuupeeSync, drift, freezed
+**Tech Stack:** Flutter, Riverpod, Go Router, shadcn_flutter, FelorxSync, drift, freezed
 
 ---
 
@@ -84,13 +84,13 @@
 - [ ] **Step 1: 创建 pubspec.yaml**
 
 ```yaml
-name: puupee_opc
+name: felorx_opc
 tobias:
   url_scheme: puupeeopc
 resolution: workspace
 version: 1.0.0
 publish_to: none
-description: Puupee OPC - One Person Company 智能体工作台
+description: Felorx OPC - One Person Company 智能体工作台
 
 environment:
   sdk: ^3.8.1
@@ -102,11 +102,11 @@ dependencies:
     sdk: flutter
 
   # 共享包
-  puupee_shared: ^0.0.48
-  puupee_ui: ^0.0.3+11
-  puupee: ^1.2.4
-  puupee_utilities: ^0.0.16
-  puupee_sync: ^0.0.32+2
+  felorx_shared: ^0.0.48
+  felorx_ui: ^0.0.3+11
+  felorx: ^1.2.4
+  felorx_utilities: ^0.0.16
+  felorx_sync: ^0.0.32+2
   felorx_api_client: ^1.23.1
 
   # 状态管理
@@ -123,19 +123,19 @@ dependencies:
   google_fonts: ^4.0.4
   cupertino_icons: ^1.0.2
   flutter_svg: ^2.0.5
-  
+
   # 数据模型
   freezed_annotation: ^3.0.0
   json_annotation: ^4.8.1
-  
+
   # 数据库
   drift: ^2.25.1
   drift_flutter: ^0.2.4
   sqlite3_flutter_libs: ^0.5.24
-  
+
   # 网络
   dio: ^5.1.2
-  
+
   # 其他
   intl:
   path: ^1.8.2
@@ -169,9 +169,9 @@ flutter:
 ```dart
 import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
-import 'package:puupee_shared/app/startup.dart';
-import 'package:puupee_opc/env.dart';
-import 'package:puupee_opc/router.dart';
+import 'package:felorx_shared/app/startup.dart';
+import 'package:felorx_opc/env.dart';
+import 'package:felorx_opc/router.dart';
 
 /// OPC 应用入口
 void main() async {
@@ -192,7 +192,7 @@ void main() async {
 - [ ] **Step 3: 创建 env.dart**
 
 ```dart
-import 'package:puupee_shared/env.dart';
+import 'package:felorx_shared/env.dart';
 
 /// OPC 应用环境配置
 class OpcEnvConfig extends EnvConfig {
@@ -203,19 +203,19 @@ class OpcEnvConfig extends EnvConfig {
         appTitle: 'OPC - One Person Company',
         apiUrl: const String.fromEnvironment(
           'API_URL',
-          defaultValue: 'https://api.puupee.com',
+          defaultValue: 'https://api.felorx.com',
         ),
         authUrl: const String.fromEnvironment(
           'AUTH_URL',
-          defaultValue: 'https://auth.puupee.com',
+          defaultValue: 'https://auth.felorx.com',
         ),
         authClientId: const String.fromEnvironment(
           'AUTH_CLIENT_ID',
-          defaultValue: 'Puupee_Sync_Node',
+          defaultValue: 'Felorx_Sync_Node',
         ),
         feedbackUrl: const String.fromEnvironment(
           'FEEDBACK_URL',
-          defaultValue: 'https://feedback.puupee.com',
+          defaultValue: 'https://feedback.felorx.com',
         ),
         defaultLeftFlex: 0.3,
         defaultRightFlex: 0.7,
@@ -230,12 +230,12 @@ class OpcEnvConfig extends EnvConfig {
 ```dart
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 import 'package:go_router/go_router.dart';
-import 'package:puupee_opc/pages/home/home_page.dart';
-import 'package:puupee_opc/pages/workspace/workspace_page.dart';
-import 'package:puupee_opc/pages/agents/agents_page.dart';
-import 'package:puupee_opc/pages/settings/settings_page.dart';
-import 'package:puupee_opc/components/layout/adaptive_shell.dart';
-import 'package:puupee_shared/features/login/login.dart';
+import 'package:felorx_opc/pages/home/home_page.dart';
+import 'package:felorx_opc/pages/workspace/workspace_page.dart';
+import 'package:felorx_opc/pages/agents/agents_page.dart';
+import 'package:felorx_opc/pages/settings/settings_page.dart';
+import 'package:felorx_opc/components/layout/adaptive_shell.dart';
+import 'package:felorx_shared/features/login/login.dart';
 
 part 'router.g.dart';
 
@@ -783,7 +783,7 @@ git commit -m "feat(opc): 创建数据模型"
 - [ ] **Step 1: 创建 agent_repo.dart**
 
 ```dart
-import 'package:puupee_opc/models/agent.dart';
+import 'package:felorx_opc/models/agent.dart';
 
 class AgentRepository {
   final List<Agent> _agents = [];
@@ -879,7 +879,7 @@ class AgentRepository {
 - [ ] **Step 2: 创建 task_repo.dart**
 
 ```dart
-import 'package:puupee_opc/models/task.dart';
+import 'package:felorx_opc/models/task.dart';
 
 class TaskRepository {
   final List<Task> _tasks = [];
@@ -907,8 +907,8 @@ class TaskRepository {
   }
 
   List<Task> getInProgress() {
-    return _tasks.where((task) => 
-      task.status == TaskStatus.inProgress || 
+    return _tasks.where((task) =>
+      task.status == TaskStatus.inProgress ||
       task.status == TaskStatus.collaborating
     ).toList();
   }
@@ -970,8 +970,8 @@ class TaskRepository {
 - [ ] **Step 3: 创建 layout_repo.dart**
 
 ```dart
-import 'package:puupee_opc/models/layout.dart';
-import 'package:puupee_opc/models/workstation.dart';
+import 'package:felorx_opc/models/layout.dart';
+import 'package:felorx_opc/models/workstation.dart';
 
 class LayoutRepository {
   final List<WorkspaceLayout> _layouts = [];
@@ -1025,11 +1025,11 @@ class LayoutRepository {
     final padding = 20.0;
 
     final columns = ((screenWidth - padding) / (stationWidth + padding)).floor();
-    
+
     for (int i = 0; i < agentIds.length; i++) {
       final row = i ~/ columns;
       final col = i % columns;
-      
+
       stations.add(Workstation(
         id: 'workstation_$i',
         agentId: agentIds[i],
@@ -1055,7 +1055,7 @@ class LayoutRepository {
 
     add(layout);
     setCurrent(layout.id);
-    
+
     return layout;
   }
 }
@@ -1082,8 +1082,8 @@ git commit -m "feat(opc): 创建数据仓库"
 
 ```dart
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:puupee_opc/models/agent.dart';
-import 'package:puupee_opc/repositories/agent_repo.dart';
+import 'package:felorx_opc/models/agent.dart';
+import 'package:felorx_opc/repositories/agent_repo.dart';
 
 part 'agent_provider.g.dart';
 
@@ -1165,8 +1165,8 @@ class AgentNotifier extends _$AgentNotifier {
 
 ```dart
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:puupee_opc/models/task.dart';
-import 'package:puupee_opc/repositories/task_repo.dart';
+import 'package:felorx_opc/models/task.dart';
+import 'package:felorx_opc/repositories/task_repo.dart';
 
 part 'task_provider.g.dart';
 
@@ -1231,8 +1231,8 @@ class TaskNotifier extends _$TaskNotifier {
 
 ```dart
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:puupee_opc/models/layout.dart';
-import 'package:puupee_opc/repositories/layout_repo.dart';
+import 'package:felorx_opc/models/layout.dart';
+import 'package:felorx_opc/repositories/layout_repo.dart';
 
 part 'layout_provider.g.dart';
 
@@ -1393,8 +1393,8 @@ git commit -m "feat(opc): 创建状态管理 Provider"
 
 ```dart
 import 'package:dio/dio.dart';
-import 'package:puupee_opc/models/agent.dart';
-import 'package:puupee_opc/models/task.dart';
+import 'package:felorx_opc/models/agent.dart';
+import 'package:felorx_opc/models/task.dart';
 
 class AIService {
   final Dio _dio;
@@ -1498,9 +1498,9 @@ class AIService {
 - [ ] **Step 2: 创建 layout_engine.dart**
 
 ```dart
-import 'package:puupee_opc/models/agent.dart';
-import 'package:puupee_opc/models/layout.dart';
-import 'package:puupee_opc/models/workstation.dart';
+import 'package:felorx_opc/models/agent.dart';
+import 'package:felorx_opc/models/layout.dart';
+import 'package:felorx_opc/models/workstation.dart';
 
 class LayoutEngine {
   WorkspaceLayout generateOptimalLayout({
@@ -1517,7 +1517,7 @@ class LayoutEngine {
     // 计算最优列数
     final availableWidth = screenWidth - padding * 2;
     final columns = (availableWidth / (stationWidth + padding)).floor();
-    
+
     // 按角色分组
     final groupedAgents = <AgentRole, List<Agent>>{};
     for (final agent in agents) {
@@ -1530,7 +1530,7 @@ class LayoutEngine {
       for (final agent in entry.value) {
         final row = index ~/ columns;
         final col = index % columns;
-        
+
         stations.add(Workstation(
           id: 'workstation_${agent.id}',
           agentId: agent.id,
@@ -1544,7 +1544,7 @@ class LayoutEngine {
           ),
           customName: agent.name,
         ));
-        
+
         index++;
       }
     }
@@ -1605,8 +1605,8 @@ class LayoutEngine {
 - [ ] **Step 3: 创建 task_allocator.dart**
 
 ```dart
-import 'package:puupee_opc/models/agent.dart';
-import 'package:puupee_opc/models/task.dart';
+import 'package:felorx_opc/models/agent.dart';
+import 'package:felorx_opc/models/task.dart';
 
 class TaskAllocator {
   Agent? findBestAgent({
@@ -1735,8 +1735,8 @@ git commit -m "feat(opc): 创建业务服务"
 ```dart
 import 'package:flutter/material.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
-import 'package:puupee_opc/models/agent.dart';
-import 'package:puupee_opc/models/workstation.dart';
+import 'package:felorx_opc/models/agent.dart';
+import 'package:felorx_opc/models/workstation.dart';
 
 class WorkstationCard extends StatelessWidget {
   const WorkstationCard({
@@ -1816,7 +1816,7 @@ class WorkstationCard extends StatelessWidget {
 ```dart
 import 'package:flutter/material.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
-import 'package:puupee_opc/models/agent.dart';
+import 'package:felorx_opc/models/agent.dart';
 
 class AgentCard extends StatelessWidget {
   const AgentCard({
@@ -1927,7 +1927,7 @@ class AgentCard extends StatelessWidget {
 ```dart
 import 'package:flutter/material.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
-import 'package:puupee_opc/models/task.dart';
+import 'package:felorx_opc/models/task.dart';
 
 class TaskPanel extends StatelessWidget {
   const TaskPanel({
@@ -2058,10 +2058,10 @@ class TaskPanel extends StatelessWidget {
 
 ```dart
 import 'package:flutter/material.dart';
-import 'package:puupee_opc/models/agent.dart';
-import 'package:puupee_opc/models/layout.dart';
-import 'package:puupee_opc/models/workstation.dart';
-import 'package:puupee_opc/components/workstation/workstation_card.dart';
+import 'package:felorx_opc/models/agent.dart';
+import 'package:felorx_opc/models/layout.dart';
+import 'package:felorx_opc/models/workstation.dart';
+import 'package:felorx_opc/components/workstation/workstation_card.dart';
 
 class OfficeLayout extends StatefulWidget {
   const OfficeLayout({
@@ -2288,7 +2288,7 @@ class AislePainter extends CustomPainter {
 ```dart
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:puupee_ui/components/context_extensions.dart';
+import 'package:felorx_ui/components/context_extensions.dart';
 
 class AdaptiveShell extends StatelessWidget {
   const AdaptiveShell({
@@ -2402,10 +2402,10 @@ git commit -m "feat(opc): 创建 UI 组件"
 ```dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:puupee_opc/providers/agents/agent_provider.dart';
-import 'package:puupee_opc/providers/tasks/task_provider.dart';
-import 'package:puupee_opc/providers/workspace/workspace_provider.dart';
-import 'package:puupee_opc/components/task_panel/task_panel.dart';
+import 'package:felorx_opc/providers/agents/agent_provider.dart';
+import 'package:felorx_opc/providers/tasks/task_provider.dart';
+import 'package:felorx_opc/providers/workspace/workspace_provider.dart';
+import 'package:felorx_opc/components/task_panel/task_panel.dart';
 
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
@@ -2417,8 +2417,8 @@ class HomePage extends ConsumerWidget {
     final workspace = ref.watch(workspaceNotifierProvider);
 
     final pendingTasks = tasks.where((t) => t.status == TaskStatus.pending).toList();
-    final inProgressTasks = tasks.where((t) => 
-      t.status == TaskStatus.inProgress || 
+    final inProgressTasks = tasks.where((t) =>
+      t.status == TaskStatus.inProgress ||
       t.status == TaskStatus.collaborating
     ).toList();
     final completedTasks = tasks.where((t) => t.status == TaskStatus.completed).toList();
@@ -2530,10 +2530,10 @@ class HomePage extends ConsumerWidget {
 ```dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:puupee_opc/providers/agents/agent_provider.dart';
-import 'package:puupee_opc/providers/layout/layout_provider.dart';
-import 'package:puupee_opc/providers/workspace/workspace_provider.dart';
-import 'package:puupee_opc/components/layout/office_layout.dart';
+import 'package:felorx_opc/providers/agents/agent_provider.dart';
+import 'package:felorx_opc/providers/layout/layout_provider.dart';
+import 'package:felorx_opc/providers/workspace/workspace_provider.dart';
+import 'package:felorx_opc/components/layout/office_layout.dart';
 
 class WorkspacePage extends ConsumerWidget {
   const WorkspacePage({super.key});
@@ -2616,9 +2616,9 @@ class WorkspacePage extends ConsumerWidget {
 ```dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:puupee_opc/models/agent.dart';
-import 'package:puupee_opc/providers/agents/agent_provider.dart';
-import 'package:puupee_opc/components/agent_card/agent_card.dart';
+import 'package:felorx_opc/models/agent.dart';
+import 'package:felorx_opc/providers/agents/agent_provider.dart';
+import 'package:felorx_opc/components/agent_card/agent_card.dart';
 
 class AgentsPage extends ConsumerWidget {
   const AgentsPage({super.key});
@@ -2845,7 +2845,7 @@ git commit -m "feat(opc): 创建页面"
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
-import 'package:puupee_opc/models/agent.dart';
+import 'package:felorx_opc/models/agent.dart';
 
 void main() {
   group('Agent Model', () {
@@ -2955,8 +2955,8 @@ void main() {
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
-import 'package:puupee_opc/models/agent.dart';
-import 'package:puupee_opc/repositories/agent_repo.dart';
+import 'package:felorx_opc/models/agent.dart';
+import 'package:felorx_opc/repositories/agent_repo.dart';
 
 void main() {
   group('AgentRepository', () {
@@ -3041,10 +3041,10 @@ void main() {
       );
 
       repo.add(agent);
-      
+
       final updated = agent.copyWith(status: AgentStatus.working);
       repo.update(updated);
-      
+
       final found = repo.getById('test_agent');
       expect(found!.status, AgentStatus.working);
     });
@@ -3060,7 +3060,7 @@ void main() {
 
       repo.add(agent);
       repo.remove('test_agent');
-      
+
       final agents = repo.getAll();
       expect(agents, isEmpty);
     });
@@ -3072,9 +3072,9 @@ void main() {
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
-import 'package:puupee_opc/models/agent.dart';
-import 'package:puupee_opc/models/task.dart';
-import 'package:puupee_opc/services/task_allocator.dart';
+import 'package:felorx_opc/models/agent.dart';
+import 'package:felorx_opc/models/task.dart';
+import 'package:felorx_opc/services/task_allocator.dart';
 
 void main() {
   group('TaskAllocator', () {
@@ -3244,31 +3244,31 @@ git commit -m "test(opc): 创建测试"
 - [ ] **Step 1: 配置 Android**
 
 ```bash
-cd apps/opc && flutter create --org com.puupee --project-name puupee_opc .
+cd apps/opc && flutter create --org com.felorx --project-name felorx_opc .
 ```
 
 - [ ] **Step 2: 配置 iOS**
 
 ```bash
-cd apps/opc && flutter create --org com.puupee --project-name puupee_opc .
+cd apps/opc && flutter create --org com.felorx --project-name felorx_opc .
 ```
 
 - [ ] **Step 3: 配置 macOS**
 
 ```bash
-cd apps/opc && flutter create --org com.puupee --project-name puupee_opc .
+cd apps/opc && flutter create --org com.felorx --project-name felorx_opc .
 ```
 
 - [ ] **Step 4: 配置 Linux**
 
 ```bash
-cd apps/opc && flutter create --org com.puupee --project-name puupee_opc .
+cd apps/opc && flutter create --org com.felorx --project-name felorx_opc .
 ```
 
 - [ ] **Step 5: 配置 Windows**
 
 ```bash
-cd apps/opc && flutter create --org com.puupee --project-name puupee_opc .
+cd apps/opc && flutter create --org com.felorx --project-name felorx_opc .
 ```
 
 - [ ] **Step 6: 运行应用**
@@ -3294,7 +3294,7 @@ git commit -m "chore(opc): 配置平台文件"
 - ✅ 布局系统 — 已实现动态布局生成、工位管理、持久化
 - ✅ 任务系统 — 已实现任务创建、分配、执行、协作
 - ✅ UI 设计 — 已实现办公室视图、工作台视图、任务面板
-- ✅ 数据同步 — 已集成 PuupeeSync 同步架构
+- ✅ 数据同步 — 已集成 FelorxSync 同步架构
 - ✅ 响应式设计 — 已实现桌面端优先的响应式布局
 
 ### 2. 占位符扫描

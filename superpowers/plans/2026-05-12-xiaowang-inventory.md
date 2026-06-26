@@ -2,23 +2,23 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Build the new `inventory` Flutter sub-application for personal physical and virtual asset inventory, backed by a Puupee/Sync `InventoryAsset` feature model.
+**Goal:** Build the new `inventory` Flutter sub-application for personal physical and virtual asset inventory, backed by a Felorx/Sync `InventoryAsset` feature model.
 
-**Architecture:** Add a first-class `InventoryAsset` content type in `packages/core/puupee`, then scaffold `apps/inventory` with the same `runMyApp`, GoRouter, Riverpod, ProductRepoBase, and shadcn Flutter conventions used by existing sub-apps. Image and screenshot capture produce editable `InventoryAssetDraft` values through a mock recognition service so the UI and Sync save path are complete before real OCR/AI exists.
+**Architecture:** Add a first-class `InventoryAsset` content type in `packages/core/felorx`, then scaffold `apps/inventory` with the same `runMyApp`, GoRouter, Riverpod, ProductRepoBase, and shadcn Flutter conventions used by existing sub-apps. Image and screenshot capture produce editable `InventoryAssetDraft` values through a mock recognition service so the UI and Sync save path are complete before real OCR/AI exists.
 
-**Tech Stack:** Dart 3.8, Flutter, shadcn_flutter, go_router with go_router_builder, Riverpod annotation, Puupee/Sync, drift query APIs via repo classes, build_runner.
+**Tech Stack:** Dart 3.8, Flutter, shadcn_flutter, go_router with go_router_builder, Riverpod annotation, Felorx/Sync, drift query APIs via repo classes, build_runner.
 
 ---
 
 ## File Structure
 
-- Modify `pubspec.yaml`: add `apps/inventory` to the workspace list near the other Puupee apps.
-- Modify `packages/core/puupee_utilities/lib/products.dart`: register `Products.inventory` for app root creation.
-- Modify `packages/core/puupee_utilities/test/products_test.dart`: cover `inventory` product lookup.
-- Create `packages/core/puupee/lib/src/features/inventory_asset.dart`: declares enums, `@PuupeeFeature`, and convenience extensions for `InventoryAsset`.
-- Modify `packages/core/puupee/lib/puupee.dart`: export `src/features/inventory_asset.dart`.
-- Generate `packages/core/puupee/lib/src/features/inventory_asset.puupee.dart`, `packages/core/puupee/lib/src/generated/puupee_content_types.g.dart`, and `packages/core/puupee/lib/src/generated/feature_cli_schemas.g.dart`.
-- Create `packages/core/puupee/test/features/inventory_asset_test.dart`: verifies contentType, key fields, and conversion helpers.
+- Modify `pubspec.yaml`: add `apps/inventory` to the workspace list near the other Felorx apps.
+- Modify `packages/core/felorx_utilities/lib/products.dart`: register `Products.inventory` for app root creation.
+- Modify `packages/core/felorx_utilities/test/products_test.dart`: cover `inventory` product lookup.
+- Create `packages/core/felorx/lib/src/features/inventory_asset.dart`: declares enums, `@FelorxFeature`, and convenience extensions for `InventoryAsset`.
+- Modify `packages/core/felorx/lib/felorx.dart`: export `src/features/inventory_asset.dart`.
+- Generate `packages/core/felorx/lib/src/features/inventory_asset.felorx.dart`, `packages/core/felorx/lib/src/generated/felorx_content_types.g.dart`, and `packages/core/felorx/lib/src/generated/feature_cli_schemas.g.dart`.
+- Create `packages/core/felorx/test/features/inventory_asset_test.dart`: verifies contentType, key fields, and conversion helpers.
 - Create `apps/inventory/pubspec.yaml`: workspace package definition.
 - Create `apps/inventory/lib/env.dart`: `InventoryEnvConfig`.
 - Create `apps/inventory/lib/main.dart`: app entry using `runMyApp`.
@@ -41,21 +41,21 @@
 ### Task 1: Add `InventoryAsset` Feature Model
 
 **Files:**
-- Create: `packages/core/puupee/test/features/inventory_asset_test.dart`
-- Create: `packages/core/puupee/lib/src/features/inventory_asset.dart`
-- Modify: `packages/core/puupee/lib/puupee.dart`
-- Generated: `packages/core/puupee/lib/src/features/inventory_asset.puupee.dart`
-- Generated: `packages/core/puupee/lib/src/generated/puupee_content_types.g.dart`
-- Generated: `packages/core/puupee/lib/src/generated/feature_cli_schemas.g.dart`
+- Create: `packages/core/felorx/test/features/inventory_asset_test.dart`
+- Create: `packages/core/felorx/lib/src/features/inventory_asset.dart`
+- Modify: `packages/core/felorx/lib/felorx.dart`
+- Generated: `packages/core/felorx/lib/src/features/inventory_asset.felorx.dart`
+- Generated: `packages/core/felorx/lib/src/generated/felorx_content_types.g.dart`
+- Generated: `packages/core/felorx/lib/src/generated/feature_cli_schemas.g.dart`
 
 - [ ] **Step 1: Write the failing model test**
 
-Create `packages/core/puupee/test/features/inventory_asset_test.dart`:
+Create `packages/core/felorx/test/features/inventory_asset_test.dart`:
 
 ```dart
 import 'package:decimal/decimal.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:puupee/puupee.dart';
+import 'package:felorx/felorx.dart';
 
 void main() {
   test('InventoryAsset exposes stable content type and slot-backed fields', () {
@@ -80,7 +80,7 @@ void main() {
       ..importance = 4;
 
     expect(asset.contentType, kInventoryAssetContentType);
-    expect(asset.contentType, 'application/vnd.puupee.inventory.asset');
+    expect(asset.contentType, 'application/vnd.felorx.inventory.asset');
     expect(asset.assetKind, InventoryAssetKind.physical);
     expect(asset.status, InventoryAssetStatus.inUse);
     expect(asset.source, InventoryAssetSource.camera);
@@ -100,7 +100,7 @@ void main() {
 Run:
 
 ```bash
-cd packages/core/puupee
+cd packages/core/felorx
 flutter test test/features/inventory_asset_test.dart
 ```
 
@@ -108,17 +108,17 @@ Expected: FAIL because `InventoryAsset`, `InventoryAssetKind`, and `kInventoryAs
 
 - [ ] **Step 3: Add the feature model source**
 
-Create `packages/core/puupee/lib/src/features/inventory_asset.dart`:
+Create `packages/core/felorx/lib/src/features/inventory_asset.dart`:
 
 ```dart
 import 'package:decimal/decimal.dart';
 import 'package:drift_postgres/drift_postgres.dart';
-import 'package:puupee_annotations/puupee_annotations.dart';
+import 'package:felorx_annotations/felorx_annotations.dart';
 
 import '../database.dart';
-import '../generated/puupee_content_types.g.dart';
+import '../generated/felorx_content_types.g.dart';
 
-part 'inventory_asset.puupee.dart';
+part 'inventory_asset.felorx.dart';
 
 enum InventoryAssetKind {
   physical,
@@ -154,8 +154,8 @@ enum InventoryBillingCycle {
   custom,
 }
 
-@PuupeeFeature(
-  contentTypeOverride: 'application/vnd.puupee.inventory.asset',
+@FelorxFeature(
+  contentTypeOverride: 'application/vnd.felorx.inventory.asset',
 )
 // ignore: unused_element
 abstract class _InventoryAsset {
@@ -171,32 +171,32 @@ abstract class _InventoryAsset {
   String? get planName;
   String? get currency;
 
-  @PuupeeField(slotType: SlotType.real)
+  @FelorxField(slotType: SlotType.real)
   Decimal? get purchasePrice;
 
-  @PuupeeField(slotType: SlotType.real)
+  @FelorxField(slotType: SlotType.real)
   Decimal? get currentValue;
 
-  @PuupeeField(slotType: SlotType.datetime)
+  @FelorxField(slotType: SlotType.datetime)
   DateTime? get purchaseDate;
 
-  @PuupeeField(slotType: SlotType.datetime)
+  @FelorxField(slotType: SlotType.datetime)
   DateTime? get warrantyEndDate;
 
-  @PuupeeField(slotType: SlotType.datetime)
+  @FelorxField(slotType: SlotType.datetime)
   DateTime? get renewalDate;
 
   InventoryBillingCycle? get billingCycle;
   int? get importance;
 
-  @PuupeeDefault(false)
+  @FelorxDefault(false)
   bool get reminderEnabled;
 
-  @PuupeeTransient()
+  @FelorxTransient()
   List<String>? get tags;
 }
 
-extension InventoryAssetPuupeeX on Puupee {
+extension InventoryAssetFelorxX on Felorx {
   InventoryAsset toInventoryAssetWithTags({List<String>? tags}) {
     final asset = toInventoryAsset(tags: tags);
     asset.tags = tags;
@@ -226,29 +226,29 @@ extension InventoryAssetX on InventoryAsset {
 
 - [ ] **Step 4: Export the feature model**
 
-Modify `packages/core/puupee/lib/puupee.dart` and add this export near the other feature exports:
+Modify `packages/core/felorx/lib/felorx.dart` and add this export near the other feature exports:
 
 ```dart
 export 'src/features/inventory_asset.dart';
 ```
 
-- [ ] **Step 5: Run generator for `packages/core/puupee`**
+- [ ] **Step 5: Run generator for `packages/core/felorx`**
 
 Run:
 
 ```bash
-cd packages/core/puupee
+cd packages/core/felorx
 dart run build_runner build --delete-conflicting-outputs
 ```
 
-Expected: generated files include `inventory_asset.puupee.dart`, `kInventoryAssetContentType`, and the CLI schema entry for `application/vnd.puupee.inventory.asset`.
+Expected: generated files include `inventory_asset.felorx.dart`, `kInventoryAssetContentType`, and the CLI schema entry for `application/vnd.felorx.inventory.asset`.
 
 - [ ] **Step 6: Run the feature test**
 
 Run:
 
 ```bash
-cd packages/core/puupee
+cd packages/core/felorx
 flutter test test/features/inventory_asset_test.dart
 ```
 
@@ -257,12 +257,12 @@ Expected: PASS.
 - [ ] **Step 7: Commit the model work**
 
 ```bash
-git add packages/core/puupee/lib/puupee.dart \
-  packages/core/puupee/lib/src/features/inventory_asset.dart \
-  packages/core/puupee/lib/src/features/inventory_asset.puupee.dart \
-  packages/core/puupee/lib/src/generated/puupee_content_types.g.dart \
-  packages/core/puupee/lib/src/generated/feature_cli_schemas.g.dart \
-  packages/core/puupee/test/features/inventory_asset_test.dart
+git add packages/core/felorx/lib/felorx.dart \
+  packages/core/felorx/lib/src/features/inventory_asset.dart \
+  packages/core/felorx/lib/src/features/inventory_asset.felorx.dart \
+  packages/core/felorx/lib/src/generated/felorx_content_types.g.dart \
+  packages/core/felorx/lib/src/generated/feature_cli_schemas.g.dart \
+  packages/core/felorx/test/features/inventory_asset_test.dart
 git commit -m "feat(inventory): 添加资产盘点模型"
 ```
 
@@ -293,7 +293,7 @@ In root `pubspec.yaml`, add the workspace entry near the other `apps/*` entries:
 Create `apps/inventory/pubspec.yaml`:
 
 ```yaml
-name: puupee_inventory
+name: felorx_inventory
 resolution: workspace
 version: 0.1.0
 publish_to: none
@@ -308,11 +308,11 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
-  puupee_shared: ^0.0.41
-  puupee_ui: ^0.0.3+3
-  puupee_utilities: ^0.0.13+3
-  puupee: ^1.1.3
-  puupee_sync: ^0.0.30+2
+  felorx_shared: ^0.0.41
+  felorx_ui: ^0.0.3+3
+  felorx_utilities: ^0.0.13+3
+  felorx: ^1.1.3
+  felorx_sync: ^0.0.30+2
 
   flutter_riverpod: ^2.5.1
   hooks_riverpod: ^2.5.1
@@ -343,7 +343,7 @@ flutter:
 Create `apps/inventory/lib/env.dart`:
 
 ```dart
-import 'package:puupee_shared/env.dart';
+import 'package:felorx_shared/env.dart';
 
 class InventoryEnvConfig extends EnvConfig {
   InventoryEnvConfig()
@@ -353,19 +353,19 @@ class InventoryEnvConfig extends EnvConfig {
         appTitle: '小汪记物',
         apiUrl: const String.fromEnvironment(
           'API_URL',
-          defaultValue: 'https://api.puupee.com',
+          defaultValue: 'https://api.felorx.com',
         ),
         authUrl: const String.fromEnvironment(
           'AUTH_URL',
-          defaultValue: 'https://auth.puupee.com',
+          defaultValue: 'https://auth.felorx.com',
         ),
         authClientId: const String.fromEnvironment(
           'AUTH_CLIENT_ID',
-          defaultValue: 'Puupee_Sync_Node',
+          defaultValue: 'Felorx_Sync_Node',
         ),
         feedbackUrl: const String.fromEnvironment(
           'FEEDBACK_URL',
-          defaultValue: 'https://feedback.puupee.com',
+          defaultValue: 'https://feedback.felorx.com',
         ),
       );
 }
@@ -375,9 +375,9 @@ Create `apps/inventory/lib/main.dart`:
 
 ```dart
 import 'package:go_router/go_router.dart';
-import 'package:puupee_inventory/env.dart';
-import 'package:puupee_inventory/router.dart';
-import 'package:puupee_shared/app/startup.dart';
+import 'package:felorx_inventory/env.dart';
+import 'package:felorx_inventory/router.dart';
+import 'package:felorx_shared/app/startup.dart';
 
 void main() async {
   await runMyApp(
@@ -416,8 +416,8 @@ Create `apps/inventory/lib/components/adaptive_inventory_shell.dart` using `Adap
 ```dart
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:puupee_shared/components/button/home_icon_button.dart';
-import 'package:puupee_ui/components/adaptive_layout.dart';
+import 'package:felorx_shared/components/button/home_icon_button.dart';
+import 'package:felorx_ui/components/adaptive_layout.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 
 class AdaptiveInventoryShell extends ConsumerWidget {
@@ -560,8 +560,8 @@ Create `apps/inventory/test/inventory_recognition_service_test.dart`:
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
-import 'package:puupee/puupee.dart';
-import 'package:puupee_inventory/services/inventory_recognition_service.dart';
+import 'package:felorx/felorx.dart';
+import 'package:felorx_inventory/services/inventory_recognition_service.dart';
 
 void main() {
   test('mock physical recognition returns multiple editable drafts', () async {
@@ -651,8 +651,8 @@ git commit -m "feat(inventory): 添加资产草稿和识别服务"
 ### Task 4: Add Sync Repo and Riverpod Providers
 
 **Files:**
-- Modify: `packages/core/puupee_utilities/lib/products.dart`
-- Modify: `packages/core/puupee_utilities/test/products_test.dart`
+- Modify: `packages/core/felorx_utilities/lib/products.dart`
+- Modify: `packages/core/felorx_utilities/test/products_test.dart`
 - Create: `apps/inventory/lib/repo/inventory_asset_repo.dart`
 - Create: `apps/inventory/lib/providers/inventory_providers.dart`
 - Generated: `apps/inventory/lib/providers/inventory_providers.g.dart`
@@ -660,15 +660,15 @@ git commit -m "feat(inventory): 添加资产草稿和识别服务"
 
 - [ ] **Step 1: Register the inventory product**
 
-Modify `packages/core/puupee_utilities/lib/products.dart`:
+Modify `packages/core/felorx_utilities/lib/products.dart`:
 
 ```dart
 static const Products inventory = Products._("inventory", "Inventory", "盘点");
 ```
 
-Add `inventory` to `Products.values` after `billings`.
+Add `inventory` to `Products.values` after `billing`.
 
-Modify `packages/core/puupee_utilities/test/products_test.dart`:
+Modify `packages/core/felorx_utilities/test/products_test.dart`:
 
 ```dart
 expect(Products.inventory.appId, equals('inventory'));
@@ -682,7 +682,7 @@ expect(Products.fromValue('Inventory'), equals(Products.inventory));
 Run:
 
 ```bash
-cd packages/core/puupee_utilities
+cd packages/core/felorx_utilities
 dart test test/products_test.dart
 ```
 
@@ -705,7 +705,7 @@ Future<InventoryAsset> updateAsset(InventoryAsset asset);
 Future<void> deleteAsset(InventoryAsset asset);
 ```
 
-Queries filter `contentType == PuupeeContentTypes.inventoryAsset`, current `creatorId`, and `deletedAt.isNull()`. Use `queryStreamWithTags` and `queryWithTags`.
+Queries filter `contentType == FelorxContentTypes.inventoryAsset`, current `creatorId`, and `deletedAt.isNull()`. Use `queryStreamWithTags` and `queryWithTags`.
 
 - [ ] **Step 4: Implement providers**
 
@@ -730,7 +730,7 @@ Run:
 cd apps/inventory
 flutter test test/inventory_provider_logic_test.dart
 dart analyze
-cd ../../../packages/core/puupee_utilities
+cd ../../../packages/core/felorx_utilities
 dart test test/products_test.dart
 ```
 
@@ -739,8 +739,8 @@ Expected: PASS and no analyzer errors in the new app.
 - [ ] **Step 7: Commit repo and provider work**
 
 ```bash
-git add packages/core/puupee_utilities/lib/products.dart \
-  packages/core/puupee_utilities/test/products_test.dart \
+git add packages/core/felorx_utilities/lib/products.dart \
+  packages/core/felorx_utilities/test/products_test.dart \
   apps/inventory/lib/repo \
   apps/inventory/lib/providers \
   apps/inventory/test/inventory_provider_logic_test.dart
@@ -850,7 +850,7 @@ Create `apps/inventory/README.md` with sections:
 - 统一管理实物和虚拟资产。
 - 手动添加、拍照实物、截图虚拟资产三个入口。
 - 拍照/截图使用模拟识别服务生成可编辑草稿。
-- 资产数据保存到 Puupee/Sync。
+- 资产数据保存到 Felorx/Sync。
 - 提供总览、资产列表、提醒和轻量盘点。
 
 ## 开发
@@ -868,7 +868,7 @@ flutter test
 Run:
 
 ```bash
-cd packages/core/puupee
+cd packages/core/felorx
 flutter test test/features/inventory_asset_test.dart
 ```
 
@@ -895,7 +895,7 @@ git status --short
 git diff --stat
 ```
 
-Expected: changed files are limited to `packages/core/puupee`, `apps/inventory`, root `pubspec.yaml`, and generated files caused by the inventory model/app. Existing unrelated `GeneratedPluginRegistrant` and `untranslated_messages.json` changes remain unstaged.
+Expected: changed files are limited to `packages/core/felorx`, `apps/inventory`, root `pubspec.yaml`, and generated files caused by the inventory model/app. Existing unrelated `GeneratedPluginRegistrant` and `untranslated_messages.json` changes remain unstaged.
 
 - [ ] **Step 5: Commit final docs**
 

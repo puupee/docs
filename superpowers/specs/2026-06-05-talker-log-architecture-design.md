@@ -2,23 +2,23 @@
 
 ## 背景
 
-仓库当前已经通过 `packages/core/puupee_utilities/lib/talker.dart` 暴露全局 `talker`，并在开发者日志页使用 `TalkerScreen(talker: talker)` 查看日志。`packages/sync/puupee_sync/lib/src/sync_server.dart` 直接持有 `Talker _logger = talker`，并大量调用 `info`、`warning`、`error` 等基础日志方法。
+仓库当前已经通过 `packages/core/felorx_utilities/lib/talker.dart` 暴露全局 `talker`，并在开发者日志页使用 `TalkerScreen(talker: talker)` 查看日志。`packages/sync/felorx_sync/lib/src/sync_server.dart` 直接持有 `Talker _logger = talker`，并大量调用 `info`、`warning`、`error` 等基础日志方法。
 
 这种写法可以输出日志，但所有业务日志会落到 `info`、`warning`、`error` 这些通用 key 下。用户在 Talker UI 中只能按等级筛选，无法单独查看 `sync-server` 相关日志。Talker 5.1.17 已支持通过 `TalkerData.key` 过滤自定义日志，也支持通过 `settings.registerKeys()` 把自定义 key 放入设置页，因此可以在不重写日志 UI 的前提下建立领域日志体系。
 
 ## 目标
 
-- 基于 Talker 原生 `TalkerLog` 设计 Puupee 自定义日志模型。
+- 基于 Talker 原生 `TalkerLog` 设计 Felorx 自定义日志模型。
 - 让 `sync_server.dart` 的日志统一进入 `sync-server` key，能在现有 TalkerScreen 中单独筛选。
 - 保留 Talker 的日志等级、异常、堆栈、console 输出和 history 能力。
-- 将通用日志基础设施放在 `puupee_utilities`，避免 sync 包各文件自行拼装 `TalkerLog`。
+- 将通用日志基础设施放在 `felorx_utilities`，避免 sync 包各文件自行拼装 `TalkerLog`。
 - 第一阶段只迁移 `sync_server.dart`，建立可验证的最小闭环。
 - 为后续 `sync-client`、`sync-storage`、`sync-auth`、`sync-mcp` 等模块扩展留出稳定 API。
 
 ## 非目标
 
 - 不重写 `TalkerScreen` 或自研日志控制台。
-- 不在第一阶段迁移 `puupee_sync` 的所有文件。
+- 不在第一阶段迁移 `felorx_sync` 的所有文件。
 - 不把每个细分场景都做成独立 Talker key，避免筛选项膨胀。
 - 不引入除 Talker 之外的新日志依赖。
 - 不在日志中保存敏感正文、token、密钥或大体积请求体。
@@ -36,30 +36,30 @@
 
 ## 架构
 
-### puupee_utilities
+### felorx_utilities
 
 新增通用日志基础设施：
 
-- `PuupeeTalkerLog extends TalkerLog`：Puupee 自定义 Talker 日志模型。
-- `PuupeeLogger`：业务侧使用的轻量门面，封装 `talker.logCustom(...)`。
-- `PuupeeLogModule`：集中定义模块 key，例如 `syncServer`、`syncClient`。
-- `PuupeeLogScene`：集中定义通用场景名，例如 `lifecycle`、`http`、`storage`。
-- `registerPuupeeTalkerKeys(Talker talker)`：集中注册自定义 key、title 和颜色。
+- `FelorxTalkerLog extends TalkerLog`：Felorx 自定义 Talker 日志模型。
+- `FelorxLogger`：业务侧使用的轻量门面，封装 `talker.logCustom(...)`。
+- `FelorxLogModule`：集中定义模块 key，例如 `syncServer`、`syncClient`。
+- `FelorxLogScene`：集中定义通用场景名，例如 `lifecycle`、`http`、`storage`。
+- `registerFelorxTalkerKeys(Talker talker)`：集中注册自定义 key、title 和颜色。
 
 同时修正 `createTalker({settings})`：当前实现忽略了传入的 `settings`，后续应改为把 settings 传给 `Talker`，否则自定义 title/color 配置无法可靠生效。
 
-### puupee_sync
+### felorx_sync
 
 第一阶段只在 `sync_server.dart` 使用：
 
-- `_logger` 类型从 `Talker` 改为 `PuupeeLogger`。
-- `_logger` 初始化为 `PuupeeLogger.syncServer()` 或等价工厂。
-- 所有日志都通过 `PuupeeLogger` 写入，模块 key 固定为 `sync-server`。
+- `_logger` 类型从 `Talker` 改为 `FelorxLogger`。
+- `_logger` 初始化为 `FelorxLogger.syncServer()` 或等价工厂。
+- 所有日志都通过 `FelorxLogger` 写入，模块 key 固定为 `sync-server`。
 - 重要日志补充 scene；低价值日志可以先使用 `lifecycle` 或保留无 scene，后续再细分。
 
 ## 核心模型
 
-`PuupeeTalkerLog` 应基于 Talker 原生字段承载信息：
+`FelorxTalkerLog` 应基于 Talker 原生字段承载信息：
 
 - `key`：模块 key，例如 `sync-server`。
 - `title`：默认等于模块展示名，例如 `sync-server`。
@@ -70,7 +70,7 @@
 - `time`：沿用 Talker 默认生成时间。
 - `pen`：可选，自定义 console 颜色；优先由 Talker settings 按 key 解析。
 
-`PuupeeLogger` 对业务侧暴露与 Talker 习惯一致的方法：
+`FelorxLogger` 对业务侧暴露与 Talker 习惯一致的方法：
 
 - `debug(message, {scene, exception, stackTrace})`
 - `info(message, {scene, exception, stackTrace})`
@@ -79,7 +79,7 @@
 - `verbose(message, {scene, exception, stackTrace})`
 - `critical(message, {scene, exception, stackTrace})`
 
-业务代码不直接构造 `PuupeeTalkerLog`，避免重复填 key、title 和 logLevel。
+业务代码不直接构造 `FelorxTalkerLog`，避免重复填 key、title 和 logLevel。
 
 ## 模块与场景
 
@@ -105,14 +105,14 @@
 - `mcp`：MCP 路由、SSE 连接和命令处理。
 - `cache`：changeset 缓存清理、App 信息缓存。
 - `crdt`：changeset、merge、record 校验。
-- `content-event`：Puupee content event 发布。
+- `content-event`：Felorx content event 发布。
 - `app-info`：App 标题解析和 API 兜底。
 
 ## 数据流
 
-1. `sync_server.dart` 调用 `_logger.warning('处理配对请求失败', scene: PuupeeLogScene.pairing, exception: e, stackTrace: st)`。
-2. `PuupeeLogger` 创建 `PuupeeTalkerLog`，写入 `key = sync-server`、`logLevel = warning`、`message = [pairing] 处理配对请求失败`。
-3. `PuupeeLogger` 调用全局 `talker.logCustom(log)`。
+1. `sync_server.dart` 调用 `_logger.warning('处理配对请求失败', scene: FelorxLogScene.pairing, exception: e, stackTrace: st)`。
+2. `FelorxLogger` 创建 `FelorxTalkerLog`，写入 `key = sync-server`、`logLevel = warning`、`message = [pairing] 处理配对请求失败`。
+3. `FelorxLogger` 调用全局 `talker.logCustom(log)`。
 4. Talker 按现有 settings/filter 处理日志，写入 stream、history 和 console。
 5. `TalkerScreen(talker: talker)` 从全局 Talker history 读取日志。
 6. 用户在 Talker UI 中勾选或搜索 `sync-server`，即可单独查看同步服务器日志。
@@ -126,24 +126,24 @@
 
 ## 迁移步骤
 
-1. 在 `puupee_utilities` 新增 `PuupeeTalkerLog`、`PuupeeLogger`、模块/场景常量和注册函数。
+1. 在 `felorx_utilities` 新增 `FelorxTalkerLog`、`FelorxLogger`、模块/场景常量和注册函数。
 2. 修正 `createTalker({settings})`，并在全局 `talker` 初始化后注册 `sync-server`。
-3. 在 `sync_server.dart` 将 `_logger` 替换为 `PuupeeLogger.syncServer()`。
+3. 在 `sync_server.dart` 将 `_logger` 替换为 `FelorxLogger.syncServer()`。
 4. 按场景迁移现有 `_logger.info/warning/error` 调用。
 5. 保留原日志文本语义，不做无关重写。
-6. 运行 `dart format`、`dart analyze` 和相关 `puupee_sync` 测试。
+6. 运行 `dart format`、`dart analyze` 和相关 `felorx_sync` 测试。
 
 ## 测试策略
 
-基础设施测试放在 `puupee_utilities`：
+基础设施测试放在 `felorx_utilities`：
 
-- `PuupeeTalkerLog` 应写入预期 `key`、`title`、`logLevel`。
+- `FelorxTalkerLog` 应写入预期 `key`、`title`、`logLevel`。
 - 有 scene 时 message 应以 `[scene] ` 开头。
 - 无 scene 时 message 不应带空括号或多余空格。
 - `exception` 与 `stackTrace` 应能完整传递。
 - `createTalker(settings: ...)` 应保留传入 settings。
 
-同步包测试放在 `puupee_sync`：
+同步包测试放在 `felorx_sync`：
 
 - `sync_server.dart` 使用的 logger 生成 `key == sync-server`。
 - 关键路径日志按预期 scene 分类，例如启动为 `lifecycle`、数据库初始化为 `db`、配对为 `pairing`。
@@ -153,7 +153,7 @@
 
 - Talker UI 的内置筛选主要基于 key，scene 只能通过搜索过滤。这是有意取舍：避免设置页出现过多细碎 key。
 - 第一阶段只迁移 `sync_server.dart`，其它 sync 日志仍会落在普通等级 key 下。后续按模块逐步迁移。
-- `PuupeeLogger` 是对 Talker 的轻封装，不应发展成独立日志框架；它只负责补充模块 key、scene、等级和异常传递。
+- `FelorxLogger` 是对 Talker 的轻封装，不应发展成独立日志框架；它只负责补充模块 key、scene、等级和异常传递。
 - 如果未来某个 scene 日志量过大，可以将它升级为独立模块 key，例如从 `sync-server` 的 `[storage]` 升级为 `sync-storage`。
 
 ## 验收标准

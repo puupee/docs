@@ -4,17 +4,17 @@
 
 ## 背景
 
-创建新的 Puupee 子应用“小汪记物”，英文应用 ID 为 `inventory`，包名为 `puupee_inventory`，路由根路径为 `/inventory`。应用定位为个人资产中枢，用于盘点生活中的实物资产和虚拟资产，并通过 Puupee/Sync 持久化和同步。
+创建新的 Felorx 子应用“小汪记物”，英文应用 ID 为 `inventory`，包名为 `felorx_inventory`，路由根路径为 `/inventory`。应用定位为个人资产中枢，用于盘点生活中的实物资产和虚拟资产，并通过 Felorx/Sync 持久化和同步。
 
 第一版采用“资产中枢 MVP”路线：实物和虚拟资产使用统一模型；拍照和截图入口生成识别草稿，用户确认后入库；真实 OCR/AI 暂不接入，先用可替换的模拟识别服务完成端到端流程。
 
 ## 目标
 
 - 新增一个可运行的 Flutter 子应用 `apps/inventory`。
-- 新增 Sync 原生功能模型 `InventoryAsset`，contentType 为 `application/vnd.puupee.inventory.asset`。
+- 新增 Sync 原生功能模型 `InventoryAsset`，contentType 为 `application/vnd.felorx.inventory.asset`。
 - 支持个人实物资产和虚拟资产的统一录入、展示、筛选、详情编辑、提醒和轻量盘点。
 - 支持三种添加入口：手动添加、拍照添加实物、截图添加虚拟资产。
-- 拍照和截图第一版走模拟识别服务，生成可编辑草稿，确认后保存到 Puupee/Sync。
+- 拍照和截图第一版走模拟识别服务，生成可编辑草稿，确认后保存到 Felorx/Sync。
 - 复用仓库已有启动、路由、设置、同步和 shadcn Flutter UI 约定。
 
 ## 非目标
@@ -51,7 +51,7 @@ apps/inventory/
 
 ### Sync 功能模型
 
-在 `packages/core/puupee/lib/src/features/` 增加 `inventory_asset.dart`，使用 `@PuupeeFeature(contentTypeOverride: 'application/vnd.puupee.inventory.asset')` 声明模型，并通过代码生成得到 `InventoryAsset` 类型、contentType 常量、CLI/MCP schema。
+在 `packages/core/felorx/lib/src/features/` 增加 `inventory_asset.dart`，使用 `@FelorxFeature(contentTypeOverride: 'application/vnd.felorx.inventory.asset')` 声明模型，并通过代码生成得到 `InventoryAsset` 类型、contentType 常量、CLI/MCP schema。
 
 `InventoryAsset` 统一承载实物和虚拟资产。核心字段分组如下：
 
@@ -63,7 +63,7 @@ apps/inventory/
 - 来源字段：手动、拍照、截图、导入；可记录来源文件或截图线索。
 - 提醒字段：提醒开关、提醒日期、提醒类型。
 
-字段会映射到 Puupee 通用 slot（`s1`-`s11`、`i1`-`i11`、`r1`-`r11`、`d1`-`d11`、`b1`-`b11`）。实现时优先保证第一版所需字段，超出 slot 的结构化信息可放在 `content` JSON 中，避免模型一开始过度膨胀。
+字段会映射到 Felorx 通用 slot（`s1`-`s11`、`i1`-`i11`、`r1`-`r11`、`d1`-`d11`、`b1`-`b11`）。实现时优先保证第一版所需字段，超出 slot 的结构化信息可放在 `content` JSON 中，避免模型一开始过度膨胀。
 
 ### 数据流
 
@@ -73,7 +73,7 @@ apps/inventory/
   -> InventoryAssetDraft
   -> 用户确认编辑
   -> InventoryAssetRepo
-  -> Puupee/Sync 持久化与同步
+  -> Felorx/Sync 持久化与同步
   -> 总览、列表、提醒、盘点视图
 ```
 

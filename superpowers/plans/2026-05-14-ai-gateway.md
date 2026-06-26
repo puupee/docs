@@ -1,10 +1,10 @@
-# Puupee AI Gateway Implementation Plan（中文实施计划）
+# Felorx AI Gateway Implementation Plan（中文实施计划）
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** 在 `api` 项目新增第一阶段 AI Gateway：统一 chat、文生图、图生图、文生视频、图生视频接口，提供 Puupee 原生 DTO 和 OpenAI 兼容外壳，并用 Mock Provider 打通端到端任务流。
+**Goal:** 在 `api` 项目新增第一阶段 AI Gateway：统一 chat、文生图、图生图、文生视频、图生视频接口，提供 Felorx 原生 DTO 和 OpenAI 兼容外壳，并用 Mock Provider 打通端到端任务流。
 
-**Architecture:** 使用 ABP 现有 `Application.Contracts` + `Application` + `HttpApi` 分层。Puupee 原生接口通过 AppService 承载业务契约，显式 MVC Controller 暴露固定 `/api/ai/**` 和 `/api/ai/v1/**` 路由；内部通过 Provider Router 分发到 Mock Provider，媒体任务通过 `IAiJobStore` 保存状态。
+**Architecture:** 使用 ABP 现有 `Application.Contracts` + `Application` + `HttpApi` 分层。Felorx 原生接口通过 AppService 承载业务契约，显式 MVC Controller 暴露固定 `/api/ai/**` 和 `/api/ai/v1/**` 路由；内部通过 Provider Router 分发到 Mock Provider，媒体任务通过 `IAiJobStore` 保存状态。
 
 **Tech Stack:** .NET 8、ABP Framework 8.1、ASP.NET Core MVC、System.Text.Json、xUnit、Shouldly。
 
@@ -14,65 +14,65 @@
 
 第一阶段新增和修改这些文件：
 
-- Create: `api/src/Puupees.Application.Contracts/Ai/IAiChatAppService.cs`
-- Create: `api/src/Puupees.Application.Contracts/Ai/IAiImageAppService.cs`
-- Create: `api/src/Puupees.Application.Contracts/Ai/IAiVideoAppService.cs`
-- Create: `api/src/Puupees.Application.Contracts/Ai/IAiJobAppService.cs`
-- Create: `api/src/Puupees.Application.Contracts/Ai/Dtos/AiEnums.cs`
-- Create: `api/src/Puupees.Application.Contracts/Ai/Dtos/AiMediaDtos.cs`
-- Create: `api/src/Puupees.Application.Contracts/Ai/Dtos/AiChatDtos.cs`
-- Create: `api/src/Puupees.Application.Contracts/Ai/Dtos/AiImageDtos.cs`
-- Create: `api/src/Puupees.Application.Contracts/Ai/Dtos/AiVideoDtos.cs`
-- Create: `api/src/Puupees.Application.Contracts/Ai/Dtos/OpenAiCompatibleDtos.cs`
-- Create: `api/src/Puupees.Application.Contracts/Ai/OpenAiCompatibleMappingExtensions.cs`
-- Create: `api/src/Puupees.Application/Ai/AiChatAppService.cs`
-- Create: `api/src/Puupees.Application/Ai/AiImageAppService.cs`
-- Create: `api/src/Puupees.Application/Ai/AiVideoAppService.cs`
-- Create: `api/src/Puupees.Application/Ai/AiJobAppService.cs`
-- Create: `api/src/Puupees.Application/Ai/Jobs/IAiJobStore.cs`
-- Create: `api/src/Puupees.Application/Ai/Jobs/InMemoryAiJobStore.cs`
-- Create: `api/src/Puupees.Application/Ai/Providers/IAiProviderRouter.cs`
-- Create: `api/src/Puupees.Application/Ai/Providers/IAiChatProvider.cs`
-- Create: `api/src/Puupees.Application/Ai/Providers/IAiImageProvider.cs`
-- Create: `api/src/Puupees.Application/Ai/Providers/IAiVideoProvider.cs`
-- Create: `api/src/Puupees.Application/Ai/Providers/DefaultAiProviderRouter.cs`
-- Create: `api/src/Puupees.Application/Ai/Providers/MockAiProvider.cs`
-- Modify: `api/src/Puupees.Application/PuupeesApplicationModule.cs`
-- Create: `api/src/Puupees.HttpApi/Controllers/Ai/AiChatController.cs`
-- Create: `api/src/Puupees.HttpApi/Controllers/Ai/AiImagesController.cs`
-- Create: `api/src/Puupees.HttpApi/Controllers/Ai/AiVideosController.cs`
-- Create: `api/src/Puupees.HttpApi/Controllers/Ai/AiJobsController.cs`
-- Create: `api/src/Puupees.HttpApi/Controllers/Ai/OpenAiCompatibleChatController.cs`
-- Create: `api/src/Puupees.HttpApi/Controllers/Ai/OpenAiCompatibleImagesController.cs`
-- Create: `api/src/Puupees.HttpApi/Controllers/Ai/OpenAiCompatibleVideosController.cs`
-- Modify: `api/test/Puupees.Application.Tests/Puupees.Application.Tests.csproj`
-- Create: `api/test/Puupees.Application.Tests/Ai/AiGatewayAppServiceTests.cs`
-- Create: `api/test/Puupees.Application.Tests/Ai/OpenAiCompatibleMappingTests.cs`
-- Create: `api/test/Puupees.Application.Tests/Ai/AiControllerRouteAndSecurityTests.cs`
+- Create: `api/src/Felorx.Application.Contracts/Ai/IAiChatAppService.cs`
+- Create: `api/src/Felorx.Application.Contracts/Ai/IAiImageAppService.cs`
+- Create: `api/src/Felorx.Application.Contracts/Ai/IAiVideoAppService.cs`
+- Create: `api/src/Felorx.Application.Contracts/Ai/IAiJobAppService.cs`
+- Create: `api/src/Felorx.Application.Contracts/Ai/Dtos/AiEnums.cs`
+- Create: `api/src/Felorx.Application.Contracts/Ai/Dtos/AiMediaDtos.cs`
+- Create: `api/src/Felorx.Application.Contracts/Ai/Dtos/AiChatDtos.cs`
+- Create: `api/src/Felorx.Application.Contracts/Ai/Dtos/AiImageDtos.cs`
+- Create: `api/src/Felorx.Application.Contracts/Ai/Dtos/AiVideoDtos.cs`
+- Create: `api/src/Felorx.Application.Contracts/Ai/Dtos/OpenAiCompatibleDtos.cs`
+- Create: `api/src/Felorx.Application.Contracts/Ai/OpenAiCompatibleMappingExtensions.cs`
+- Create: `api/src/Felorx.Application/Ai/AiChatAppService.cs`
+- Create: `api/src/Felorx.Application/Ai/AiImageAppService.cs`
+- Create: `api/src/Felorx.Application/Ai/AiVideoAppService.cs`
+- Create: `api/src/Felorx.Application/Ai/AiJobAppService.cs`
+- Create: `api/src/Felorx.Application/Ai/Jobs/IAiJobStore.cs`
+- Create: `api/src/Felorx.Application/Ai/Jobs/InMemoryAiJobStore.cs`
+- Create: `api/src/Felorx.Application/Ai/Providers/IAiProviderRouter.cs`
+- Create: `api/src/Felorx.Application/Ai/Providers/IAiChatProvider.cs`
+- Create: `api/src/Felorx.Application/Ai/Providers/IAiImageProvider.cs`
+- Create: `api/src/Felorx.Application/Ai/Providers/IAiVideoProvider.cs`
+- Create: `api/src/Felorx.Application/Ai/Providers/DefaultAiProviderRouter.cs`
+- Create: `api/src/Felorx.Application/Ai/Providers/MockAiProvider.cs`
+- Modify: `api/src/Felorx.Application/FelorxApplicationModule.cs`
+- Create: `api/src/Felorx.HttpApi/Controllers/Ai/AiChatController.cs`
+- Create: `api/src/Felorx.HttpApi/Controllers/Ai/AiImagesController.cs`
+- Create: `api/src/Felorx.HttpApi/Controllers/Ai/AiVideosController.cs`
+- Create: `api/src/Felorx.HttpApi/Controllers/Ai/AiJobsController.cs`
+- Create: `api/src/Felorx.HttpApi/Controllers/Ai/OpenAiCompatibleChatController.cs`
+- Create: `api/src/Felorx.HttpApi/Controllers/Ai/OpenAiCompatibleImagesController.cs`
+- Create: `api/src/Felorx.HttpApi/Controllers/Ai/OpenAiCompatibleVideosController.cs`
+- Modify: `api/test/Felorx.Application.Tests/Felorx.Application.Tests.csproj`
+- Create: `api/test/Felorx.Application.Tests/Ai/AiGatewayAppServiceTests.cs`
+- Create: `api/test/Felorx.Application.Tests/Ai/OpenAiCompatibleMappingTests.cs`
+- Create: `api/test/Felorx.Application.Tests/Ai/AiControllerRouteAndSecurityTests.cs`
 
 ## Task 1: 创建契约 DTO 和 AppService 接口
 
 **Files:**
-- Create: `api/src/Puupees.Application.Contracts/Ai/Dtos/AiEnums.cs`
-- Create: `api/src/Puupees.Application.Contracts/Ai/Dtos/AiMediaDtos.cs`
-- Create: `api/src/Puupees.Application.Contracts/Ai/Dtos/AiChatDtos.cs`
-- Create: `api/src/Puupees.Application.Contracts/Ai/Dtos/AiImageDtos.cs`
-- Create: `api/src/Puupees.Application.Contracts/Ai/Dtos/AiVideoDtos.cs`
-- Create: `api/src/Puupees.Application.Contracts/Ai/Dtos/OpenAiCompatibleDtos.cs`
-- Create: `api/src/Puupees.Application.Contracts/Ai/OpenAiCompatibleMappingExtensions.cs`
-- Create: `api/src/Puupees.Application.Contracts/Ai/IAiChatAppService.cs`
-- Create: `api/src/Puupees.Application.Contracts/Ai/IAiImageAppService.cs`
-- Create: `api/src/Puupees.Application.Contracts/Ai/IAiVideoAppService.cs`
-- Create: `api/src/Puupees.Application.Contracts/Ai/IAiJobAppService.cs`
+- Create: `api/src/Felorx.Application.Contracts/Ai/Dtos/AiEnums.cs`
+- Create: `api/src/Felorx.Application.Contracts/Ai/Dtos/AiMediaDtos.cs`
+- Create: `api/src/Felorx.Application.Contracts/Ai/Dtos/AiChatDtos.cs`
+- Create: `api/src/Felorx.Application.Contracts/Ai/Dtos/AiImageDtos.cs`
+- Create: `api/src/Felorx.Application.Contracts/Ai/Dtos/AiVideoDtos.cs`
+- Create: `api/src/Felorx.Application.Contracts/Ai/Dtos/OpenAiCompatibleDtos.cs`
+- Create: `api/src/Felorx.Application.Contracts/Ai/OpenAiCompatibleMappingExtensions.cs`
+- Create: `api/src/Felorx.Application.Contracts/Ai/IAiChatAppService.cs`
+- Create: `api/src/Felorx.Application.Contracts/Ai/IAiImageAppService.cs`
+- Create: `api/src/Felorx.Application.Contracts/Ai/IAiVideoAppService.cs`
+- Create: `api/src/Felorx.Application.Contracts/Ai/IAiJobAppService.cs`
 
 - [ ] **Step 1: 创建枚举文件**
 
-Create `api/src/Puupees.Application.Contracts/Ai/Dtos/AiEnums.cs`:
+Create `api/src/Felorx.Application.Contracts/Ai/Dtos/AiEnums.cs`:
 
 ```csharp
 using System.Text.Json.Serialization;
 
-namespace Puupees.Ai.Dtos;
+namespace Felorx.Ai.Dtos;
 
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum AiJobStatus
@@ -112,13 +112,13 @@ public enum AiMediaType
 
 - [ ] **Step 2: 创建媒体与任务 DTO**
 
-Create `api/src/Puupees.Application.Contracts/Ai/Dtos/AiMediaDtos.cs`:
+Create `api/src/Felorx.Application.Contracts/Ai/Dtos/AiMediaDtos.cs`:
 
 ```csharp
 using System;
 using System.Collections.Generic;
 
-namespace Puupees.Ai.Dtos;
+namespace Felorx.Ai.Dtos;
 
 [Serializable]
 public class AiMediaReferenceDto
@@ -183,13 +183,13 @@ public class AiJobDto
 
 - [ ] **Step 3: 创建 Chat DTO**
 
-Create `api/src/Puupees.Application.Contracts/Ai/Dtos/AiChatDtos.cs`:
+Create `api/src/Felorx.Application.Contracts/Ai/Dtos/AiChatDtos.cs`:
 
 ```csharp
 using System;
 using System.Collections.Generic;
 
-namespace Puupees.Ai.Dtos;
+namespace Felorx.Ai.Dtos;
 
 [Serializable]
 public class AiChatMessageDto
@@ -202,7 +202,7 @@ public class AiChatMessageDto
 [Serializable]
 public class CreateAiChatCompletionDto
 {
-    public string Model { get; set; } = "puupee-chat";
+    public string Model { get; set; } = "felorx-chat";
     public List<AiChatMessageDto> Messages { get; set; } = new();
     public double? Temperature { get; set; }
     public double? TopP { get; set; }
@@ -233,18 +233,18 @@ public class AiChatCompletionDto
 
 - [ ] **Step 4: 创建图片和视频 DTO**
 
-Create `api/src/Puupees.Application.Contracts/Ai/Dtos/AiImageDtos.cs`:
+Create `api/src/Felorx.Application.Contracts/Ai/Dtos/AiImageDtos.cs`:
 
 ```csharp
 using System;
 using System.Collections.Generic;
 
-namespace Puupees.Ai.Dtos;
+namespace Felorx.Ai.Dtos;
 
 [Serializable]
 public class CreateAiImageGenerationDto
 {
-    public string Model { get; set; } = "puupee-image";
+    public string Model { get; set; } = "felorx-image";
     public string Prompt { get; set; } = string.Empty;
     public string? Size { get; set; }
     public string? Quality { get; set; }
@@ -255,7 +255,7 @@ public class CreateAiImageGenerationDto
 [Serializable]
 public class CreateAiImageEditDto
 {
-    public string Model { get; set; } = "puupee-image";
+    public string Model { get; set; } = "felorx-image";
     public string Prompt { get; set; } = string.Empty;
     public List<AiMediaReferenceDto> InputImages { get; set; } = new();
     public AiMediaReferenceDto? Mask { get; set; }
@@ -266,18 +266,18 @@ public class CreateAiImageEditDto
 }
 ```
 
-Create `api/src/Puupees.Application.Contracts/Ai/Dtos/AiVideoDtos.cs`:
+Create `api/src/Felorx.Application.Contracts/Ai/Dtos/AiVideoDtos.cs`:
 
 ```csharp
 using System;
 using System.Collections.Generic;
 
-namespace Puupees.Ai.Dtos;
+namespace Felorx.Ai.Dtos;
 
 [Serializable]
 public class CreateAiVideoGenerationDto
 {
-    public string Model { get; set; } = "puupee-video";
+    public string Model { get; set; } = "felorx-video";
     public string Prompt { get; set; } = string.Empty;
     public int? Width { get; set; }
     public int? Height { get; set; }
@@ -288,7 +288,7 @@ public class CreateAiVideoGenerationDto
 [Serializable]
 public class CreateAiVideoEditDto
 {
-    public string Model { get; set; } = "puupee-video";
+    public string Model { get; set; } = "felorx-video";
     public string Prompt { get; set; } = string.Empty;
     public List<AiMediaReferenceDto> InputImages { get; set; } = new();
     public int? Width { get; set; }
@@ -300,19 +300,19 @@ public class CreateAiVideoEditDto
 
 - [ ] **Step 5: 创建 OpenAI 兼容 DTO 和映射**
 
-Create `api/src/Puupees.Application.Contracts/Ai/Dtos/OpenAiCompatibleDtos.cs`:
+Create `api/src/Felorx.Application.Contracts/Ai/Dtos/OpenAiCompatibleDtos.cs`:
 
 ```csharp
 using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace Puupees.Ai.Dtos;
+namespace Felorx.Ai.Dtos;
 
 [Serializable]
 public class OpenAiChatCompletionRequestDto
 {
-    public string Model { get; set; } = "puupee-chat";
+    public string Model { get; set; } = "felorx-chat";
     public List<AiChatMessageDto> Messages { get; set; } = new();
     public double? Temperature { get; set; }
 
@@ -329,7 +329,7 @@ public class OpenAiChatCompletionRequestDto
 [Serializable]
 public class OpenAiImageGenerationRequestDto
 {
-    public string Model { get; set; } = "puupee-image";
+    public string Model { get; set; } = "felorx-image";
     public string Prompt { get; set; } = string.Empty;
     public string? Size { get; set; }
     public string? Quality { get; set; }
@@ -363,7 +363,7 @@ public class OpenAiImageResponseDto
 [Serializable]
 public class OpenAiVideoRequestDto
 {
-    public string Model { get; set; } = "puupee-video";
+    public string Model { get; set; } = "felorx-video";
     public string Prompt { get; set; } = string.Empty;
 
     [JsonPropertyName("input_images")]
@@ -397,18 +397,18 @@ public class OpenAiVideoResponseDto
 }
 ```
 
-Create `api/src/Puupees.Application.Contracts/Ai/OpenAiCompatibleMappingExtensions.cs`:
+Create `api/src/Felorx.Application.Contracts/Ai/OpenAiCompatibleMappingExtensions.cs`:
 
 ```csharp
 using System;
 using System.Linq;
-using Puupees.Ai.Dtos;
+using Felorx.Ai.Dtos;
 
-namespace Puupees.Ai;
+namespace Felorx.Ai;
 
 public static class OpenAiCompatibleMappingExtensions
 {
-    public static CreateAiChatCompletionDto ToPuupeeInput(this OpenAiChatCompletionRequestDto input)
+    public static CreateAiChatCompletionDto ToFelorxInput(this OpenAiChatCompletionRequestDto input)
     {
         return new CreateAiChatCompletionDto
         {
@@ -422,7 +422,7 @@ public static class OpenAiCompatibleMappingExtensions
         };
     }
 
-    public static CreateAiImageGenerationDto ToPuupeeInput(this OpenAiImageGenerationRequestDto input)
+    public static CreateAiImageGenerationDto ToFelorxInput(this OpenAiImageGenerationRequestDto input)
     {
         return new CreateAiImageGenerationDto
         {
@@ -485,14 +485,14 @@ public static class OpenAiCompatibleMappingExtensions
 
 - [ ] **Step 6: 创建 AppService 接口**
 
-Create `api/src/Puupees.Application.Contracts/Ai/IAiChatAppService.cs`:
+Create `api/src/Felorx.Application.Contracts/Ai/IAiChatAppService.cs`:
 
 ```csharp
 using System.Threading.Tasks;
-using Puupees.Ai.Dtos;
+using Felorx.Ai.Dtos;
 using Volo.Abp.Application.Services;
 
-namespace Puupees.Ai;
+namespace Felorx.Ai;
 
 public interface IAiChatAppService : IApplicationService
 {
@@ -500,14 +500,14 @@ public interface IAiChatAppService : IApplicationService
 }
 ```
 
-Create `api/src/Puupees.Application.Contracts/Ai/IAiImageAppService.cs`:
+Create `api/src/Felorx.Application.Contracts/Ai/IAiImageAppService.cs`:
 
 ```csharp
 using System.Threading.Tasks;
-using Puupees.Ai.Dtos;
+using Felorx.Ai.Dtos;
 using Volo.Abp.Application.Services;
 
-namespace Puupees.Ai;
+namespace Felorx.Ai;
 
 public interface IAiImageAppService : IApplicationService
 {
@@ -516,14 +516,14 @@ public interface IAiImageAppService : IApplicationService
 }
 ```
 
-Create `api/src/Puupees.Application.Contracts/Ai/IAiVideoAppService.cs`:
+Create `api/src/Felorx.Application.Contracts/Ai/IAiVideoAppService.cs`:
 
 ```csharp
 using System.Threading.Tasks;
-using Puupees.Ai.Dtos;
+using Felorx.Ai.Dtos;
 using Volo.Abp.Application.Services;
 
-namespace Puupees.Ai;
+namespace Felorx.Ai;
 
 public interface IAiVideoAppService : IApplicationService
 {
@@ -532,14 +532,14 @@ public interface IAiVideoAppService : IApplicationService
 }
 ```
 
-Create `api/src/Puupees.Application.Contracts/Ai/IAiJobAppService.cs`:
+Create `api/src/Felorx.Application.Contracts/Ai/IAiJobAppService.cs`:
 
 ```csharp
 using System.Threading.Tasks;
-using Puupees.Ai.Dtos;
+using Felorx.Ai.Dtos;
 using Volo.Abp.Application.Services;
 
-namespace Puupees.Ai;
+namespace Felorx.Ai;
 
 public interface IAiJobAppService : IApplicationService
 {
@@ -554,7 +554,7 @@ Run:
 
 ```bash
 cd api
-dotnet build src/Puupees.Application.Contracts/Puupees.Application.Contracts.csproj
+dotnet build src/Felorx.Application.Contracts/Felorx.Application.Contracts.csproj
 ```
 
 Expected: `Build succeeded.`，没有 `CS0246`、`CS8618` 或 JSON 属性命名相关错误。
@@ -562,29 +562,29 @@ Expected: `Build succeeded.`，没有 `CS0246`、`CS8618` 或 JSON 属性命名�
 - [ ] **Step 8: 提交契约**
 
 ```bash
-git add api/src/Puupees.Application.Contracts/Ai
+git add api/src/Felorx.Application.Contracts/Ai
 git commit -m "feat(api): 添加 AI Gateway 契约"
 ```
 
 ## Task 2: 先写 AppService 失败测试
 
 **Files:**
-- Create: `api/test/Puupees.Application.Tests/Ai/AiGatewayAppServiceTests.cs`
+- Create: `api/test/Felorx.Application.Tests/Ai/AiGatewayAppServiceTests.cs`
 
 - [ ] **Step 1: 写 AppService 行为测试**
 
-Create `api/test/Puupees.Application.Tests/Ai/AiGatewayAppServiceTests.cs`:
+Create `api/test/Felorx.Application.Tests/Ai/AiGatewayAppServiceTests.cs`:
 
 ```csharp
 using System.Threading.Tasks;
-using Puupees.Ai;
-using Puupees.Ai.Dtos;
+using Felorx.Ai;
+using Felorx.Ai.Dtos;
 using Shouldly;
 using Xunit;
 
-namespace Puupees.Tests.Ai;
+namespace Felorx.Tests.Ai;
 
-public class AiGatewayAppServiceTests : PuupeesApplicationTestBase<PuupeesApplicationTestModule>
+public class AiGatewayAppServiceTests : FelorxApplicationTestBase<FelorxApplicationTestModule>
 {
     private readonly IAiChatAppService _chatAppService;
     private readonly IAiImageAppService _imageAppService;
@@ -604,7 +604,7 @@ public class AiGatewayAppServiceTests : PuupeesApplicationTestBase<PuupeesApplic
     {
         var result = await _chatAppService.CreateCompletionAsync(new CreateAiChatCompletionDto
         {
-            Model = "puupee-chat",
+            Model = "felorx-chat",
             Messages =
             {
                 new AiChatMessageDto { Role = "user", Content = "你好" }
@@ -625,7 +625,7 @@ public class AiGatewayAppServiceTests : PuupeesApplicationTestBase<PuupeesApplic
     {
         var job = await _imageAppService.CreateGenerationAsync(new CreateAiImageGenerationDto
         {
-            Model = "puupee-image",
+            Model = "felorx-image",
             Prompt = "生成一个蓝色托特包效果图",
             Size = "1024x1024",
             N = 1
@@ -651,19 +651,19 @@ public class AiGatewayAppServiceTests : PuupeesApplicationTestBase<PuupeesApplic
     {
         var job = await _imageAppService.CreateEditAsync(new CreateAiImageEditDto
         {
-            Model = "puupee-image",
+            Model = "felorx-image",
             Prompt = "使用牛仔布重绘这个包",
             InputImages =
             {
                 new AiMediaReferenceDto
                 {
-                    Bucket = "puupee-test",
+                    Bucket = "felorx-test",
                     Key = "users/test/style.png",
                     MimeType = "image/png"
                 },
                 new AiMediaReferenceDto
                 {
-                    Bucket = "puupee-test",
+                    Bucket = "felorx-test",
                     Key = "users/test/fabric.png",
                     MimeType = "image/png"
                 }
@@ -682,7 +682,7 @@ public class AiGatewayAppServiceTests : PuupeesApplicationTestBase<PuupeesApplic
     {
         var job = await _videoAppService.CreateGenerationAsync(new CreateAiVideoGenerationDto
         {
-            Model = "puupee-video",
+            Model = "felorx-video",
             Prompt = "展示布料被裁剪和缝纫成包的过程",
             DurationSeconds = 8
         });
@@ -700,13 +700,13 @@ public class AiGatewayAppServiceTests : PuupeesApplicationTestBase<PuupeesApplic
     {
         var job = await _videoAppService.CreateEditAsync(new CreateAiVideoEditDto
         {
-            Model = "puupee-video",
+            Model = "felorx-video",
             Prompt = "从布料到成品的缝纫过程",
             InputImages =
             {
                 new AiMediaReferenceDto
                 {
-                    Bucket = "puupee-test",
+                    Bucket = "felorx-test",
                     Key = "users/test/fabric.png",
                     MimeType = "image/png"
                 }
@@ -730,7 +730,7 @@ Run:
 
 ```bash
 cd api
-dotnet test test/Puupees.Application.Tests/Puupees.Application.Tests.csproj --filter FullyQualifiedName~AiGatewayAppServiceTests
+dotnet test test/Felorx.Application.Tests/Felorx.Application.Tests.csproj --filter FullyQualifiedName~AiGatewayAppServiceTests
 ```
 
 Expected: FAIL，失败原因是 `IAiChatAppService`、`IAiImageAppService`、`IAiVideoAppService` 或 `IAiJobAppService` 尚未注册或实现。不能出现 Contracts 编译错误。
@@ -738,32 +738,32 @@ Expected: FAIL，失败原因是 `IAiChatAppService`、`IAiImageAppService`、`I
 - [ ] **Step 3: 提交失败测试**
 
 ```bash
-git add api/test/Puupees.Application.Tests/Ai/AiGatewayAppServiceTests.cs
+git add api/test/Felorx.Application.Tests/Ai/AiGatewayAppServiceTests.cs
 git commit -m "test(api): 添加 AI Gateway 应用服务测试"
 ```
 
 ## Task 3: 实现 Job Store、Provider Router 和 Mock Provider
 
 **Files:**
-- Create: `api/src/Puupees.Application/Ai/Jobs/IAiJobStore.cs`
-- Create: `api/src/Puupees.Application/Ai/Jobs/InMemoryAiJobStore.cs`
-- Create: `api/src/Puupees.Application/Ai/Providers/IAiProviderRouter.cs`
-- Create: `api/src/Puupees.Application/Ai/Providers/IAiChatProvider.cs`
-- Create: `api/src/Puupees.Application/Ai/Providers/IAiImageProvider.cs`
-- Create: `api/src/Puupees.Application/Ai/Providers/IAiVideoProvider.cs`
-- Create: `api/src/Puupees.Application/Ai/Providers/DefaultAiProviderRouter.cs`
-- Create: `api/src/Puupees.Application/Ai/Providers/MockAiProvider.cs`
-- Modify: `api/src/Puupees.Application/PuupeesApplicationModule.cs`
+- Create: `api/src/Felorx.Application/Ai/Jobs/IAiJobStore.cs`
+- Create: `api/src/Felorx.Application/Ai/Jobs/InMemoryAiJobStore.cs`
+- Create: `api/src/Felorx.Application/Ai/Providers/IAiProviderRouter.cs`
+- Create: `api/src/Felorx.Application/Ai/Providers/IAiChatProvider.cs`
+- Create: `api/src/Felorx.Application/Ai/Providers/IAiImageProvider.cs`
+- Create: `api/src/Felorx.Application/Ai/Providers/IAiVideoProvider.cs`
+- Create: `api/src/Felorx.Application/Ai/Providers/DefaultAiProviderRouter.cs`
+- Create: `api/src/Felorx.Application/Ai/Providers/MockAiProvider.cs`
+- Modify: `api/src/Felorx.Application/FelorxApplicationModule.cs`
 
 - [ ] **Step 1: 创建 Job Store 接口**
 
-Create `api/src/Puupees.Application/Ai/Jobs/IAiJobStore.cs`:
+Create `api/src/Felorx.Application/Ai/Jobs/IAiJobStore.cs`:
 
 ```csharp
 using System.Threading.Tasks;
-using Puupees.Ai.Dtos;
+using Felorx.Ai.Dtos;
 
-namespace Puupees.Ai.Jobs;
+namespace Felorx.Ai.Jobs;
 
 public interface IAiJobStore
 {
@@ -775,16 +775,16 @@ public interface IAiJobStore
 
 - [ ] **Step 2: 创建内存 Job Store**
 
-Create `api/src/Puupees.Application/Ai/Jobs/InMemoryAiJobStore.cs`:
+Create `api/src/Felorx.Application/Ai/Jobs/InMemoryAiJobStore.cs`:
 
 ```csharp
 using System;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
-using Puupees.Ai.Dtos;
+using Felorx.Ai.Dtos;
 using Volo.Abp;
 
-namespace Puupees.Ai.Jobs;
+namespace Felorx.Ai.Jobs;
 
 public class InMemoryAiJobStore : IAiJobStore
 {
@@ -806,7 +806,7 @@ public class InMemoryAiJobStore : IAiJobStore
     {
         if (!_jobs.TryGetValue(id, out var job))
         {
-            throw new BusinessException("Puupees.Ai:JobNotFound")
+            throw new BusinessException("Felorx.Ai:JobNotFound")
                 .WithData("Id", id);
         }
 
@@ -825,13 +825,13 @@ public class InMemoryAiJobStore : IAiJobStore
 
 - [ ] **Step 3: 创建 Provider 接口和 Router**
 
-Create `api/src/Puupees.Application/Ai/Providers/IAiChatProvider.cs`:
+Create `api/src/Felorx.Application/Ai/Providers/IAiChatProvider.cs`:
 
 ```csharp
 using System.Threading.Tasks;
-using Puupees.Ai.Dtos;
+using Felorx.Ai.Dtos;
 
-namespace Puupees.Ai.Providers;
+namespace Felorx.Ai.Providers;
 
 public interface IAiChatProvider
 {
@@ -840,13 +840,13 @@ public interface IAiChatProvider
 }
 ```
 
-Create `api/src/Puupees.Application/Ai/Providers/IAiImageProvider.cs`:
+Create `api/src/Felorx.Application/Ai/Providers/IAiImageProvider.cs`:
 
 ```csharp
 using System.Threading.Tasks;
-using Puupees.Ai.Dtos;
+using Felorx.Ai.Dtos;
 
-namespace Puupees.Ai.Providers;
+namespace Felorx.Ai.Providers;
 
 public interface IAiImageProvider
 {
@@ -856,13 +856,13 @@ public interface IAiImageProvider
 }
 ```
 
-Create `api/src/Puupees.Application/Ai/Providers/IAiVideoProvider.cs`:
+Create `api/src/Felorx.Application/Ai/Providers/IAiVideoProvider.cs`:
 
 ```csharp
 using System.Threading.Tasks;
-using Puupees.Ai.Dtos;
+using Felorx.Ai.Dtos;
 
-namespace Puupees.Ai.Providers;
+namespace Felorx.Ai.Providers;
 
 public interface IAiVideoProvider
 {
@@ -872,12 +872,12 @@ public interface IAiVideoProvider
 }
 ```
 
-Create `api/src/Puupees.Application/Ai/Providers/IAiProviderRouter.cs`:
+Create `api/src/Felorx.Application/Ai/Providers/IAiProviderRouter.cs`:
 
 ```csharp
 using System.Threading.Tasks;
 
-namespace Puupees.Ai.Providers;
+namespace Felorx.Ai.Providers;
 
 public interface IAiProviderRouter
 {
@@ -887,12 +887,12 @@ public interface IAiProviderRouter
 }
 ```
 
-Create `api/src/Puupees.Application/Ai/Providers/DefaultAiProviderRouter.cs`:
+Create `api/src/Felorx.Application/Ai/Providers/DefaultAiProviderRouter.cs`:
 
 ```csharp
 using System.Threading.Tasks;
 
-namespace Puupees.Ai.Providers;
+namespace Felorx.Ai.Providers;
 
 public class DefaultAiProviderRouter : IAiProviderRouter
 {
@@ -922,16 +922,16 @@ public class DefaultAiProviderRouter : IAiProviderRouter
 
 - [ ] **Step 4: 创建 Mock Provider**
 
-Create `api/src/Puupees.Application/Ai/Providers/MockAiProvider.cs`:
+Create `api/src/Felorx.Application/Ai/Providers/MockAiProvider.cs`:
 
 ```csharp
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Puupees.Ai.Dtos;
+using Felorx.Ai.Dtos;
 
-namespace Puupees.Ai.Providers;
+namespace Felorx.Ai.Providers;
 
 public class MockAiProvider : IAiChatProvider, IAiImageProvider, IAiVideoProvider
 {
@@ -979,7 +979,7 @@ public class MockAiProvider : IAiChatProvider, IAiImageProvider, IAiVideoProvide
             new AiMediaOutputDto
             {
                 Type = AiMediaType.Image,
-                Url = "https://cdn.puupee.com/ai/mock/text-to-image.png",
+                Url = "https://cdn.felorx.com/ai/mock/text-to-image.png",
                 StorageKey = "ai/mock/text-to-image.png",
                 MimeType = "image/png",
                 Width = 1024,
@@ -997,7 +997,7 @@ public class MockAiProvider : IAiChatProvider, IAiImageProvider, IAiVideoProvide
             new AiMediaOutputDto
             {
                 Type = AiMediaType.Image,
-                Url = "https://cdn.puupee.com/ai/mock/image-to-image.png",
+                Url = "https://cdn.felorx.com/ai/mock/image-to-image.png",
                 StorageKey = "ai/mock/image-to-image.png",
                 MimeType = "image/png",
                 Width = 1024,
@@ -1015,7 +1015,7 @@ public class MockAiProvider : IAiChatProvider, IAiImageProvider, IAiVideoProvide
             new AiMediaOutputDto
             {
                 Type = AiMediaType.Video,
-                Url = "https://cdn.puupee.com/ai/mock/text-to-video.mp4",
+                Url = "https://cdn.felorx.com/ai/mock/text-to-video.mp4",
                 StorageKey = "ai/mock/text-to-video.mp4",
                 MimeType = "video/mp4",
                 Width = input.Width ?? 1280,
@@ -1034,7 +1034,7 @@ public class MockAiProvider : IAiChatProvider, IAiImageProvider, IAiVideoProvide
             new AiMediaOutputDto
             {
                 Type = AiMediaType.Video,
-                Url = "https://cdn.puupee.com/ai/mock/image-to-video.mp4",
+                Url = "https://cdn.felorx.com/ai/mock/image-to-video.mp4",
                 StorageKey = "ai/mock/image-to-video.mp4",
                 MimeType = "video/mp4",
                 Width = input.Width ?? 1280,
@@ -1072,12 +1072,12 @@ public class MockAiProvider : IAiChatProvider, IAiImageProvider, IAiVideoProvide
 
 - [ ] **Step 5: 注册 AI 服务**
 
-Modify `api/src/Puupees.Application/PuupeesApplicationModule.cs` inside `ConfigureServices` after existing service registrations:
+Modify `api/src/Felorx.Application/FelorxApplicationModule.cs` inside `ConfigureServices` after existing service registrations:
 
 ```csharp
-context.Services.AddSingleton<Puupees.Ai.Jobs.IAiJobStore, Puupees.Ai.Jobs.InMemoryAiJobStore>();
-context.Services.AddSingleton<Puupees.Ai.Providers.MockAiProvider>();
-context.Services.AddSingleton<Puupees.Ai.Providers.IAiProviderRouter, Puupees.Ai.Providers.DefaultAiProviderRouter>();
+context.Services.AddSingleton<Felorx.Ai.Jobs.IAiJobStore, Felorx.Ai.Jobs.InMemoryAiJobStore>();
+context.Services.AddSingleton<Felorx.Ai.Providers.MockAiProvider>();
+context.Services.AddSingleton<Felorx.Ai.Providers.IAiProviderRouter, Felorx.Ai.Providers.DefaultAiProviderRouter>();
 ```
 
 If the file does not currently include these namespaces, use fully qualified names as shown above so no extra `using` lines are required.
@@ -1088,7 +1088,7 @@ Run:
 
 ```bash
 cd api
-dotnet build src/Puupees.Application/Puupees.Application.csproj
+dotnet build src/Felorx.Application/Felorx.Application.csproj
 ```
 
 Expected: `Build succeeded.`，测试仍然失败，因为 AppService 实现还没有创建。
@@ -1096,33 +1096,33 @@ Expected: `Build succeeded.`，测试仍然失败，因为 AppService 实现还�
 - [ ] **Step 7: 提交 Provider 和 Job Store**
 
 ```bash
-git add api/src/Puupees.Application/Ai/Jobs api/src/Puupees.Application/Ai/Providers api/src/Puupees.Application/PuupeesApplicationModule.cs
+git add api/src/Felorx.Application/Ai/Jobs api/src/Felorx.Application/Ai/Providers api/src/Felorx.Application/FelorxApplicationModule.cs
 git commit -m "feat(api): 添加 AI Gateway Mock Provider"
 ```
 
-## Task 4: 实现 Puupee 原生 AppService
+## Task 4: 实现 Felorx 原生 AppService
 
 **Files:**
-- Create: `api/src/Puupees.Application/Ai/AiChatAppService.cs`
-- Create: `api/src/Puupees.Application/Ai/AiImageAppService.cs`
-- Create: `api/src/Puupees.Application/Ai/AiVideoAppService.cs`
-- Create: `api/src/Puupees.Application/Ai/AiJobAppService.cs`
+- Create: `api/src/Felorx.Application/Ai/AiChatAppService.cs`
+- Create: `api/src/Felorx.Application/Ai/AiImageAppService.cs`
+- Create: `api/src/Felorx.Application/Ai/AiVideoAppService.cs`
+- Create: `api/src/Felorx.Application/Ai/AiJobAppService.cs`
 
 - [ ] **Step 1: 创建 Chat AppService**
 
-Create `api/src/Puupees.Application/Ai/AiChatAppService.cs`:
+Create `api/src/Felorx.Application/Ai/AiChatAppService.cs`:
 
 ```csharp
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Puupees.Ai.Dtos;
-using Puupees.Ai.Providers;
+using Felorx.Ai.Dtos;
+using Felorx.Ai.Providers;
 using Volo.Abp;
 
-namespace Puupees.Ai;
+namespace Felorx.Ai;
 
 [Authorize]
-public class AiChatAppService : PuupeesAppServiceBase, IAiChatAppService
+public class AiChatAppService : FelorxAppServiceBase, IAiChatAppService
 {
     private readonly IAiProviderRouter _providerRouter;
 
@@ -1135,7 +1135,7 @@ public class AiChatAppService : PuupeesAppServiceBase, IAiChatAppService
     {
         if (input.Messages.Count == 0)
         {
-            throw new BusinessException("Puupees.Ai:MessagesRequired");
+            throw new BusinessException("Felorx.Ai:MessagesRequired");
         }
 
         var provider = await _providerRouter.GetChatProviderAsync(input.Model);
@@ -1146,20 +1146,20 @@ public class AiChatAppService : PuupeesAppServiceBase, IAiChatAppService
 
 - [ ] **Step 2: 创建 Image AppService**
 
-Create `api/src/Puupees.Application/Ai/AiImageAppService.cs`:
+Create `api/src/Felorx.Application/Ai/AiImageAppService.cs`:
 
 ```csharp
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Puupees.Ai.Dtos;
-using Puupees.Ai.Jobs;
-using Puupees.Ai.Providers;
+using Felorx.Ai.Dtos;
+using Felorx.Ai.Jobs;
+using Felorx.Ai.Providers;
 using Volo.Abp;
 
-namespace Puupees.Ai;
+namespace Felorx.Ai;
 
 [Authorize]
-public class AiImageAppService : PuupeesAppServiceBase, IAiImageAppService
+public class AiImageAppService : FelorxAppServiceBase, IAiImageAppService
 {
     private readonly IAiProviderRouter _providerRouter;
     private readonly IAiJobStore _jobStore;
@@ -1174,7 +1174,7 @@ public class AiImageAppService : PuupeesAppServiceBase, IAiImageAppService
     {
         if (string.IsNullOrWhiteSpace(input.Prompt))
         {
-            throw new BusinessException("Puupees.Ai:PromptRequired");
+            throw new BusinessException("Felorx.Ai:PromptRequired");
         }
 
         var provider = await _providerRouter.GetImageProviderAsync(input.Model);
@@ -1186,12 +1186,12 @@ public class AiImageAppService : PuupeesAppServiceBase, IAiImageAppService
     {
         if (string.IsNullOrWhiteSpace(input.Prompt))
         {
-            throw new BusinessException("Puupees.Ai:PromptRequired");
+            throw new BusinessException("Felorx.Ai:PromptRequired");
         }
 
         if (input.InputImages.Count == 0)
         {
-            throw new BusinessException("Puupees.Ai:InputImagesRequired");
+            throw new BusinessException("Felorx.Ai:InputImagesRequired");
         }
 
         var provider = await _providerRouter.GetImageProviderAsync(input.Model);
@@ -1203,20 +1203,20 @@ public class AiImageAppService : PuupeesAppServiceBase, IAiImageAppService
 
 - [ ] **Step 3: 创建 Video AppService**
 
-Create `api/src/Puupees.Application/Ai/AiVideoAppService.cs`:
+Create `api/src/Felorx.Application/Ai/AiVideoAppService.cs`:
 
 ```csharp
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Puupees.Ai.Dtos;
-using Puupees.Ai.Jobs;
-using Puupees.Ai.Providers;
+using Felorx.Ai.Dtos;
+using Felorx.Ai.Jobs;
+using Felorx.Ai.Providers;
 using Volo.Abp;
 
-namespace Puupees.Ai;
+namespace Felorx.Ai;
 
 [Authorize]
-public class AiVideoAppService : PuupeesAppServiceBase, IAiVideoAppService
+public class AiVideoAppService : FelorxAppServiceBase, IAiVideoAppService
 {
     private readonly IAiProviderRouter _providerRouter;
     private readonly IAiJobStore _jobStore;
@@ -1231,7 +1231,7 @@ public class AiVideoAppService : PuupeesAppServiceBase, IAiVideoAppService
     {
         if (string.IsNullOrWhiteSpace(input.Prompt))
         {
-            throw new BusinessException("Puupees.Ai:PromptRequired");
+            throw new BusinessException("Felorx.Ai:PromptRequired");
         }
 
         var provider = await _providerRouter.GetVideoProviderAsync(input.Model);
@@ -1243,12 +1243,12 @@ public class AiVideoAppService : PuupeesAppServiceBase, IAiVideoAppService
     {
         if (string.IsNullOrWhiteSpace(input.Prompt))
         {
-            throw new BusinessException("Puupees.Ai:PromptRequired");
+            throw new BusinessException("Felorx.Ai:PromptRequired");
         }
 
         if (input.InputImages.Count == 0)
         {
-            throw new BusinessException("Puupees.Ai:InputImagesRequired");
+            throw new BusinessException("Felorx.Ai:InputImagesRequired");
         }
 
         var provider = await _providerRouter.GetVideoProviderAsync(input.Model);
@@ -1260,19 +1260,19 @@ public class AiVideoAppService : PuupeesAppServiceBase, IAiVideoAppService
 
 - [ ] **Step 4: 创建 Job AppService**
 
-Create `api/src/Puupees.Application/Ai/AiJobAppService.cs`:
+Create `api/src/Felorx.Application/Ai/AiJobAppService.cs`:
 
 ```csharp
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Puupees.Ai.Dtos;
-using Puupees.Ai.Jobs;
+using Felorx.Ai.Dtos;
+using Felorx.Ai.Jobs;
 using Volo.Abp;
 
-namespace Puupees.Ai;
+namespace Felorx.Ai;
 
 [Authorize]
-public class AiJobAppService : PuupeesAppServiceBase, IAiJobAppService
+public class AiJobAppService : FelorxAppServiceBase, IAiJobAppService
 {
     private readonly IAiJobStore _jobStore;
 
@@ -1286,7 +1286,7 @@ public class AiJobAppService : PuupeesAppServiceBase, IAiJobAppService
         var job = await _jobStore.FindAsync(id);
         if (job == null)
         {
-            throw new BusinessException("Puupees.Ai:JobNotFound")
+            throw new BusinessException("Felorx.Ai:JobNotFound")
                 .WithData("Id", id);
         }
 
@@ -1306,7 +1306,7 @@ Run:
 
 ```bash
 cd api
-dotnet test test/Puupees.Application.Tests/Puupees.Application.Tests.csproj --filter FullyQualifiedName~AiGatewayAppServiceTests
+dotnet test test/Felorx.Application.Tests/Felorx.Application.Tests.csproj --filter FullyQualifiedName~AiGatewayAppServiceTests
 ```
 
 Expected: PASS，5 个 AI Gateway AppService 测试通过。
@@ -1314,32 +1314,32 @@ Expected: PASS，5 个 AI Gateway AppService 测试通过。
 - [ ] **Step 6: 提交 AppService 实现**
 
 ```bash
-git add api/src/Puupees.Application/Ai api/test/Puupees.Application.Tests/Ai/AiGatewayAppServiceTests.cs
+git add api/src/Felorx.Application/Ai api/test/Felorx.Application.Tests/Ai/AiGatewayAppServiceTests.cs
 git commit -m "feat(api): 实现 AI Gateway 应用服务"
 ```
 
 ## Task 5: 添加 OpenAI 兼容映射测试
 
 **Files:**
-- Create: `api/test/Puupees.Application.Tests/Ai/OpenAiCompatibleMappingTests.cs`
+- Create: `api/test/Felorx.Application.Tests/Ai/OpenAiCompatibleMappingTests.cs`
 
 - [ ] **Step 1: 写映射测试**
 
-Create `api/test/Puupees.Application.Tests/Ai/OpenAiCompatibleMappingTests.cs`:
+Create `api/test/Felorx.Application.Tests/Ai/OpenAiCompatibleMappingTests.cs`:
 
 ```csharp
 using System;
-using Puupees.Ai;
-using Puupees.Ai.Dtos;
+using Felorx.Ai;
+using Felorx.Ai.Dtos;
 using Shouldly;
 using Xunit;
 
-namespace Puupees.Tests.Ai;
+namespace Felorx.Tests.Ai;
 
 public class OpenAiCompatibleMappingTests
 {
     [Fact]
-    public void Should_Map_OpenAi_Chat_Request_To_Puupee_Input()
+    public void Should_Map_OpenAi_Chat_Request_To_Felorx_Input()
     {
         var request = new OpenAiChatCompletionRequestDto
         {
@@ -1354,7 +1354,7 @@ public class OpenAiCompatibleMappingTests
             Stream = true
         };
 
-        var input = request.ToPuupeeInput();
+        var input = request.ToFelorxInput();
 
         input.Model.ShouldBe("gpt-compatible");
         input.Messages.Count.ShouldBe(1);
@@ -1384,7 +1384,7 @@ public class OpenAiCompatibleMappingTests
                 new AiMediaOutputDto
                 {
                     Type = AiMediaType.Image,
-                    Url = "https://cdn.puupee.com/ai/mock/text-to-image.png"
+                    Url = "https://cdn.felorx.com/ai/mock/text-to-image.png"
                 }
             }
         };
@@ -1393,7 +1393,7 @@ public class OpenAiCompatibleMappingTests
 
         response.Created.ShouldBeGreaterThan(0);
         response.Data.Count.ShouldBe(1);
-        response.Data[0].Url.ShouldBe("https://cdn.puupee.com/ai/mock/text-to-image.png");
+        response.Data[0].Url.ShouldBe("https://cdn.felorx.com/ai/mock/text-to-image.png");
         response.Data[0].RevisedPrompt.ShouldBe("blue bag");
     }
 
@@ -1432,7 +1432,7 @@ Run:
 
 ```bash
 cd api
-dotnet test test/Puupees.Application.Tests/Puupees.Application.Tests.csproj --filter FullyQualifiedName~OpenAiCompatibleMappingTests
+dotnet test test/Felorx.Application.Tests/Felorx.Application.Tests.csproj --filter FullyQualifiedName~OpenAiCompatibleMappingTests
 ```
 
 Expected: PASS，3 个映射测试通过。
@@ -1440,35 +1440,35 @@ Expected: PASS，3 个映射测试通过。
 - [ ] **Step 3: 提交映射测试**
 
 ```bash
-git add api/test/Puupees.Application.Tests/Ai/OpenAiCompatibleMappingTests.cs
+git add api/test/Felorx.Application.Tests/Ai/OpenAiCompatibleMappingTests.cs
 git commit -m "test(api): 覆盖 OpenAI 兼容映射"
 ```
 
-## Task 6: 添加 Puupee 原生固定路由 Controller
+## Task 6: 添加 Felorx 原生固定路由 Controller
 
 **Files:**
-- Create: `api/src/Puupees.HttpApi/Controllers/Ai/AiChatController.cs`
-- Create: `api/src/Puupees.HttpApi/Controllers/Ai/AiImagesController.cs`
-- Create: `api/src/Puupees.HttpApi/Controllers/Ai/AiVideosController.cs`
-- Create: `api/src/Puupees.HttpApi/Controllers/Ai/AiJobsController.cs`
+- Create: `api/src/Felorx.HttpApi/Controllers/Ai/AiChatController.cs`
+- Create: `api/src/Felorx.HttpApi/Controllers/Ai/AiImagesController.cs`
+- Create: `api/src/Felorx.HttpApi/Controllers/Ai/AiVideosController.cs`
+- Create: `api/src/Felorx.HttpApi/Controllers/Ai/AiJobsController.cs`
 
 - [ ] **Step 1: 创建 Chat Controller**
 
-Create `api/src/Puupees.HttpApi/Controllers/Ai/AiChatController.cs`:
+Create `api/src/Felorx.HttpApi/Controllers/Ai/AiChatController.cs`:
 
 ```csharp
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Puupees.Ai;
-using Puupees.Ai.Dtos;
+using Felorx.Ai;
+using Felorx.Ai.Dtos;
 
-namespace Puupees.Controllers.Ai;
+namespace Felorx.Controllers.Ai;
 
 [Authorize]
 [ApiController]
 [Route("api/ai/chat")]
-public class AiChatController : PuupeesController
+public class AiChatController : FelorxController
 {
     private readonly IAiChatAppService _chatAppService;
 
@@ -1487,21 +1487,21 @@ public class AiChatController : PuupeesController
 
 - [ ] **Step 2: 创建 Images Controller**
 
-Create `api/src/Puupees.HttpApi/Controllers/Ai/AiImagesController.cs`:
+Create `api/src/Felorx.HttpApi/Controllers/Ai/AiImagesController.cs`:
 
 ```csharp
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Puupees.Ai;
-using Puupees.Ai.Dtos;
+using Felorx.Ai;
+using Felorx.Ai.Dtos;
 
-namespace Puupees.Controllers.Ai;
+namespace Felorx.Controllers.Ai;
 
 [Authorize]
 [ApiController]
 [Route("api/ai/images")]
-public class AiImagesController : PuupeesController
+public class AiImagesController : FelorxController
 {
     private readonly IAiImageAppService _imageAppService;
 
@@ -1526,21 +1526,21 @@ public class AiImagesController : PuupeesController
 
 - [ ] **Step 3: 创建 Videos Controller**
 
-Create `api/src/Puupees.HttpApi/Controllers/Ai/AiVideosController.cs`:
+Create `api/src/Felorx.HttpApi/Controllers/Ai/AiVideosController.cs`:
 
 ```csharp
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Puupees.Ai;
-using Puupees.Ai.Dtos;
+using Felorx.Ai;
+using Felorx.Ai.Dtos;
 
-namespace Puupees.Controllers.Ai;
+namespace Felorx.Controllers.Ai;
 
 [Authorize]
 [ApiController]
 [Route("api/ai/videos")]
-public class AiVideosController : PuupeesController
+public class AiVideosController : FelorxController
 {
     private readonly IAiVideoAppService _videoAppService;
 
@@ -1565,21 +1565,21 @@ public class AiVideosController : PuupeesController
 
 - [ ] **Step 4: 创建 Jobs Controller**
 
-Create `api/src/Puupees.HttpApi/Controllers/Ai/AiJobsController.cs`:
+Create `api/src/Felorx.HttpApi/Controllers/Ai/AiJobsController.cs`:
 
 ```csharp
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Puupees.Ai;
-using Puupees.Ai.Dtos;
+using Felorx.Ai;
+using Felorx.Ai.Dtos;
 
-namespace Puupees.Controllers.Ai;
+namespace Felorx.Controllers.Ai;
 
 [Authorize]
 [ApiController]
 [Route("api/ai/jobs")]
-public class AiJobsController : PuupeesController
+public class AiJobsController : FelorxController
 {
     private readonly IAiJobAppService _jobAppService;
 
@@ -1608,42 +1608,42 @@ Run:
 
 ```bash
 cd api
-dotnet build src/Puupees.HttpApi/Puupees.HttpApi.csproj
+dotnet build src/Felorx.HttpApi/Felorx.HttpApi.csproj
 ```
 
 Expected: `Build succeeded.`，Controller 路由和注入类型编译通过。
 
-- [ ] **Step 6: 提交 Puupee 原生 Controller**
+- [ ] **Step 6: 提交 Felorx 原生 Controller**
 
 ```bash
-git add api/src/Puupees.HttpApi/Controllers/Ai/AiChatController.cs api/src/Puupees.HttpApi/Controllers/Ai/AiImagesController.cs api/src/Puupees.HttpApi/Controllers/Ai/AiVideosController.cs api/src/Puupees.HttpApi/Controllers/Ai/AiJobsController.cs
+git add api/src/Felorx.HttpApi/Controllers/Ai/AiChatController.cs api/src/Felorx.HttpApi/Controllers/Ai/AiImagesController.cs api/src/Felorx.HttpApi/Controllers/Ai/AiVideosController.cs api/src/Felorx.HttpApi/Controllers/Ai/AiJobsController.cs
 git commit -m "feat(api): 添加 AI Gateway 原生路由"
 ```
 
 ## Task 7: 添加 OpenAI 兼容 Controller
 
 **Files:**
-- Create: `api/src/Puupees.HttpApi/Controllers/Ai/OpenAiCompatibleChatController.cs`
-- Create: `api/src/Puupees.HttpApi/Controllers/Ai/OpenAiCompatibleImagesController.cs`
-- Create: `api/src/Puupees.HttpApi/Controllers/Ai/OpenAiCompatibleVideosController.cs`
+- Create: `api/src/Felorx.HttpApi/Controllers/Ai/OpenAiCompatibleChatController.cs`
+- Create: `api/src/Felorx.HttpApi/Controllers/Ai/OpenAiCompatibleImagesController.cs`
+- Create: `api/src/Felorx.HttpApi/Controllers/Ai/OpenAiCompatibleVideosController.cs`
 
 - [ ] **Step 1: 创建 OpenAI Chat Controller**
 
-Create `api/src/Puupees.HttpApi/Controllers/Ai/OpenAiCompatibleChatController.cs`:
+Create `api/src/Felorx.HttpApi/Controllers/Ai/OpenAiCompatibleChatController.cs`:
 
 ```csharp
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Puupees.Ai;
-using Puupees.Ai.Dtos;
+using Felorx.Ai;
+using Felorx.Ai.Dtos;
 
-namespace Puupees.Controllers.Ai;
+namespace Felorx.Controllers.Ai;
 
 [Authorize]
 [ApiController]
 [Route("api/ai/v1/chat/completions")]
-public class OpenAiCompatibleChatController : PuupeesController
+public class OpenAiCompatibleChatController : FelorxController
 {
     private readonly IAiChatAppService _chatAppService;
 
@@ -1655,14 +1655,14 @@ public class OpenAiCompatibleChatController : PuupeesController
     [HttpPost]
     public async Task<AiChatCompletionDto> CreateAsync([FromBody] OpenAiChatCompletionRequestDto input)
     {
-        return await _chatAppService.CreateCompletionAsync(input.ToPuupeeInput());
+        return await _chatAppService.CreateCompletionAsync(input.ToFelorxInput());
     }
 }
 ```
 
 - [ ] **Step 2: 创建 OpenAI Images Controller**
 
-Create `api/src/Puupees.HttpApi/Controllers/Ai/OpenAiCompatibleImagesController.cs`:
+Create `api/src/Felorx.HttpApi/Controllers/Ai/OpenAiCompatibleImagesController.cs`:
 
 ```csharp
 using System.Collections.Generic;
@@ -1670,15 +1670,15 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Puupees.Ai;
-using Puupees.Ai.Dtos;
+using Felorx.Ai;
+using Felorx.Ai.Dtos;
 
-namespace Puupees.Controllers.Ai;
+namespace Felorx.Controllers.Ai;
 
 [Authorize]
 [ApiController]
 [Route("api/ai/v1/images")]
-public class OpenAiCompatibleImagesController : PuupeesController
+public class OpenAiCompatibleImagesController : FelorxController
 {
     private readonly IAiImageAppService _imageAppService;
 
@@ -1690,7 +1690,7 @@ public class OpenAiCompatibleImagesController : PuupeesController
     [HttpPost("generations")]
     public async Task<OpenAiImageResponseDto> CreateGenerationAsync([FromBody] OpenAiImageGenerationRequestDto input)
     {
-        var job = await _imageAppService.CreateGenerationAsync(input.ToPuupeeInput());
+        var job = await _imageAppService.CreateGenerationAsync(input.ToFelorxInput());
         return job.ToOpenAiImageResponse();
     }
 
@@ -1730,7 +1730,7 @@ public class OpenAiCompatibleImagesController : PuupeesController
 
     public class OpenAiImageEditForm
     {
-        public string Model { get; set; } = "puupee-image";
+        public string Model { get; set; } = "felorx-image";
         public string Prompt { get; set; } = string.Empty;
         public List<IFormFile> Image { get; set; } = new();
         public IFormFile? Mask { get; set; }
@@ -1742,21 +1742,21 @@ public class OpenAiCompatibleImagesController : PuupeesController
 
 - [ ] **Step 3: 创建 OpenAI Videos Controller**
 
-Create `api/src/Puupees.HttpApi/Controllers/Ai/OpenAiCompatibleVideosController.cs`:
+Create `api/src/Felorx.HttpApi/Controllers/Ai/OpenAiCompatibleVideosController.cs`:
 
 ```csharp
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Puupees.Ai;
-using Puupees.Ai.Dtos;
+using Felorx.Ai;
+using Felorx.Ai.Dtos;
 
-namespace Puupees.Controllers.Ai;
+namespace Felorx.Controllers.Ai;
 
 [Authorize]
 [ApiController]
 [Route("api/ai/v1/videos")]
-public class OpenAiCompatibleVideosController : PuupeesController
+public class OpenAiCompatibleVideosController : FelorxController
 {
     private readonly IAiVideoAppService _videoAppService;
     private readonly IAiJobAppService _jobAppService;
@@ -1818,7 +1818,7 @@ Run:
 
 ```bash
 cd api
-dotnet build src/Puupees.HttpApi/Puupees.HttpApi.csproj
+dotnet build src/Felorx.HttpApi/Felorx.HttpApi.csproj
 ```
 
 Expected: `Build succeeded.`，没有 `IFormFile`、`Consumes` 或映射扩展方法相关编译错误。
@@ -1829,7 +1829,7 @@ Run:
 
 ```bash
 cd api
-dotnet test test/Puupees.Application.Tests/Puupees.Application.Tests.csproj --filter FullyQualifiedName~Ai
+dotnet test test/Felorx.Application.Tests/Felorx.Application.Tests.csproj --filter FullyQualifiedName~Ai
 ```
 
 Expected: PASS，AI Gateway AppService 测试和 OpenAI 映射测试全部通过。
@@ -1837,48 +1837,48 @@ Expected: PASS，AI Gateway AppService 测试和 OpenAI 映射测试全部通过
 - [ ] **Step 6: 提交 OpenAI 兼容 Controller**
 
 ```bash
-git add api/src/Puupees.HttpApi/Controllers/Ai/OpenAiCompatibleChatController.cs api/src/Puupees.HttpApi/Controllers/Ai/OpenAiCompatibleImagesController.cs api/src/Puupees.HttpApi/Controllers/Ai/OpenAiCompatibleVideosController.cs
+git add api/src/Felorx.HttpApi/Controllers/Ai/OpenAiCompatibleChatController.cs api/src/Felorx.HttpApi/Controllers/Ai/OpenAiCompatibleImagesController.cs api/src/Felorx.HttpApi/Controllers/Ai/OpenAiCompatibleVideosController.cs
 git commit -m "feat(api): 添加 OpenAI 兼容 AI 路由"
 ```
 
 ## Task 8: 添加 Controller 路由和授权反射测试
 
 **Files:**
-- Modify: `api/test/Puupees.Application.Tests/Puupees.Application.Tests.csproj`
-- Create: `api/test/Puupees.Application.Tests/Ai/AiControllerRouteAndSecurityTests.cs`
+- Modify: `api/test/Felorx.Application.Tests/Felorx.Application.Tests.csproj`
+- Create: `api/test/Felorx.Application.Tests/Ai/AiControllerRouteAndSecurityTests.cs`
 
 - [ ] **Step 1: 让测试项目引用 HttpApi 项目**
 
-Modify `api/test/Puupees.Application.Tests/Puupees.Application.Tests.csproj` and add the `Puupees.HttpApi` project reference inside the existing first `<ItemGroup>`:
+Modify `api/test/Felorx.Application.Tests/Felorx.Application.Tests.csproj` and add the `Felorx.HttpApi` project reference inside the existing first `<ItemGroup>`:
 
 ```xml
-<ProjectReference Include="..\..\src\Puupees.HttpApi\Puupees.HttpApi.csproj" />
+<ProjectReference Include="..\..\src\Felorx.HttpApi\Felorx.HttpApi.csproj" />
 ```
 
 After the edit, the first `<ItemGroup>` should be:
 
 ```xml
 <ItemGroup>
-  <ProjectReference Include="..\..\src\Puupees.Application\Puupees.Application.csproj" />
-  <ProjectReference Include="..\..\src\Puupees.HttpApi\Puupees.HttpApi.csproj" />
-  <ProjectReference Include="..\Puupees.Domain.Tests\Puupees.Domain.Tests.csproj" />
+  <ProjectReference Include="..\..\src\Felorx.Application\Felorx.Application.csproj" />
+  <ProjectReference Include="..\..\src\Felorx.HttpApi\Felorx.HttpApi.csproj" />
+  <ProjectReference Include="..\Felorx.Domain.Tests\Felorx.Domain.Tests.csproj" />
 </ItemGroup>
 ```
 
 - [ ] **Step 2: 创建 Controller 路由和授权测试**
 
-Create `api/test/Puupees.Application.Tests/Ai/AiControllerRouteAndSecurityTests.cs`:
+Create `api/test/Felorx.Application.Tests/Ai/AiControllerRouteAndSecurityTests.cs`:
 
 ```csharp
 using System;
 using System.Reflection;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Puupees.Controllers.Ai;
+using Felorx.Controllers.Ai;
 using Shouldly;
 using Xunit;
 
-namespace Puupees.Tests.Ai;
+namespace Felorx.Tests.Ai;
 
 public class AiControllerRouteAndSecurityTests
 {
@@ -1910,7 +1910,7 @@ Run:
 
 ```bash
 cd api
-dotnet test test/Puupees.Application.Tests/Puupees.Application.Tests.csproj --filter FullyQualifiedName~AiControllerRouteAndSecurityTests
+dotnet test test/Felorx.Application.Tests/Felorx.Application.Tests.csproj --filter FullyQualifiedName~AiControllerRouteAndSecurityTests
 ```
 
 Expected: PASS，7 个 Controller 均有固定路由、`[ApiController]` 和 `[Authorize]`。
@@ -1918,7 +1918,7 @@ Expected: PASS，7 个 Controller 均有固定路由、`[ApiController]` 和 `[A
 - [ ] **Step 4: 提交 Controller 测试**
 
 ```bash
-git add api/test/Puupees.Application.Tests/Puupees.Application.Tests.csproj api/test/Puupees.Application.Tests/Ai/AiControllerRouteAndSecurityTests.cs
+git add api/test/Felorx.Application.Tests/Felorx.Application.Tests.csproj api/test/Felorx.Application.Tests/Ai/AiControllerRouteAndSecurityTests.cs
 git commit -m "test(api): 覆盖 AI Gateway 路由和授权"
 ```
 
@@ -1933,9 +1933,9 @@ Run:
 
 ```bash
 cd api
-dotnet build src/Puupees.Application.Contracts/Puupees.Application.Contracts.csproj
-dotnet build src/Puupees.Application/Puupees.Application.csproj
-dotnet build src/Puupees.HttpApi/Puupees.HttpApi.csproj
+dotnet build src/Felorx.Application.Contracts/Felorx.Application.Contracts.csproj
+dotnet build src/Felorx.Application/Felorx.Application.csproj
+dotnet build src/Felorx.HttpApi/Felorx.HttpApi.csproj
 ```
 
 Expected: 三个命令均输出 `Build succeeded.`。
@@ -1946,7 +1946,7 @@ Run:
 
 ```bash
 cd api
-dotnet test test/Puupees.Application.Tests/Puupees.Application.Tests.csproj
+dotnet test test/Felorx.Application.Tests/Felorx.Application.Tests.csproj
 ```
 
 Expected: PASS。若出现与本次 AI Gateway 无关的既有失败，记录失败测试名称、错误摘要和本次已通过的 `--filter FullyQualifiedName~Ai` 结果，不修改无关模块。
@@ -1965,7 +1965,7 @@ Expected: 输出为空。
 
 在最终回复中说明：
 
-- 新增了 Puupee 原生 AI Gateway 接口。
+- 新增了 Felorx 原生 AI Gateway 接口。
 - 新增了 OpenAI 兼容入口。
 - 第一阶段使用 Mock Provider，不依赖真实供应商 API Key。
 - 列出实际运行的 build/test 命令和结果。
