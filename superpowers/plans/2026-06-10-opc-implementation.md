@@ -86,7 +86,7 @@
 ```yaml
 name: felorx_opc
 tobias:
-  url_scheme: puupeeopc
+  url_scheme: felorxopc
 resolution: workspace
 version: 1.0.0
 publish_to: none
